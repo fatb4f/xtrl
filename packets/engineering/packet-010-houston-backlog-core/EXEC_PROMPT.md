@@ -21,6 +21,7 @@
     "raw/tests.txt"
   ]
 }
+```
 
 Acceptance checks
 
