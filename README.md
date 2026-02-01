@@ -22,6 +22,7 @@ $CODEX_DATA/vendor/xtrl
 See `docs/projectops/xdg-layout.md` for details.
 
 Binding ProjectOps paths: `docs/drr/DRR-0001-projectops-naming-paths.md`
+Repo backlog: `backlog.md`
 
 ## Export surface (skills-pack)
 `skills-pack/` is the subtree-importable export surface for `$CODEX_HOME/skills/`:
@@ -79,3 +80,12 @@ runs `just-mcp --watch-dir "$CODEX_HOME/xtrl:xtrl"`.
 
 The launcher at `~/.local/bin/xtrl-just-mcp` watches `$CODEX_HOME/xtrl`
 (alias `xtrl`), so MCP tools are published as `just_<recipe>@xtrl`.
+
+## Control surface (ctrl.*)
+The control surface is a set of `just` recipes prefixed with `ctrl.` that act as
+the public actuator API for MCP and Yazi:
+- `ctrl.help`, `ctrl.list`, `ctrl.paths`, `ctrl.doctor`
+- `ctrl.preflight`, `ctrl.exec`, `ctrl.check`, `ctrl.evidence`
+- `ctrl.promote` (deny-by-default)
+
+See `docs/projectops/yazi.md` for the Yazi → just wiring.

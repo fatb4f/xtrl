@@ -5,10 +5,20 @@ XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 CODEX_HOME="${CODEX_HOME:-$XDG_CONFIG_HOME/codex}"
 CODEX_STATE="${CODEX_STATE:-$XDG_STATE_HOME/codex}"
+CODEX_DATA="${CODEX_DATA:-${XDG_DATA_HOME:-$HOME/.local/share}/codex}"
 WATCH_ALIAS="${XTRL_JUST_MCP_ALIAS:-xtrl}"
 WATCH_DIR="$CODEX_HOME/xtrl"
 
 export CODEX_HOME
 export CODEX_STATE
+export CODEX_DATA
+
+if [[ -z "${XTRL_ROOT:-}" ]]; then
+  if [[ -d "$CODEX_DATA/vendor/xtrl" ]]; then
+    export XTRL_ROOT="$CODEX_DATA/vendor/xtrl"
+  elif [[ -d "$CODEX_HOME/skills/vendor/xtrl" ]]; then
+    export XTRL_ROOT="$CODEX_HOME/skills/vendor/xtrl"
+  fi
+fi
 
 exec just-mcp --watch-dir "$WATCH_DIR:$WATCH_ALIAS" "$@"

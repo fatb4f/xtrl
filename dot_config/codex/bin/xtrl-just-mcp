@@ -3,10 +3,20 @@ set -euo pipefail
 
 CODEX_HOME="${CODEX_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/codex}"
 CODEX_STATE="${CODEX_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/codex}"
+CODEX_DATA="${CODEX_DATA:-${XDG_DATA_HOME:-$HOME/.local/share}/codex}"
 WATCH_DIR="$CODEX_HOME/xtrl"
 mkdir -p "$WATCH_DIR"
 
 export CODEX_HOME
 export CODEX_STATE
+export CODEX_DATA
+
+if [[ -z "${XTRL_ROOT:-}" ]]; then
+  if [[ -d "$CODEX_DATA/vendor/xtrl" ]]; then
+    export XTRL_ROOT="$CODEX_DATA/vendor/xtrl"
+  elif [[ -d "$CODEX_HOME/skills/vendor/xtrl" ]]; then
+    export XTRL_ROOT="$CODEX_HOME/skills/vendor/xtrl"
+  fi
+fi
 
 exec just-mcp --watch-dir "$WATCH_DIR:xtrl"

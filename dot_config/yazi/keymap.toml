@@ -1,0 +1,25 @@
+# Yazi keybindings for xtrl control surface (just-based)
+[[manager.prepend_keymap]]
+on = ["g", "w"]
+run = "shell --block -- just wt repo_root=\"$PWD\""
+desc = "ProjectOps: worktree (just wt)"
+
+[[manager.prepend_keymap]]
+on = ["g", "s"]
+run = "shell --block -- just sess repo_root=\"$PWD\""
+desc = "ProjectOps: session (just sess)"
+
+[[manager.prepend_keymap]]
+on = ["g", "p"]
+run = "shell --block -- just -f \"$CODEX_HOME/xtrl/Justfile\" ctrl.preflight repo_root=\"$PWD\""
+desc = "ProjectOps: ctrl.preflight"
+
+[[manager.prepend_keymap]]
+on = ["g", "c"]
+run = "shell --block -- just -f \"$CODEX_HOME/xtrl/Justfile\" ctrl.check repo_root=\"$PWD\" contract=\"%h\""
+desc = "ProjectOps: ctrl.check (hovered contract)"
+
+[[manager.prepend_keymap]]
+on = ["g", "m"]
+run = "shell --block -- just -f \"$CODEX_HOME/xtrl/Justfile\" ctrl.promote repo_root=\"$PWD\""
+desc = "ProjectOps: ctrl.promote (disabled)"
