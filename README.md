@@ -1,8 +1,27 @@
 # Codex xtrl
 
-xtrl is a repo-agnostic execution surface that lives under `$CODEX_HOME`. It
-provides packet templates, execution tooling, and evidence conventions while
-keeping all runtime state out of the target repositories.
+xtrl is a repo-agnostic execution surface that keeps config, state, and vendor
+data in distinct XDG roots. It provides packet templates, execution tooling, and
+evidence conventions while keeping all runtime state out of the target
+repositories.
+
+## XDG layout (canonical)
+- `CODEX_HOME` = `$XDG_CONFIG_HOME/codex` (config only)
+- `CODEX_STATE` = `$XDG_STATE_HOME/codex` (runtime state + evidence)
+- `CODEX_DATA` = `$XDG_DATA_HOME/codex` (vendor checkouts)
+
+State root:
+```
+$CODEX_STATE/xtrl/{packets,out,worktrees}/...
+```
+
+Vendor checkout:
+```
+$CODEX_DATA/vendor/xtrl
+```
+See `docs/projectops/xdg-layout.md` for details.
+
+Binding ProjectOps paths: `docs/drr/DRR-0001-projectops-naming-paths.md`
 
 ## Export surface (skills-pack)
 `skills-pack/` is the subtree-importable export surface for `$CODEX_HOME/skills/`:
@@ -13,13 +32,9 @@ keeping all runtime state out of the target repositories.
 
 ## Global-only roots (no repo-local .codex/.quint)
 xtrl must not create or depend on repo-local `./.codex/` or `./.quint/`.
-All runtime artifacts live under the xtrl state root (the repo resolves to the
-first existing directory in `$CODEX_HOME/{xtrl,ctrlex,plant-a}`):
-```
-$CODEX_HOME/xtrl/{packets,out,worktrees}/...
-```
-A compatibility alias may expose `$CODEX_HOME/ctrlex/` or `$CODEX_HOME/plant-a/`
-if you are still migrating existing work.
+All runtime artifacts live under the xtrl state root in `$CODEX_STATE`.
+A compatibility alias may expose `$CODEX_STATE/ctrlex/` or
+`$CODEX_STATE/plant-a/` if you are still migrating existing work.
 
 ## Install via chezmoi subtree (example)
 From your chezmoi source directory:
@@ -38,7 +53,14 @@ bash $CODEX_HOME/skills/xtrl.packet-runner/scripts/run_packet.sh \
 ## Evidence output
 Evidence bundles are written under:
 ```
-$CODEX_HOME/xtrl/out/<packet_id>/
+$CODEX_STATE/xtrl/out/<packet_id>/
+```
+
+## Install wrappers (repo-shipped)
+Copy the repo-shipped wrappers into your PATH and mark them executable:
+```bash
+install -m 755 scripts/install/xtrl ~/.local/bin/xtrl
+install -m 755 scripts/install/xtrl-just-mcp ~/.local/bin/xtrl-just-mcp
 ```
 
 ## CLI & Just integration
@@ -51,14 +73,9 @@ xtrl run-packet --repo-root /path/to/repo packets/examples/<packet>.json
 xtrl collect-evidence --repo-root /path/to/repo packets/examples/<packet>.json
 ```
 
-Use `xtrl just render --out $CODEX_HOME/Justfile` to create the global Justfile
+Use `xtrl just render --out "$CODEX_HOME/xtrl/Justfile"` to generate the Justfile
 watched by `just-mcp`, and `xtrl just install-mcp` to print the MCP stanza that
-runs `just-mcp --watch-dir "$CODEX_HOME:xtrl"`.
+runs `just-mcp --watch-dir "$CODEX_HOME/xtrl:xtrl"`.
 
-The launcher at `$CODEX_HOME/bin/xtrl-just-mcp` already watches `$CODEX_HOME`
+The launcher at `~/.local/bin/xtrl-just-mcp` watches `$CODEX_HOME/xtrl`
 (alias `xtrl`), so MCP tools are published as `just_<recipe>@xtrl`.
-
-Install the bundled wrapper at `$CODEX_HOME/bin/xtrl` (see
-`dot_config/codex/bin/xtrl`) so both the exported Justfile and the MCP server call
-a stable executable path instead of depending on `PATH`. Start the just-mcp
-server via `$CODEX_HOME/bin/xtrl-just-mcp`.
