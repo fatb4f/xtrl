@@ -1,22 +1,22 @@
 # Agents Runbook (xtrl)
 
-This file defines the instruction set for operating Codex xtrl when installed under
-the global Codex root (`CODEX_HOME`).
+This file defines the instruction set for operating Codex xtrl with XDG-split
+roots (config, state, data).
 
 ## Situational awareness
-- **Global install:** xtrl is installed under `$CODEX_HOME/xtrl/` (legacy `ctrlex`
-and `plant-a` roots may remain briefly for compatibility).
+- **Vendor root:** xtrl is installed under `$CODEX_DATA/vendor/xtrl` (legacy
+  `ctrlex` and `plant-a` roots may remain briefly for compatibility).
 - **Target-aware:** All execution operates on an explicit target repo.
 - **No repo-local roots:** xtrl must not create or depend on `./.codex/` or `./.quint/`.
 
 ## Directory structure (global)
-- `$CODEX_HOME/xtrl/README.md` - repository purpose and entry points
-- `$CODEX_HOME/xtrl/plant.manifest.json` - structural manifest for drift prevention
-- `$CODEX_HOME/xtrl/schemas/` - JSON schemas for contracts and the manifest
-- `$CODEX_HOME/xtrl/packets/` - packet templates and example packets
-- `$CODEX_HOME/xtrl/tools/` - execution tools (preflight, worktree, evidence)
-- `$CODEX_HOME/xtrl/out/<packet_id>/` - evidence bundles
-- `$CODEX_HOME/xtrl/worktrees/<packet_id>/` - isolated worktrees (WORK zone)
+- `$CODEX_DATA/vendor/xtrl/README.md` - repository purpose and entry points
+- `$CODEX_DATA/vendor/xtrl/plant.manifest.json` - structural manifest for drift prevention
+- `$CODEX_DATA/vendor/xtrl/schemas/` - JSON schemas for contracts and the manifest
+- `$CODEX_STATE/xtrl/packets/` - packet templates and example packets
+- `$CODEX_DATA/vendor/xtrl/tools/` - execution tools (preflight, worktree, evidence)
+- `$CODEX_STATE/xtrl/out/<packet_id>/` - evidence bundles
+- `$CODEX_STATE/xtrl/worktrees/<packet_id>/` - isolated worktrees (WORK zone)
 - `$CODEX_HOME/skills/xtrl.packet-template/` - packet scaffolding skill
 - `$CODEX_HOME/skills/xtrl.packet-runner/` - packet runner skill
 
@@ -51,8 +51,8 @@ If using a flat contract, store the corresponding prompt as:
 - `packets/examples/<packet_id>.EXEC_PROMPT.md`
 
 ## Transition alias notes
-- A compatibility alias may expose `$CODEX_HOME/plant-a/` or `$CODEX_HOME/ctrlex/` as
-  symlinks to `$CODEX_HOME/xtrl/` during the transition window.
+- A compatibility alias may expose `$CODEX_STATE/plant-a/` or `$CODEX_STATE/ctrlex/` as
+  symlinks to `$CODEX_STATE/xtrl/` during the transition window.
 - CLI consumers can keep using legacy entrypoints for a short window if an alias
   script forwards to `xtrl`.
 

@@ -28,10 +28,30 @@ def resolve_codex_home(raw: str | None) -> Path:
     return (base / "codex").resolve()
 
 
-def resolve_state_root(codex_home: Path) -> Path:
-    xtrl_root = codex_home / "xtrl"
-    ctrlex_root = codex_home / "ctrlex"
-    plant_root = codex_home / "plant-a"
+def resolve_codex_state(raw: str | None) -> Path:
+    if raw:
+        return expand_path(raw)
+    env = os.environ.get("CODEX_STATE")
+    if env:
+        return Path(os.path.expanduser(env)).resolve()
+    xdg = os.environ.get("XDG_STATE_HOME")
+    base = Path(xdg) if xdg else Path.home() / ".local" / "state"
+    return (base / "codex").resolve()
+
+
+def resolve_codex_data() -> Path:
+    env = os.environ.get("CODEX_DATA")
+    if env:
+        return Path(os.path.expanduser(env)).resolve()
+    xdg = os.environ.get("XDG_DATA_HOME")
+    base = Path(xdg) if xdg else Path.home() / ".local" / "share"
+    return (base / "codex").resolve()
+
+
+def resolve_state_root(codex_state: Path) -> Path:
+    xtrl_root = codex_state / "xtrl"
+    ctrlex_root = codex_state / "ctrlex"
+    plant_root = codex_state / "plant-a"
     if xtrl_root.exists():
         return xtrl_root.resolve()
     if ctrlex_root.exists():
@@ -70,7 +90,14 @@ def resolve_xtrl_root(script_dir: Path) -> Path:
         raise SystemExit(
             f"CTRLEX_ROOT is set to {candidate}, but {candidate / 'tools'} does not exist"
         )
+    codex_data = resolve_codex_data()
+    vendor_xtrl = codex_data / "vendor" / "xtrl"
+    if (vendor_xtrl / "tools").exists():
+        return vendor_xtrl.resolve()
     codex_home = resolve_codex_home(None)
+    vendor_ctrlex = codex_data / "vendor" / "ctrlex"
+    if (vendor_ctrlex / "tools").exists():
+        return vendor_ctrlex.resolve()
     vendor_xtrl = codex_home / "skills" / "vendor" / "xtrl"
     if (vendor_xtrl / "tools").exists():
         return vendor_xtrl.resolve()
@@ -80,7 +107,8 @@ def resolve_xtrl_root(script_dir: Path) -> Path:
     if (script_dir / "tools").exists():
         return script_dir.resolve()
     raise SystemExit(
-        "XTRL_ROOT is not set and the default ($CODEX_HOME/skills/vendor/xtrl or .../ctrlex) "
+        "XTRL_ROOT is not set and no vendor checkout was found under $XDG_DATA_HOME/codex/vendor/xtrl "
+        "or $CODEX_HOME/skills/vendor/xtrl. "
         "does not exist. Set XTRL_ROOT to your xtrl checkout."
     )
 
@@ -100,7 +128,12 @@ def command_common_args(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument(
         "--codex-home",
-        help="Override the CODEX_HOME base path.",
+        help="Override the CODEX_HOME config path.",
+        default=None,
+    )
+    parser.add_argument(
+        "--codex-state",
+        help="Override the CODEX_STATE base path.",
         default=None,
     )
 
@@ -108,53 +141,91 @@ def command_common_args(parser: argparse.ArgumentParser) -> None:
 def handle_preflight(args: argparse.Namespace, script_dir: Path) -> None:
     repo_root = resolve_repo_root(args.repo_root)
     codex_home = resolve_codex_home(args.codex_home)
+    codex_state = resolve_codex_state(args.codex_state)
     xtrl_root = resolve_xtrl_root(script_dir)
     script = xtrl_root / "tools" / "root_preflight.py"
     run_script(
         script,
-        ["--repo-root", str(repo_root), "--codex-home", str(codex_home)],
+        [
+            "--repo-root",
+            str(repo_root),
+            "--codex-home",
+            str(codex_home),
+            "--codex-state",
+            str(codex_state),
+        ],
     )
 
 
 def handle_enter_work(args: argparse.Namespace, script_dir: Path) -> None:
     repo_root = resolve_repo_root(args.repo_root)
     codex_home = resolve_codex_home(args.codex_home)
+    codex_state = resolve_codex_state(args.codex_state)
     xtrl_root = resolve_xtrl_root(script_dir)
     script = xtrl_root / "tools" / "g0_enter_work.py"
     run_script(
         script,
-        ["--repo-root", str(repo_root), "--codex-home", str(codex_home), args.contract],
+        [
+            "--repo-root",
+            str(repo_root),
+            "--codex-home",
+            str(codex_home),
+            "--codex-state",
+            str(codex_state),
+            args.contract,
+        ],
     )
 
 
 def handle_run_packet(args: argparse.Namespace, script_dir: Path) -> None:
     repo_root = resolve_repo_root(args.repo_root)
     codex_home = resolve_codex_home(args.codex_home)
+    codex_state = resolve_codex_state(args.codex_state)
     xtrl_root = resolve_xtrl_root(script_dir)
     script = xtrl_root / "tools" / "run_packet.py"
     run_script(
         script,
-        ["--repo-root", str(repo_root), "--codex-home", str(codex_home), args.contract],
+        [
+            "--repo-root",
+            str(repo_root),
+            "--codex-home",
+            str(codex_home),
+            "--codex-state",
+            str(codex_state),
+            args.contract,
+        ],
     )
 
 
 def handle_collect_evidence(args: argparse.Namespace, script_dir: Path) -> None:
     repo_root = resolve_repo_root(args.repo_root)
     codex_home = resolve_codex_home(args.codex_home)
+    codex_state = resolve_codex_state(args.codex_state)
     xtrl_root = resolve_xtrl_root(script_dir)
     script = xtrl_root / "tools" / "evidence" / "collect_packet_evidence.py"
     run_script(
         script,
-        ["--repo-root", str(repo_root), "--codex-home", str(codex_home), args.contract],
+        [
+            "--repo-root",
+            str(repo_root),
+            "--codex-home",
+            str(codex_home),
+            "--codex-state",
+            str(codex_state),
+            args.contract,
+        ],
     )
 
 
 def handle_doctor(args: argparse.Namespace, script_dir: Path) -> None:
     repo_root = resolve_repo_root(args.repo_root)
     codex_home = resolve_codex_home(args.codex_home)
-    state_root = resolve_state_root(codex_home)
+    codex_state = resolve_codex_state(args.codex_state)
+    state_root = resolve_state_root(codex_state)
     print(f"repo_root={repo_root}")
     print(f"CODEX_HOME={codex_home}")
+    print(f"CODEX_STATE={codex_state}")
+    print(f"CODEX_DATA={resolve_codex_data()}")
     print(f"state_root={state_root} (exists={'yes' if state_root.exists() else 'no'})")
     for subdir in ["packets", "worktrees", "out", "log"]:
         candidate = state_root / subdir
@@ -162,51 +233,69 @@ def handle_doctor(args: argparse.Namespace, script_dir: Path) -> None:
 
 
 JUST_TEMPLATE = """\
+XTRL_CLI := "{{XTRL_CLI}}"
+
 # {{repo_root}}: Absolute or relative path to the target repository root.
-# {{codex_home}}: Override CODEX_HOME (defaults to environment or ~/.config/codex).
-preflight repo_root="." codex_home="" :
-	{cli} preflight --repo-root "{{repo_root}}" --codex-home "{{codex_home}}"
+# {{codex_home}}: Override CODEX_HOME (config).
+# {{codex_state}}: Override CODEX_STATE (state).
+preflight repo_root="." codex_home="" codex_state="" :
+	{{XTRL_CLI}} preflight --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}"
 
 # {{contract}}: Path to the packet contract JSON.
 # {{repo_root}}: Absolute or relative path to the target repository root.
-# {{codex_home}}: Override CODEX_HOME (defaults to environment or ~/.config/codex).
-enter_work contract repo_root="." codex_home="" :
-	{cli} enter-work --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" "{{contract}}"
+# {{codex_home}}: Override CODEX_HOME (config).
+# {{codex_state}}: Override CODEX_STATE (state).
+enter_work contract repo_root="." codex_home="" codex_state="" :
+	{{XTRL_CLI}} enter-work --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
 
 # {{contract}}: Path to the packet contract JSON.
 # {{repo_root}}: Absolute or relative path to the target repository root.
-# {{codex_home}}: Override CODEX_HOME (defaults to environment or ~/.config/codex).
-run_packet contract repo_root="." codex_home="" :
-	{cli} run-packet --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" "{{contract}}"
+# {{codex_home}}: Override CODEX_HOME (config).
+# {{codex_state}}: Override CODEX_STATE (state).
+run_packet contract repo_root="." codex_home="" codex_state="" :
+	{{XTRL_CLI}} run-packet --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
 
 # {{contract}}: Path to the packet contract JSON.
 # {{repo_root}}: Absolute or relative path to the target repository root.
-# {{codex_home}}: Override CODEX_HOME (defaults to environment or ~/.config/codex).
-collect_evidence contract repo_root="." codex_home="" :
-	{cli} collect-evidence --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" "{{contract}}"
+# {{codex_home}}: Override CODEX_HOME (config).
+# {{codex_state}}: Override CODEX_STATE (state).
+collect_evidence contract repo_root="." codex_home="" codex_state="" :
+	{{XTRL_CLI}} collect-evidence --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
 
 # {{repo_root}}: Absolute or relative path to the target repository root.
-# {{codex_home}}: Override CODEX_HOME (defaults to environment or ~/.config/codex).
-doctor repo_root="." codex_home="" :
-	{cli} doctor --repo-root "{{repo_root}}" --codex-home "{{codex_home}}"
+# {{codex_home}}: Override CODEX_HOME (config).
+# {{codex_state}}: Override CODEX_STATE (state).
+doctor repo_root="." codex_home="" codex_state="" :
+	{{XTRL_CLI}} doctor --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}"
 """
 
 
 
 
-def handle_just_render(args: argparse.Namespace) -> None:
-    out_path = Path(os.path.expanduser(args.out)).resolve()
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+def load_just_template(script_dir: Path) -> str:
+    template_path = script_dir / "templates" / "Justfile.tmpl"
+    if template_path.exists():
+        return template_path.read_text(encoding="utf-8")
+    return JUST_TEMPLATE
+
+
+def handle_just_render(args: argparse.Namespace, script_dir: Path) -> None:
     codex_home = resolve_codex_home(args.codex_home)
-    cli_path = (codex_home / "bin" / "xtrl").resolve()
-    rendered = JUST_TEMPLATE.replace("{cli}", str(cli_path))
+    if args.out:
+        out_path = Path(os.path.expanduser(args.out)).resolve()
+    else:
+        out_path = (codex_home / "xtrl" / "Justfile").resolve()
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    cli_path = os.environ.get("XTRL_CLI") or "xtrl"
+    rendered = load_just_template(script_dir).replace("{{XTRL_CLI}}", str(cli_path))
     out_path.write_text(rendered, encoding="utf-8")
     print(f"wrote Justfile → {out_path}")
 
 
 def handle_just_install_mcp(args: argparse.Namespace) -> None:
     codex_home = resolve_codex_home(args.codex_home)
-    watch_dir = codex_home
+    codex_state = resolve_codex_state(args.codex_state)
+    watch_dir = codex_home / "xtrl"
     try:
         watch_dir.mkdir(parents=True, exist_ok=True)
     except PermissionError as exc:
@@ -217,6 +306,7 @@ command = "just-mcp"
 args = ["--watch-dir", "{watch_dir}:{args.watch_alias}"]
 env = {{
     "CODEX_HOME" = "{codex_home}",
+    "CODEX_STATE" = "{codex_state}",
     "XTRL_ROOT" = "{xtrl_root}",
     "CTRLEX_ROOT" = "{xtrl_root}"
 }}
@@ -256,18 +346,23 @@ def main() -> None:
     just_sub = just.add_subparsers(dest="just_cmd", required=True)
 
     render = just_sub.add_parser("render")
-    render.add_argument("--out", required=True)
+    render.add_argument("--out")
     render.add_argument(
         "--codex-home",
         help="Override CODEX_HOME base path for rendering.",
         default=None,
     )
-    render.set_defaults(func=lambda args: handle_just_render(args))
+    render.set_defaults(func=lambda args: handle_just_render(args, script_dir))
 
     install = just_sub.add_parser("install-mcp")
     install.add_argument(
         "--codex-home",
         help="Override the CODEX_HOME base path for the MCP server.",
+        default=None,
+    )
+    install.add_argument(
+        "--codex-state",
+        help="Override the CODEX_STATE base path for the MCP server.",
         default=None,
     )
     install.add_argument(

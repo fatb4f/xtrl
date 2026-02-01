@@ -2,9 +2,23 @@
 set -euo pipefail
 
 CODEX_HOME="${CODEX_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/codex}"
-XTRL_ROOT="${XTRL_ROOT:-$CODEX_HOME/skills/vendor/xtrl}"
-CTRLEX_ROOT="${CTRLEX_ROOT:-$CODEX_HOME/skills/vendor/ctrlex}"
+CODEX_DATA="${CODEX_DATA:-${XDG_DATA_HOME:-$HOME/.local/share}/codex}"
+XTRL_ROOT="${XTRL_ROOT:-$CODEX_DATA/vendor/xtrl}"
+CTRLEX_ROOT="${CTRLEX_ROOT:-$CODEX_DATA/vendor/ctrlex}"
 
+XTRL_CLI="$XTRL_ROOT/xtrl"
+CTRLEX_CLI="$CTRLEX_ROOT/ctrlex"
+
+if [ -x "$XTRL_CLI" ]; then
+  exec "$XTRL_CLI" "$@"
+fi
+
+if [ -x "$CTRLEX_CLI" ]; then
+  exec "$CTRLEX_CLI" "$@"
+fi
+
+XTRL_ROOT="${CODEX_HOME}/skills/vendor/xtrl"
+CTRLEX_ROOT="${CODEX_HOME}/skills/vendor/ctrlex"
 XTRL_CLI="$XTRL_ROOT/xtrl"
 CTRLEX_CLI="$CTRLEX_ROOT/ctrlex"
 

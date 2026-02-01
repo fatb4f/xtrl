@@ -125,12 +125,13 @@ def main() -> int:
     parser.add_argument("--contract", required=True, help="Path to packet contract JSON.")
     parser.add_argument("--evidence-out", help="Override evidence output path.")
     parser.add_argument("--repo-root", help="Target repo root (defaults to git rev-parse).")
-    parser.add_argument("--codex-home", help="Override CODEX_HOME for the xtrl state.")
+    parser.add_argument("--codex-home", help="Override CODEX_HOME config root.")
+    parser.add_argument("--codex-state", help="Override CODEX_STATE root.")
     args = parser.parse_args()
 
     repo_root = resolve_repo_root(args.repo_root)
     ensure_git_root(repo_root)
-    state_root = resolve_state_root(args.codex_home)
+    state_root = resolve_state_root(args.codex_state, args.codex_home)
     decision = Decision()
 
     contract_path = resolve_contract_path(args.contract, repo_root)

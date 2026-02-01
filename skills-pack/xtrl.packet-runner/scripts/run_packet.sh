@@ -3,13 +3,14 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF' >&2
-Usage: run_packet.sh <contract_path> [--repo-root PATH] [--codex-home PATH] [--resume]
+Usage: run_packet.sh <contract_path> [--repo-root PATH] [--codex-home PATH] [--codex-state PATH] [--resume]
 EOF
 }
 
 CONTRACT_PATH=""
 REPO_ROOT=""
 CODEX_HOME_FLAG=""
+CODEX_STATE_FLAG=""
 RESUME=""
 
 while [[ $# -gt 0 ]]; do
@@ -20,6 +21,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --codex-home)
       CODEX_HOME_FLAG="${2:-}"
+      shift 2
+      ;;
+    --codex-state)
+      CODEX_STATE_FLAG="${2:-}"
       shift 2
       ;;
     --resume)
@@ -82,9 +87,30 @@ else
   fi
 fi
 
-XTRL_ROOT="${CODEX_HOME}/xtrl"
-CTRLEX_ROOT="${CODEX_HOME}/ctrlex"
-PLANT_ROOT="${CODEX_HOME}/plant-a"
+if [[ -n "$CODEX_STATE_FLAG" ]]; then
+  CODEX_STATE="$CODEX_STATE_FLAG"
+else
+  if [[ -n "${CODEX_STATE:-}" ]]; then
+    CODEX_STATE="${CODEX_STATE}"
+  elif [[ -n "${XDG_STATE_HOME:-}" ]]; then
+    CODEX_STATE="${XDG_STATE_HOME}/codex"
+  else
+    CODEX_STATE="${HOME}/.local/state/codex"
+  fi
+fi
+
+XDG_DATA_HOME_DEFAULT="${XDG_DATA_HOME:-${HOME}/.local/share}"
+CODEX_DATA="${CODEX_DATA:-${XDG_DATA_HOME_DEFAULT}/codex}"
+
+XTRL_ROOT="${CODEX_DATA}/vendor/xtrl"
+CTRLEX_ROOT="${CODEX_DATA}/vendor/ctrlex"
+PLANT_ROOT="${CODEX_DATA}/vendor/plant-a"
+if [[ ! -d "$XTRL_ROOT/tools" ]]; then
+  XTRL_ROOT="${CODEX_HOME}/skills/vendor/xtrl"
+fi
+if [[ ! -d "$CTRLEX_ROOT/tools" ]]; then
+  CTRLEX_ROOT="${CODEX_HOME}/skills/vendor/ctrlex"
+fi
 
 if [[ -d "$XTRL_ROOT" ]]; then
   SKILL_ROOT="$XTRL_ROOT"
@@ -98,4 +124,4 @@ fi
 
 RUNNER="${SKILL_ROOT}/tools/run_packet.py"
 
-python "${RUNNER}" "${CONTRACT_PATH}" --repo-root "${REPO_ROOT}" --codex-home "${CODEX_HOME}" ${RESUME}
+python "${RUNNER}" "${CONTRACT_PATH}" --repo-root "${REPO_ROOT}" --codex-home "${CODEX_HOME}" --codex-state "${CODEX_STATE}" ${RESUME}

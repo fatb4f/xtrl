@@ -22,6 +22,8 @@ from path_utils import (
 from validate_plant import validate_plant_root
 
 PLANT_ROOT = Path(__file__).resolve().parents[1]
+LEGACY_XDG_MARKER = "LEGACY_XDG_PATHS_OK"
+LEGACY_XDG_PATTERNS = ("$CODEX_HOME/xtrl/out", "$CODEX_HOME/xtrl/worktrees")
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -351,6 +353,28 @@ def validate_contract(contract: Dict[str, Any]) -> Optional[str]:
     return None
 
 
+def find_legacy_xdg_refs(repo_root: Path) -> Dict[str, List[str]]:
+    rc, out, err = run(["git", "ls-files"], cwd=repo_root)
+    if rc != 0:
+        return {}
+    hits: Dict[str, List[str]] = {}
+    for rel in out.splitlines():
+        rel = rel.strip()
+        if not rel:
+            continue
+        path = (repo_root / rel).resolve()
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        if LEGACY_XDG_MARKER in text:
+            continue
+        found = [pat for pat in LEGACY_XDG_PATTERNS if pat in text]
+        if found:
+            hits[rel] = found
+    return hits
+
+
 @dataclass
 class Decision:
     allow: bool = True
@@ -379,12 +403,13 @@ def main() -> int:
     parser.add_argument("--contract", required=True, help="Path to packet contract JSON.")
     parser.add_argument("--evidence-out", help="Override evidence output path.")
     parser.add_argument("--repo-root", help="Target repo root (defaults to git rev-parse).")
-    parser.add_argument("--codex-home", help="Override CODEX_HOME for the xtrl state.")
+    parser.add_argument("--codex-home", help="Override CODEX_HOME config root.")
+    parser.add_argument("--codex-state", help="Override CODEX_STATE root.")
     args = parser.parse_args()
 
     repo_root = resolve_repo_root(args.repo_root)
     ensure_git_root(repo_root)
-    state_root = resolve_state_root(args.codex_home)
+    state_root = resolve_state_root(args.codex_state, args.codex_home)
     decision = Decision()
 
     contract_path = resolve_contract_path(args.contract, repo_root)
@@ -424,6 +449,15 @@ def main() -> int:
         if forbidden_paths:
             sample = ", ".join(forbidden_paths[:3])
             decision.deny("FORBIDDEN_ROOTS", f"forbidden directories present: {sample}")
+
+    if decision.allow:
+        legacy_refs = find_legacy_xdg_refs(repo_root)
+        if legacy_refs:
+            sample = ", ".join(sorted(legacy_refs.keys())[:3])
+            decision.deny(
+                "LEGACY_XDG_PATHS",
+                f"legacy CODEX_HOME state paths in: {sample} (use CODEX_STATE or mark {LEGACY_XDG_MARKER})",
+            )
 
     if decision.allow:
         if git_porcelain(repo_root):

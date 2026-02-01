@@ -27,8 +27,19 @@ def resolve_codex_home(codex_home: str | None) -> Path:
     return (base / "codex").resolve()
 
 
-def resolve_state_root(codex_home: str | None) -> Path:
-    base = resolve_codex_home(codex_home)
+def resolve_codex_state(codex_state: str | None) -> Path:
+    if codex_state:
+        return expand_path(codex_state).resolve()
+    env = os.environ.get("CODEX_STATE")
+    if env:
+        return expand_path(env).resolve()
+    xdg = os.environ.get("XDG_STATE_HOME")
+    base = Path(xdg) if xdg else (Path.home() / ".local" / "state")
+    return (base / "codex").resolve()
+
+
+def resolve_state_root(codex_state: str | None, codex_home: str | None = None) -> Path:
+    base = resolve_codex_state(codex_state)
     xtrl_root = base / "xtrl"
     ctrlex_root = base / "ctrlex"
     plant_root = base / "plant-a"

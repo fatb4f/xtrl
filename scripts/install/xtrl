@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+CODEX_HOME="${CODEX_HOME:-$XDG_CONFIG_HOME/codex}"
+CODEX_DATA="${CODEX_DATA:-$XDG_DATA_HOME/codex}"
+
+resolve_root() {
+  local candidate="$1"
+  if [[ -n "$candidate" && -d "$candidate/tools" && -f "$candidate/xtrl" ]]; then
+    echo "$candidate"
+    return 0
+  fi
+  return 1
+}
+
+if [[ -n "${XTRL_ROOT:-}" ]]; then
+  resolve_root "$XTRL_ROOT" && exec "$XTRL_ROOT/xtrl" "$@"
+  echo "XTRL_ROOT is set to $XTRL_ROOT but $XTRL_ROOT/tools or $XTRL_ROOT/xtrl is missing" >&2
+  exit 1
+fi
+
+if [[ -n "${CTRLEX_ROOT:-}" ]]; then
+  resolve_root "$CTRLEX_ROOT" && exec "$CTRLEX_ROOT/xtrl" "$@"
+  echo "CTRLEX_ROOT is set to $CTRLEX_ROOT but $CTRLEX_ROOT/tools or $CTRLEX_ROOT/xtrl is missing" >&2
+  exit 1
+fi
+
+for candidate in \
+  "$CODEX_DATA/vendor/xtrl" \
+  "$CODEX_DATA/vendor/ctrlex" \
+  "$CODEX_HOME/skills/vendor/xtrl" \
+  "$CODEX_HOME/skills/vendor/ctrlex"; do
+  if resolve_root "$candidate"; then
+    exec "$candidate/xtrl" "$@"
+  fi
+done
+
+cat >&2 <<MSG
+xtrl wrapper: no vendor checkout found.
+Looked in:
+- $CODEX_DATA/vendor/xtrl
+- $CODEX_DATA/vendor/ctrlex
+- $CODEX_HOME/skills/vendor/xtrl
+- $CODEX_HOME/skills/vendor/ctrlex
+Set XTRL_ROOT to your xtrl checkout.
+MSG
+exit 1

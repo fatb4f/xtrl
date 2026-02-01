@@ -2,7 +2,11 @@
 set -euo pipefail
 
 CODEX_HOME="${CODEX_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/codex}"
-WATCH_DIR="$CODEX_HOME"
+CODEX_STATE="${CODEX_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/codex}"
+WATCH_DIR="$CODEX_HOME/xtrl"
 mkdir -p "$WATCH_DIR"
+
+export CODEX_HOME
+export CODEX_STATE
 
 exec just-mcp --watch-dir "$WATCH_DIR:xtrl"

@@ -4,8 +4,8 @@ Packets are **mechanical, auditable units of work** executed through Codex skill
 
 ## Concepts
 - **Contract**: a JSON file that declares intent, boundaries, and allowed moves.
-- **Worktree**: each packet executes inside an isolated git worktree under `$CODEX_HOME/xtrl/worktrees/<packet_id>`.
-- **Evidence**: each run emits immutable artifacts under `$CODEX_HOME/xtrl/out/<packet_id>/`.
+- **Worktree**: each packet executes inside an isolated git worktree under `$CODEX_STATE/xtrl/worktrees/<packet_id>`.
+- **Evidence**: each run emits immutable artifacts under `$CODEX_STATE/xtrl/out/<packet_id>/`.
 
 ## Required invariants
 - No execution on a dirty base repo (unless explicitly allowed by `worktree_policy`).
@@ -21,7 +21,7 @@ Packets are **mechanical, auditable units of work** executed through Codex skill
 1) Create contract under `packets/<area>/<packet_id>/contract.json`.
 2) Create prompt under `packets/<area>/<packet_id>/EXEC_PROMPT.md`.
 3) Run `xtrl.packet-runner` with the contract path.
-4) Review evidence under `$CODEX_HOME/xtrl/out/<packet_id>/`.
+4) Review evidence under `$CODEX_STATE/xtrl/out/<packet_id>/`.
 
 Legacy flat layout (deprecated, keep for backward compatibility only):
 - Contract: `packets/examples/<packet_id>.json`

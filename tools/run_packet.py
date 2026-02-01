@@ -8,7 +8,7 @@ Responsibilities:
 
 Notes:
 - stdlib only
-- evidence is written under the xtrl state root (default: $CODEX_HOME/xtrl/out/<packet_id>/)
+- evidence is written under the xtrl state root (default: $CODEX_STATE/xtrl/out/<packet_id>/)
 """
 
 from __future__ import annotations
@@ -250,6 +250,7 @@ def run_gate(
     evidence_path: pathlib.Path,
     repo_root: pathlib.Path,
     codex_home: str | None,
+    codex_state: str | None,
 ) -> int:
     argv = [
         sys.executable,
@@ -263,6 +264,8 @@ def run_gate(
     ]
     if codex_home:
         argv += ["--codex-home", codex_home]
+    if codex_state:
+        argv += ["--codex-state", codex_state]
     p = subprocess.run(argv, check=False)
     return p.returncode
 
@@ -311,11 +314,14 @@ def collect_packet_evidence(
     meta_path: pathlib.Path | None,
     repo_root: pathlib.Path,
     codex_home: str | None,
+    codex_state: str | None,
 ) -> None:
     collector = PLANT_ROOT / "tools" / "evidence" / "collect_packet_evidence.py"
     argv = [sys.executable, str(collector), "--contract", contract_path, "--repo-root", str(repo_root)]
     if codex_home:
         argv += ["--codex-home", codex_home]
+    if codex_state:
+        argv += ["--codex-state", codex_state]
     if meta_path is not None:
         argv += ["--meta", str(meta_path)]
     subprocess.run(argv, check=False)
@@ -350,7 +356,8 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
         help="Reuse existing worktree if G0 denies due to collision.",
     )
     ap.add_argument("--repo-root", help="Target repo root (defaults to git rev-parse).")
-    ap.add_argument("--codex-home", help="Override CODEX_HOME for the xtrl state.")
+    ap.add_argument("--codex-home", help="Override CODEX_HOME config root.")
+    ap.add_argument("--codex-state", help="Override CODEX_STATE root.")
     return ap.parse_args(argv[1:])
 
 
@@ -399,7 +406,7 @@ def main(argv: List[str]) -> int:
     args = parse_args(argv)
     repo_root = resolve_repo_root(args.repo_root)
     ensure_git_root(repo_root)
-    state_root = resolve_state_root(args.codex_home)
+    state_root = resolve_state_root(args.codex_state, args.codex_home)
 
     contract_path_obj = resolve_contract_path(args.contract_path, repo_root)
     if not contract_path_obj.exists():
@@ -454,6 +461,7 @@ def main(argv: List[str]) -> int:
             preflight_path,
             repo_root,
             args.codex_home,
+            args.codex_state,
         )
         if rc != 0:
             raise SystemExit("root preflight denied")
@@ -464,6 +472,7 @@ def main(argv: List[str]) -> int:
             g0_path,
             repo_root,
             args.codex_home,
+            args.codex_state,
         )
         if rc != 0 and args.resume:
             wt_path, base_sha, resume_reasons = resume_from_collision(g0_path, base_ref, branch, repo_root)
@@ -545,6 +554,7 @@ def main(argv: List[str]) -> int:
             meta_path=meta_path,
             repo_root=repo_root,
             codex_home=args.codex_home,
+            codex_state=args.codex_state,
         )
 
     missing = required_evidence_missing(out_base)

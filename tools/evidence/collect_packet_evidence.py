@@ -2,7 +2,7 @@
 """Packet-002: Structured Post-Run Evidence Harness.
 
 Writes a uniform bundle to the xtrl state root (default):
-  $CODEX_HOME/xtrl/out/<packet_id>/
+  $CODEX_STATE/xtrl/out/<packet_id>/
     evidence.json
     evidence.md
     manifest.json
@@ -153,7 +153,8 @@ def main() -> int:
     ap.add_argument("--contract", required=True)
     ap.add_argument("--meta")
     ap.add_argument("--repo-root", help="Target repo root (defaults to git rev-parse).")
-    ap.add_argument("--codex-home", help="Override CODEX_HOME for the xtrl state.")
+    ap.add_argument("--codex-home", help="Override CODEX_HOME config root.")
+    ap.add_argument("--codex-state", help="Override CODEX_STATE root.")
     args = ap.parse_args()
 
     generated_at = utc_now()
@@ -162,13 +163,13 @@ def main() -> int:
         repo_root = resolve_repo_root(args.repo_root)
         ensure_git_root(repo_root)
     except Exception as e:
-        state_root = resolve_state_root(args.codex_home)
+        state_root = resolve_state_root(args.codex_state, args.codex_home)
         out_dir = resolve_state_path(None, state_root, "out") / "unknown"
         (out_dir / "raw").mkdir(parents=True, exist_ok=True)
         write_json(out_dir / "evidence.json", {"generated_at_utc": utc_now(), "error": str(e)})
         return 2
 
-    state_root = resolve_state_root(args.codex_home)
+    state_root = resolve_state_root(args.codex_state, args.codex_home)
     contract_path = resolve_contract_path(args.contract, repo_root)
     if not contract_path.exists():
         raw = Path(args.contract)

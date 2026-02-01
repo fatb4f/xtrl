@@ -24,4 +24,4 @@ Evidence bundles are written under the xtrl state root:
 
 ## Notes
 The runner resolves the target repo via `--repo-root` or `git rev-parse`.
-Artifacts are stored under the state root derived from `CODEX_HOME` (or `XDG_CONFIG_HOME/codex`).
+Artifacts are stored under the state root derived from `CODEX_STATE` (or `XDG_STATE_HOME/codex`).

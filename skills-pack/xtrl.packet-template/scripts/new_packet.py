@@ -35,8 +35,49 @@ def resolve_codex_home(codex_home: str | None) -> pathlib.Path:
     return (base / "codex").resolve()
 
 
-def xtrl_root(codex_home: str | None) -> pathlib.Path:
-    return resolve_codex_home(codex_home) / "xtrl"
+def resolve_codex_state(codex_state: str | None) -> pathlib.Path:
+    if codex_state:
+        return pathlib.Path(os.path.expandvars(os.path.expanduser(codex_state))).resolve()
+    env = os.environ.get("CODEX_STATE")
+    if env:
+        return pathlib.Path(os.path.expandvars(os.path.expanduser(env))).resolve()
+    xdg = os.environ.get("XDG_STATE_HOME")
+    base = pathlib.Path(xdg) if xdg else (pathlib.Path.home() / ".local" / "state")
+    return (base / "codex").resolve()
+
+
+def resolve_codex_data() -> pathlib.Path:
+    env = os.environ.get("CODEX_DATA")
+    if env:
+        return pathlib.Path(os.path.expandvars(os.path.expanduser(env))).resolve()
+    xdg = os.environ.get("XDG_DATA_HOME")
+    base = pathlib.Path(xdg) if xdg else (pathlib.Path.home() / ".local" / "share")
+    return (base / "codex").resolve()
+
+
+def xtrl_root(codex_home: str | None, codex_state: str | None) -> pathlib.Path:
+    env = os.environ.get("XTRL_ROOT")
+    if env:
+        return pathlib.Path(os.path.expandvars(os.path.expanduser(env))).resolve()
+    env = os.environ.get("CTRLEX_ROOT")
+    if env:
+        return pathlib.Path(os.path.expandvars(os.path.expanduser(env))).resolve()
+    codex_data = resolve_codex_data()
+    vendor = codex_data / "vendor" / "xtrl"
+    if vendor.exists():
+        return vendor
+    vendor = codex_data / "vendor" / "ctrlex"
+    if vendor.exists():
+        return vendor
+    codex_home_path = resolve_codex_home(codex_home)
+    vendor = codex_home_path / "skills" / "vendor" / "xtrl"
+    if vendor.exists():
+        return vendor
+    vendor = codex_home_path / "skills" / "vendor" / "ctrlex"
+    if vendor.exists():
+        return vendor
+    codex_state_path = resolve_codex_state(codex_state)
+    return codex_state_path / "xtrl"
 
 
 def load_prompt_validator(root: pathlib.Path):
@@ -114,7 +155,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--layout", choices=["dir", "flat"], default="dir", help="packet layout")
     parser.add_argument("--examples", action="store_true", help="write under packets/examples/")
     parser.add_argument("--validate-prompt", action="store_true", help="validate EXEC_PROMPT metadata")
-    parser.add_argument("--codex-home", help="Override CODEX_HOME for the xtrl state.")
+    parser.add_argument("--codex-home", help="Override CODEX_HOME config root.")
+    parser.add_argument("--codex-state", help="Override CODEX_STATE root.")
     return parser.parse_args(argv[1:])
 
 
@@ -139,8 +181,8 @@ def main(argv: list[str]) -> int:
         "branch": args.branch or defaults["branch"],
     }
 
-    root = xtrl_root(args.codex_home)
-    state_root = root
+    root = xtrl_root(args.codex_home, args.codex_state)
+    state_root = resolve_codex_state(args.codex_state) / "xtrl"
     template = load_template(template_path(root, args.template))
     contract = build_contract(template, mapping)
     prompt_template = load_prompt_template(prompt_template_path(root, args.prompt_template))
@@ -150,14 +192,14 @@ def main(argv: list[str]) -> int:
         contract_path = base_dir / "contract.json"
         prompt_path = base_dir / "EXEC_PROMPT.md"
         contract_rel = (
-            f"$CODEX_HOME/xtrl/packets/"
+            f"$CODEX_STATE/xtrl/packets/"
             f"{'examples' if args.examples else mapping['area']}/{packet_id}/contract.json"
         )
     else:
         base_dir = state_root / "packets" / "examples"
         contract_path = base_dir / f"{packet_id}.json"
         prompt_path = base_dir / f"{packet_id}.EXEC_PROMPT.md"
-        contract_rel = f"$CODEX_HOME/xtrl/packets/examples/{packet_id}.json"
+        contract_rel = f"$CODEX_STATE/xtrl/packets/examples/{packet_id}.json"
 
     if contract_path.exists():
         die(f"already exists: {contract_path}")
@@ -173,7 +215,7 @@ def main(argv: list[str]) -> int:
             "packet_id": packet_id,
             "area": mapping["area"],
             "contract_path": contract_rel,
-            "worktree_root": f"$CODEX_HOME/xtrl/worktrees/{packet_id}/",
+            "worktree_root": f"$CODEX_STATE/xtrl/worktrees/{packet_id}/",
         },
     )
     prompt_path.write_text(prompt_text, encoding="utf-8")

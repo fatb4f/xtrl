@@ -1,33 +1,34 @@
+XTRL_CLI := "{{XTRL_CLI}}"
+
 # {{repo_root}}: Absolute or relative path to the target repository root.
 # {{codex_home}}: Override CODEX_HOME (config).
 # {{codex_state}}: Override CODEX_STATE (state).
-XTRL_CLI := "xtrl"
 preflight repo_root="." codex_home="" codex_state="" :
-	$(XTRL_CLI) preflight --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}"
+	{{XTRL_CLI}} preflight --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}"
 
 # {{contract}}: Path to the packet contract JSON.
 # {{repo_root}}: Absolute or relative path to the target repository root.
 # {{codex_home}}: Override CODEX_HOME (config).
 # {{codex_state}}: Override CODEX_STATE (state).
 enter_work contract repo_root="." codex_home="" codex_state="" :
-	$(XTRL_CLI) enter-work --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
+	{{XTRL_CLI}} enter-work --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
 
 # {{contract}}: Path to the packet contract JSON.
 # {{repo_root}}: Absolute or relative path to the target repository root.
 # {{codex_home}}: Override CODEX_HOME (config).
 # {{codex_state}}: Override CODEX_STATE (state).
 run_packet contract repo_root="." codex_home="" codex_state="" :
-	$(XTRL_CLI) run-packet --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
+	{{XTRL_CLI}} run-packet --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
 
 # {{contract}}: Path to the packet contract JSON.
 # {{repo_root}}: Absolute or relative path to the target repository root.
 # {{codex_home}}: Override CODEX_HOME (config).
 # {{codex_state}}: Override CODEX_STATE (state).
 collect_evidence contract repo_root="." codex_home="" codex_state="" :
-	$(XTRL_CLI) collect-evidence --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
+	{{XTRL_CLI}} collect-evidence --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}" "{{contract}}"
 
 # {{repo_root}}: Absolute or relative path to the target repository root.
 # {{codex_home}}: Override CODEX_HOME (config).
 # {{codex_state}}: Override CODEX_STATE (state).
 doctor repo_root="." codex_home="" codex_state="" :
-	$(XTRL_CLI) doctor --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}"
+	{{XTRL_CLI}} doctor --repo-root "{{repo_root}}" --codex-home "{{codex_home}}" --codex-state "{{codex_state}}"

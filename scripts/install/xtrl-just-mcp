@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+CODEX_HOME="${CODEX_HOME:-$XDG_CONFIG_HOME/codex}"
+CODEX_STATE="${CODEX_STATE:-$XDG_STATE_HOME/codex}"
+WATCH_ALIAS="${XTRL_JUST_MCP_ALIAS:-xtrl}"
+WATCH_DIR="$CODEX_HOME/xtrl"
+
+export CODEX_HOME
+export CODEX_STATE
+
+exec just-mcp --watch-dir "$WATCH_DIR:$WATCH_ALIAS" "$@"

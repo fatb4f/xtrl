@@ -63,5 +63,5 @@ just-mcp admin_sync
    Look for entries like `just_preflight@xtrl`, `just_run_packet@xtrl`, etc.
 
 All recipes operate on the target repo via `--repo-root` and emit artifacts under
-`$CODEX_HOME/xtrl/{packets,out,worktrees}`. Legacy `ctrlex` or `plant-a` roots are
+`$CODEX_STATE/xtrl/{packets,out,worktrees}`. Legacy `ctrlex` or `plant-a` roots are
 only referenced when the canonical `xtrl` directories are missing.
