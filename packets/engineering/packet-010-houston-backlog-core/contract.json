@@ -1,0 +1,63 @@
+{
+  "packet_id": "packet-010-houston-backlog-core",
+  "area": "engineering",
+  "repo": "local:xtrl",
+  "base_ref": "main",
+  "branch": "packet/packet-010-houston-backlog-core",
+  "github_ops_required": false,
+  "net_ops_required": false,
+  "allowed_paths": [
+    "backlog.md",
+    "data/**",
+    "schemas/**",
+    "tools/**",
+    "tests/**",
+    "docs/**",
+    "packets/**",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "forbidden_outputs": [
+    ".codex/**",
+    ".quint/**"
+  ],
+  "worktree_policy": {
+    "mode": "strict",
+    "worktree_root": "$CODEX_STATE/xtrl/worktrees",
+    "deny_if_worktree_exists": true,
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": []
+  },
+  "network_policy": {
+    "internet_access": "off",
+    "domain_allowlist_preset": "none",
+    "additional_domains": [],
+    "allowed_http_methods": []
+  },
+  "run": {
+    "regen_cmd": "",
+    "test_cmd": "python tests/smoke_xdg_paths.py",
+    "commands": []
+  },
+  "budgets": {
+    "max_changed_files": 40,
+    "max_changed_lines": 3000
+  },
+  "evidence": {
+    "out_dir": "$CODEX_STATE/xtrl/out",
+    "include_git_diff_patch": false
+  },
+  "github": {
+    "repo": "",
+    "issue": {
+      "title": "packet-010-houston-backlog-core",
+      "body": "",
+      "template": "packet-default.yml",
+      "labels": [],
+      "milestone": "",
+      "ensure": false,
+      "comment_on_run": false,
+      "close_on_success": false
+    }
+  }
+}
