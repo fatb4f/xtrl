@@ -34,6 +34,7 @@ def test_state_root_uses_xdg_state():
         xdg_config = Path(tmp) / "config"
         codex_home = xdg_config / "codex"
         env = {
+            "CODEX_STATE": "",
             "XDG_STATE_HOME": str(xdg_state),
             "XDG_CONFIG_HOME": str(xdg_config),
             "CODEX_HOME": str(codex_home),
