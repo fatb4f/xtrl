@@ -43,6 +43,7 @@ def main() -> int:
     ap.add_argument("packet_id")
     ap.add_argument("--repo-root", default=None)
     ap.add_argument("--codex-state", default=None)
+    ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
     repo_root = resolve_repo_root(args.repo_root)
@@ -70,41 +71,54 @@ def main() -> int:
     if not base_ref:
         raise SystemExit("base_ref missing from contract")
 
+    gates = []
+
     # ensure clean
     status = run_cmd(["git", "status", "--porcelain"], cwd=repo_root)
-    if status.strip():
+    clean_ok = not status.strip()
+    gates.append({"id": "clean_repo", "status": "PASS" if clean_ok else "FAIL"})
+    if not clean_ok:
         promotion = {
             "timestamp": utc_now(),
             "packet_id": packet_id,
             "status": "DENY",
             "reason_codes": ["DIRTY_REPO_DENIED"],
+            "dry_run": args.dry_run,
         }
         write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates})
         return 2
 
     # binary diff detection
     numstat = run_cmd(["git", "diff", "--numstat", f"{base_ref}..HEAD"], cwd=repo_root)
     binary = any(line.split("\t")[0] == "-" or line.split("\t")[1] == "-" for line in numstat.splitlines() if line)
+    gates.append({"id": "no_binary_diffs", "status": "PASS" if not binary else "FAIL"})
     if binary:
         promotion = {
             "timestamp": utc_now(),
             "packet_id": packet_id,
             "status": "DENY",
             "reason_codes": ["BINARY_DIFF_DENIED"],
+            "dry_run": args.dry_run,
         }
         write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates})
         return 2
 
     # submodule detection
     raw = run_cmd(["git", "diff", "--raw", f"{base_ref}..HEAD"], cwd=repo_root)
-    if "160000" in raw:
+    has_submodule = "160000" in raw
+    gates.append({"id": "no_submodules", "status": "PASS" if not has_submodule else "FAIL"})
+    if has_submodule:
         promotion = {
             "timestamp": utc_now(),
             "packet_id": packet_id,
             "status": "DENY",
             "reason_codes": ["SUBMODULE_DENIED"],
+            "dry_run": args.dry_run,
         }
         write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates})
         return 2
 
     patch = run_cmd(["git", "diff", "--binary", f"{base_ref}..HEAD"], cwd=repo_root)
@@ -117,10 +131,12 @@ def main() -> int:
         "timestamp": utc_now(),
         "packet_id": packet_id,
         "status": "BLOCKED",
-        "reason_codes": ["PROMOTE_NOT_IMPLEMENTED"],
+        "reason_codes": ["PROMOTE_NOT_IMPLEMENTED"] if not args.dry_run else ["DRY_RUN_ONLY"],
         "note": "Promotion DAG not yet implemented; patch captured for review.",
+        "dry_run": args.dry_run,
     }
     write_json(out_dir / "git" / "promotion.json", promotion)
+    write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": args.dry_run})
     return 3
 
 

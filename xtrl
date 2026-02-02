@@ -275,6 +275,7 @@ def handle_git_promote(args: argparse.Namespace, script_dir: Path) -> None:
             str(repo_root),
             "--codex-state",
             str(codex_state),
+            *(["--dry-run"] if args.dry_run else []),
             args.packet_id,
         ],
     )
@@ -421,6 +422,7 @@ def main() -> None:
     promote = git_sub.add_parser("promote")
     command_common_args(promote)
     promote.add_argument("packet_id")
+    promote.add_argument("--dry-run", action="store_true")
     promote.set_defaults(func=lambda args: handle_git_promote(args, script_dir))
 
     backlog = subparsers.add_parser("backlog")
