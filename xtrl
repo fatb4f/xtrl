@@ -217,6 +217,26 @@ def handle_collect_evidence(args: argparse.Namespace, script_dir: Path) -> None:
     )
 
 
+def handle_backlog_sync(args: argparse.Namespace, script_dir: Path) -> None:
+    repo_root = resolve_repo_root(args.repo_root)
+    codex_home = resolve_codex_home(args.codex_home)
+    codex_state = resolve_codex_state(args.codex_state)
+    xtrl_root = resolve_xtrl_root(script_dir)
+    script = xtrl_root / "tools" / "backlog_sync.py"
+    sync_args = [
+        "--repo-root",
+        str(repo_root),
+        "--codex-home",
+        str(codex_home),
+        "--codex-state",
+        str(codex_state),
+    ]
+    if args.dry_run:
+        sync_args.append("--dry-run")
+    sync_args.append(args.contract)
+    run_script(script, sync_args)
+
+
 def handle_doctor(args: argparse.Namespace, script_dir: Path) -> None:
     repo_root = resolve_repo_root(args.repo_root)
     codex_home = resolve_codex_home(args.codex_home)
@@ -337,6 +357,15 @@ def main() -> None:
     command_common_args(gather)
     gather.add_argument("contract")
     gather.set_defaults(func=lambda args: handle_collect_evidence(args, script_dir))
+
+    backlog = subparsers.add_parser("backlog")
+    backlog_sub = backlog.add_subparsers(dest="backlog_cmd", required=True)
+
+    sync = backlog_sub.add_parser("sync")
+    command_common_args(sync)
+    sync.add_argument("contract")
+    sync.add_argument("--dry-run", action="store_true")
+    sync.set_defaults(func=lambda args: handle_backlog_sync(args, script_dir))
 
     doctor = subparsers.add_parser("doctor")
     command_common_args(doctor)
