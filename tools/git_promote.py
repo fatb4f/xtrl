@@ -156,9 +156,22 @@ def main() -> int:
 
     # patch apply check (skip if empty)
     apply_ok = True
+    already_applied = False
     if has_patch:
         apply_ok = run_ok(["git", "apply", "--check", str(out_dir / "git" / "patch.diff")], cwd=repo_root)
-    gates.append({"id": "patch_applies", "status": "PASS" if apply_ok else "FAIL"})
+        if not apply_ok:
+            already_applied = run_ok(
+                ["git", "apply", "--check", "--reverse", str(out_dir / "git" / "patch.diff")], cwd=repo_root
+            )
+            if already_applied:
+                apply_ok = True
+    gates.append(
+        {
+            "id": "patch_applies",
+            "status": "PASS" if apply_ok else "FAIL",
+            "note": "already_applied" if already_applied else None,
+        }
+    )
     if not apply_ok:
         promotion = {
             "timestamp": utc_now(),
