@@ -1,5 +1,7 @@
 ---
-id: TASK-13
+area: ops
+milestone: P2
+id: pkt-skills-0001-validate-skills-pack-layout-and-compatibility-symlink
 title: Validate skills-pack layout and compatibility symlink
 status: To Do
 assignee: []

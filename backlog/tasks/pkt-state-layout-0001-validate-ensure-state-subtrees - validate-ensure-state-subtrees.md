@@ -1,5 +1,7 @@
 ---
-id: TASK-14
+area: ops
+milestone: P2
+id: pkt-state-layout-0001-validate-ensure-state-subtrees
 title: Validate/ensure state subtrees
 status: To Do
 assignee: []

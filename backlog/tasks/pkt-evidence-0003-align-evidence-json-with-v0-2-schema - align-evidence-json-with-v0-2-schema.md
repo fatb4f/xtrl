@@ -1,12 +1,14 @@
 ---
-id: TASK-7
+area: ops
+milestone: P0
+id: pkt-evidence-0003-align-evidence-json-with-v0-2-schema
 title: Align evidence.json with v0.2 schema
 status: To Do
 assignee: []
 created_date: '2026-02-02 00:00'
 labels: []
 priority: P0
-dependencies: [TASK-6]
+dependencies: [pkt-evidence-0002-implement-evidencecapsule-v0-2-layout]
 ---
 
 ## Description

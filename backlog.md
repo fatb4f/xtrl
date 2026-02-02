@@ -4,19 +4,23 @@ Planning SSOT lives in `./backlog/`.
 
 This file is a summary/export view only.
 
-## xtrl-ops v0.2 compliance backlog (priority order)
-- P0: TASK-4 xtrl-ops v0.2 contract schema adoption
-- P0: TASK-5 Enforce ACTION-only execution
-- P0: TASK-6 Implement EvidenceCapsule v0.2 layout
-- P0: TASK-7 Align evidence.json with v0.2 schema
-- P1: TASK-8 Update OUT_DIR to include repo namespace
-- P1: TASK-9 Normalize Modes and ReasonCodes
-- P1: TASK-10 Enforce budgets (time/diff/iteration)
-- P1: TASK-11 Enforce allowed paths during execution
-- P2: TASK-12 Enforce actuator chain requirements
-- P2: TASK-13 Validate skills-pack layout and compatibility symlink
-- P2: TASK-14 Validate/ensure state subtrees
-
+## Backlog tasks by area/milestone
+### ops
+- P0
+  - pkt-evidence-0001-xtrl-ops-v0-2-contract-schema-adoption: xtrl-ops v0.2 contract schema adoption (To Do)
+  - pkt-evidence-0002-implement-evidencecapsule-v0-2-layout: Implement EvidenceCapsule v0.2 layout (To Do)
+  - pkt-evidence-0003-align-evidence-json-with-v0-2-schema: Align evidence.json with v0.2 schema (To Do)
+  - pkt-exec-0001-enforce-action-only-execution: Enforce ACTION-only execution (To Do)
+- P1
+  - pkt-exec-0002-enforce-budgets-time-diff-iteration: Enforce budgets (time/diff/iteration) (To Do)
+  - pkt-exec-0003-enforce-allowed-paths-during-execution: Enforce allowed paths during execution (To Do)
+  - pkt-paths-0001-update-out-dir-to-include-repo-namespace: Update OUT_DIR to include repo namespace (To Do)
+  - pkt-policy-0001-normalize-modes-and-reasoncodes: Normalize Modes and ReasonCodes (To Do)
+- P2
+  - pkt-actuator-0001-enforce-actuator-chain-requirements: Enforce actuator chain requirements (To Do)
+  - pkt-backlog-0002-worktree-visibility: Worktree visibility (To Do)
+  - pkt-skills-0001-validate-skills-pack-layout-and-compatibility-symlink: Validate skills-pack layout and compatibility symlink (To Do)
+  - pkt-state-layout-0001-validate-ensure-state-subtrees: Validate/ensure state subtrees (To Do)
 ## Consolidated backlog (raw)
 
 ```json

@@ -1,5 +1,7 @@
 ---
-id: TASK-12
+area: ops
+milestone: P2
+id: pkt-actuator-0001-enforce-actuator-chain-requirements
 title: Enforce actuator chain requirements
 status: To Do
 assignee: []

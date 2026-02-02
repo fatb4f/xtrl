@@ -1,5 +1,7 @@
 ---
-id: TASK-6
+area: ops
+milestone: P0
+id: pkt-evidence-0002-implement-evidencecapsule-v0-2-layout
 title: Implement EvidenceCapsule v0.2 layout
 status: To Do
 assignee: []

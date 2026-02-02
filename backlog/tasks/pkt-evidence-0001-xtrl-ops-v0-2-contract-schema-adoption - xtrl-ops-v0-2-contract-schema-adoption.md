@@ -1,5 +1,7 @@
 ---
-id: TASK-4
+area: ops
+milestone: P0
+id: pkt-evidence-0001-xtrl-ops-v0-2-contract-schema-adoption
 title: xtrl-ops v0.2 contract schema adoption
 status: To Do
 assignee: []
