@@ -135,6 +135,10 @@ def main() -> int:
     write_text(out_dir / "git" / "patch.diff", patch)
     write_text(out_dir / "git" / "diffstat.txt", diffstat)
 
+    # empty patch gate
+    has_patch = bool(patch.strip())
+    gates.append({"id": "has_patch", "status": "PASS" if has_patch else "FAIL"})
+
     # base ref resolvable
     base_ok = run_ok(["git", "rev-parse", "--verify", base_ref], cwd=repo_root)
     gates.append({"id": "base_ref_resolves", "status": "PASS" if base_ok else "FAIL"})
@@ -150,8 +154,10 @@ def main() -> int:
         write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": args.dry_run})
         return 2
 
-    # patch apply check
-    apply_ok = run_ok(["git", "apply", "--check", str(out_dir / "git" / "patch.diff")], cwd=repo_root)
+    # patch apply check (skip if empty)
+    apply_ok = True
+    if has_patch:
+        apply_ok = run_ok(["git", "apply", "--check", str(out_dir / "git" / "patch.diff")], cwd=repo_root)
     gates.append({"id": "patch_applies", "status": "PASS" if apply_ok else "FAIL"})
     if not apply_ok:
         promotion = {
@@ -171,7 +177,7 @@ def main() -> int:
             "packet_id": packet_id,
             "status": "BLOCKED",
             "reason_codes": ["DRY_RUN_ONLY"],
-            "note": "Dry-run: patch is applicable; commit/push not performed.",
+            "note": "Dry-run: patch applicable or empty; commit/push not performed.",
             "dry_run": True,
         }
         write_json(out_dir / "git" / "promotion.json", promotion)
