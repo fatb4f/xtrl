@@ -1,13 +1,15 @@
 ---
-area: ops
-milestone: P1
-id: pkt-paths-0001-update-out-dir-to-include-repo-namespace
-title: Update OUT_DIR to include repo namespace
+id: TASK-20
+title: >-
+  pkt-paths-0001-update-out-dir-to-include-repo-namespace — Update OUT_DIR to
+  include repo namespace
 status: To Do
 assignee: []
-created_date: '2026-02-02 00:00'
-labels: []
-priority: P1
+created_date: '2026-02-02 21:59'
+labels:
+  - packet
+  - paths
+milestone: P1
 dependencies: []
 ---
 

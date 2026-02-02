@@ -1,12 +1,13 @@
 ---
-area: ops
-milestone: P2
-id: pkt-backlog-0002-worktree-visibility
-title: Worktree visibility
+id: TASK-17
+title: pkt-backlog-0002-worktree-visibility — Worktree visibility
 status: To Do
 assignee: []
-created_date: '2026-02-02 11:11'
-labels: []
+created_date: '2026-02-02 21:59'
+labels:
+  - packet
+  - backlog
+milestone: P2
 dependencies: []
 ---
 

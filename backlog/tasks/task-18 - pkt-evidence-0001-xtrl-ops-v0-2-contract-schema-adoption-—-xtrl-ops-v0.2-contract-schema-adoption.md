@@ -1,13 +1,15 @@
 ---
-area: ops
-milestone: P0
-id: pkt-evidence-0001-xtrl-ops-v0-2-contract-schema-adoption
-title: xtrl-ops v0.2 contract schema adoption
+id: TASK-18
+title: >-
+  pkt-evidence-0001-xtrl-ops-v0-2-contract-schema-adoption — xtrl-ops v0.2
+  contract schema adoption
 status: To Do
 assignee: []
-created_date: '2026-02-02 00:00'
-labels: []
-priority: P0
+created_date: '2026-02-02 21:59'
+labels:
+  - packet
+  - evidence
+milestone: P0
 dependencies: []
 ---
 

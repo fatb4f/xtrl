@@ -1,0 +1,76 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-ops-0022-packet-pipeline-plant",
+  "repo": "xtrl",
+  "component": "ops",
+  "base_ref": "origin/main",
+  "mode": "NORMAL",
+  "budgets": {
+    "time_minutes": 90,
+    "diff_budget": { "max_files_changed": 60, "max_lines_changed": 2500 },
+    "iteration_budget": 2
+  },
+  "plan_card": {
+    "who": "xtrl controller",
+    "what": "implement Packet-as-a-Plant composite pipeline from PreContract to Git promote and Backlog completion",
+    "why": "make execution deterministic, auditable, and mechanically completable (end_state==Completed)",
+    "where": "xtrl repo (controller + tooling surface)",
+    "when": "for all packets that must run through PromoGate → Exec → Promote",
+    "how": "PromoGate deny-fast + OUT_DIR materialization + ACTION-only exec + patch-based promote + completion transition"
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [".codex", ".quint"],
+    "allowed_paths": [
+      "src/**",
+      "tools/**",
+      "tests/**",
+      "docs/**",
+      "pyproject.toml",
+      "justfile"
+    ],
+    "forbidden_paths": [
+      ".git/**",
+      "backlog/**"
+    ],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "subprocess\\.Popen\\(.*shell\\s*=\\s*True",
+      "\\bos\\.system\\(",
+      "\\beval\\(",
+      "\\bexec\\("
+    ]
+  },
+  "actions": {
+    "test": ["pytest", "-q"],
+    "lint": ["ruff", "check", "."],
+    "format": ["ruff", "format", "."]
+  },
+  "evidence": {
+    "required_files": [
+      "gate/decision.json",
+      "contract.json",
+      "exec-prompt.md",
+      "packet.json",
+      "evidence.json",
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "commands.log",
+      "summary.md",
+      "git/patch.diff",
+      "git/diffstat.txt",
+      "git/promotion.json"
+    ]
+  },
+  "inputs": {
+    "task_md_path": "backlog/tasks/pkt-ops-0022-packet-pipeline-plant - packet-pipeline-plant.md",
+    "binding_ref": "docs/xtrl-ops_authoritative_binding.md",
+    "gitplant_ref": "docs/git_plant_revised_spec_no_overlays.md",
+    "pipeline_binding_ref": "docs/backlog_tightening_pre_contract_→_promo_gate_→_packet_generator_xtrl_ops_binding.md",
+    "promotion_trailer_packet": "packet-022"
+  }
+}

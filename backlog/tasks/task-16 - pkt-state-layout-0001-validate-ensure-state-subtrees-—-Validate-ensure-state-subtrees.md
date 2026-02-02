@@ -1,13 +1,15 @@
 ---
-area: ops
-milestone: P2
-id: pkt-state-layout-0001-validate-ensure-state-subtrees
-title: Validate/ensure state subtrees
+id: TASK-16
+title: >-
+  pkt-state-layout-0001-validate-ensure-state-subtrees — Validate/ensure state
+  subtrees
 status: To Do
 assignee: []
-created_date: '2026-02-02 00:00'
-labels: []
-priority: P2
+created_date: '2026-02-02 21:59'
+labels:
+  - packet
+  - state-layout
+milestone: P2
 dependencies: []
 ---
 
