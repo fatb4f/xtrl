@@ -11,7 +11,7 @@
     "Emit evidence artifacts."
   ],
   "acceptance_checks": [
-    "NPM_CONFIG_PREFIX="$HOME/.local" npm i -g backlog.md",
+    "NPM_CONFIG_PREFIX=\"$HOME/.local\" npm i -g backlog.md",
     "backlog --help",
     "backlog --version",
     "backlog mcp start --help"
