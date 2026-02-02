@@ -1,0 +1,48 @@
+{
+  "ruleset_id": "xtrl.binding.rules",
+  "spec_ref": "xtrl.binding@v0.1",
+  "order": [
+    {
+      "id": "env.required_vars",
+      "when": "missing_required_vars",
+      "decision": "DENY",
+      "reason_code": "ENV_MISSING"
+    },
+    {
+      "id": "repo.forbidden_roots",
+      "when": "forbidden_roots_present",
+      "decision": "DENY",
+      "reason_code": "FORBIDDEN_ROOT_PRESENT"
+    },
+    {
+      "id": "repo.clean_gate",
+      "when": "git_status_not_clean",
+      "decision": "DENY",
+      "reason_code": "DIRTY_REPO_DENIED"
+    },
+    {
+      "id": "exec.action_only",
+      "when": "action_not_in_allowed_actions",
+      "decision": "DENY",
+      "reason_code": "ACTION_NOT_AUTHORIZED"
+    },
+    {
+      "id": "paths.enforce",
+      "when": "touched_forbidden_path",
+      "decision": "DENY",
+      "reason_code": "FORBIDDEN_PATH_TOUCHED"
+    },
+    {
+      "id": "budgets",
+      "when": "budget_exceeded_or_loop_detected",
+      "decision": "STOP",
+      "reason_code": "BUDGET_EXCEEDED"
+    },
+    {
+      "id": "evidence.required",
+      "when": "missing_required_evidence",
+      "decision": "STOP",
+      "reason_code": "MISSING_EVIDENCE"
+    }
+  ]
+}

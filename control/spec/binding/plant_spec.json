@@ -1,0 +1,45 @@
+{
+  "spec_id": "xtrl.binding",
+  "spec_version": "v0.1",
+  "phases": ["preflight", "work", "evidence", "promote"],
+  "env": {
+    "required_vars": ["CODEX_HOME", "CODEX_STATE", "XTRL_STATE"]
+  },
+  "invariants": {
+    "forbidden_repo_roots": [".codex", ".quint"],
+    "no_binary_diffs": true,
+    "no_submodules": true
+  },
+  "actions": {
+    "exec_mode": "ACTION_ONLY",
+    "allowed_actions": ["preflight", "run", "check", "promote"]
+  },
+  "constraints": {
+    "allowed_paths": [],
+    "forbidden_paths": [],
+    "diff_budget": {"max_files": 50, "max_lines": 1500}
+  },
+  "budgets": {
+    "max_iterations": 3,
+    "max_runtime_seconds": 900
+  },
+  "evidence": {
+    "out_layout": "CODEX_STATE/xtrl/out/<repo>/<packet_id>/...",
+    "required_files": [
+      "contract.json",
+      "evidence.json",
+      "decision_trace.txt",
+      "reason_codes.json"
+    ],
+    "required_signals": ["diffstat", "tests", "lint"]
+  },
+  "reason_codes": [
+    "ENV_MISSING",
+    "FORBIDDEN_ROOT_PRESENT",
+    "DIRTY_REPO_DENIED",
+    "ACTION_NOT_AUTHORIZED",
+    "FORBIDDEN_PATH_TOUCHED",
+    "BUDGET_EXCEEDED",
+    "MISSING_EVIDENCE"
+  ]
+}

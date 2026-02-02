@@ -237,6 +237,49 @@ def handle_backlog_sync(args: argparse.Namespace, script_dir: Path) -> None:
     run_script(script, sync_args)
 
 
+def handle_packet_generate(args: argparse.Namespace, script_dir: Path) -> None:
+    codex_state = resolve_codex_state(args.codex_state)
+    xtrl_root = resolve_xtrl_root(script_dir)
+    script = xtrl_root / "tools" / "packet_generate.py"
+    gen_args = ["--codex-state", str(codex_state), args.pre_contract]
+    run_script(script, gen_args)
+
+
+def handle_exec_packet(args: argparse.Namespace, script_dir: Path) -> None:
+    repo_root = resolve_repo_root(args.repo_root)
+    codex_state = resolve_codex_state(args.codex_state)
+    xtrl_root = resolve_xtrl_root(script_dir)
+    script = xtrl_root / "tools" / "exec_packet.py"
+    run_script(
+        script,
+        [
+            "--repo-root",
+            str(repo_root),
+            "--codex-state",
+            str(codex_state),
+            *(["--action", args.action] if args.action else []),
+            args.packet_id,
+        ],
+    )
+
+
+def handle_git_promote(args: argparse.Namespace, script_dir: Path) -> None:
+    repo_root = resolve_repo_root(args.repo_root)
+    codex_state = resolve_codex_state(args.codex_state)
+    xtrl_root = resolve_xtrl_root(script_dir)
+    script = xtrl_root / "tools" / "git_promote.py"
+    run_script(
+        script,
+        [
+            "--repo-root",
+            str(repo_root),
+            "--codex-state",
+            str(codex_state),
+            args.packet_id,
+        ],
+    )
+
+
 def handle_doctor(args: argparse.Namespace, script_dir: Path) -> None:
     repo_root = resolve_repo_root(args.repo_root)
     codex_home = resolve_codex_home(args.codex_home)
@@ -357,6 +400,28 @@ def main() -> None:
     command_common_args(gather)
     gather.add_argument("contract")
     gather.set_defaults(func=lambda args: handle_collect_evidence(args, script_dir))
+
+    packet = subparsers.add_parser("packet")
+    packet_sub = packet.add_subparsers(dest="packet_cmd", required=True)
+
+    generate = packet_sub.add_parser("generate")
+    generate.add_argument("pre_contract")
+    generate.add_argument("--codex-state", default=None)
+    generate.set_defaults(func=lambda args: handle_packet_generate(args, script_dir))
+
+    exec_packet = packet_sub.add_parser("exec")
+    exec_packet.add_argument("packet_id")
+    exec_packet.add_argument("--action", default=None)
+    command_common_args(exec_packet)
+    exec_packet.set_defaults(func=lambda args: handle_exec_packet(args, script_dir))
+
+    git = subparsers.add_parser("git")
+    git_sub = git.add_subparsers(dest="git_cmd", required=True)
+
+    promote = git_sub.add_parser("promote")
+    command_common_args(promote)
+    promote.add_argument("packet_id")
+    promote.set_defaults(func=lambda args: handle_git_promote(args, script_dir))
 
     backlog = subparsers.add_parser("backlog")
     backlog_sub = backlog.add_subparsers(dest="backlog_cmd", required=True)

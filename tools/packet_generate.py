@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""PreContract -> PromoGate -> PacketGenerator."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+from path_utils import resolve_codex_state, resolve_state_root
+
+
+REQUIRED_FIELDS = [
+    "schema_version",
+    "packet_id",
+    "repo",
+    "base_ref",
+    "mode",
+    "budgets",
+    "constraints",
+    "actions",
+    "evidence",
+]
+
+REQUIRED_CONSTRAINT_FIELDS = [
+    "clean_repo_required",
+    "deny_repo_local_roots",
+    "allowed_paths",
+    "forbidden_paths",
+    "forbidden_patterns",
+]
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def read_json(path: Path) -> Dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_json(path: Path, payload: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def promo_gate(pre_contract: Dict[str, Any]) -> Tuple[bool, List[str], List[str]]:
+    reasons: List[str] = []
+    errors: List[str] = []
+
+    for field in REQUIRED_FIELDS:
+        if field not in pre_contract:
+            errors.append(f"missing_field:{field}")
+
+    if errors:
+        return False, ["PRECONTRACT_MISSING_FIELDS"], errors
+
+    mode = pre_contract.get("mode")
+    if mode not in {"NORMAL", "REPAIR", "SAFE"}:
+        reasons.append("MODE_INVALID")
+
+    budgets = pre_contract.get("budgets") or {}
+    if "diff_budget" not in budgets or "time_minutes" not in budgets or "iteration_budget" not in budgets:
+        reasons.append("BUDGETS_INVALID")
+
+    constraints = pre_contract.get("constraints") or {}
+    for field in REQUIRED_CONSTRAINT_FIELDS:
+        if field not in constraints:
+            reasons.append("CONSTRAINTS_INVALID")
+            break
+
+    deny_roots = constraints.get("deny_repo_local_roots")
+    if deny_roots != [".codex", ".quint"]:
+        reasons.append("DENY_ROOTS_INVALID")
+
+    allowed_paths = constraints.get("allowed_paths")
+    if not isinstance(allowed_paths, list) or not allowed_paths:
+        reasons.append("ALLOWED_PATHS_EMPTY")
+
+    diff_budget = budgets.get("diff_budget") if isinstance(budgets, dict) else None
+    if not isinstance(diff_budget, dict) or not all(k in diff_budget for k in ("max_files_changed", "max_lines_changed")):
+        reasons.append("DIFF_BUDGET_INVALID")
+
+    actions = pre_contract.get("actions") or {}
+    if not isinstance(actions, dict) or not actions:
+        reasons.append("ACTIONS_MISSING")
+    else:
+        for name, argv in actions.items():
+            if not isinstance(argv, list) or not argv or any(not isinstance(x, str) for x in argv):
+                reasons.append("ACTIONS_INVALID")
+                break
+
+    evidence = pre_contract.get("evidence") or {}
+    req_files = evidence.get("required_files") if isinstance(evidence, dict) else None
+    if not isinstance(req_files, list) or not req_files:
+        reasons.append("EVIDENCE_REQUIRED_FILES_MISSING")
+
+    base_ref = pre_contract.get("base_ref")
+    if not isinstance(base_ref, str) or not base_ref.strip():
+        reasons.append("BASE_REF_MISSING")
+
+    return len(reasons) == 0, reasons, errors
+
+
+def build_contract(pre_contract: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "schema_version": "xtrl.contract/v0.2",
+        "packet_id": pre_contract["packet_id"],
+        "base_ref": pre_contract["base_ref"],
+        "constraints": pre_contract["constraints"],
+        "actions": pre_contract["actions"],
+        "evidence": pre_contract["evidence"],
+    }
+
+
+def build_exec_prompt(pre_contract: Dict[str, Any], out_dir: Path) -> str:
+    meta = {
+        "schema_version": "xtrl.exec_prompt/v0.1",
+        "contract_path": str(out_dir / "contract.json"),
+        "worktree_root": "$CODEX_STATE/xtrl/worktrees/<packet_id>/",
+        "tasks": [
+            "Execute packet using contract.json in OUT_DIR.",
+            "Emit required evidence files under OUT_DIR.",
+        ],
+        "acceptance_checks": ["verify evidence required_files are present"],
+        "evidence": ["see contract.json evidence.required_files"],
+    }
+    lines = [
+        f"# EXEC_PROMPT — {pre_contract['packet_id']}",
+        "",
+        "```json",
+        json.dumps(meta, indent=2),
+        "```",
+        "",
+        "Generated by packet_generate from pre_contract.json.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("pre_contract")
+    parser.add_argument("--codex-state", default=None)
+    args = parser.parse_args()
+
+    pre_path = Path(os.path.expanduser(args.pre_contract)).resolve()
+    pre_contract = read_json(pre_path)
+
+    codex_state = resolve_codex_state(args.codex_state)
+    state_root = resolve_state_root(str(codex_state))
+
+    repo = pre_contract.get("repo") or "unknown"
+    packet_id = pre_contract.get("packet_id") or "unknown"
+
+    out_dir = state_root / "out" / repo / packet_id
+    gate_dir = out_dir / "gate"
+
+    allow, reasons, errors = promo_gate(pre_contract)
+    decision = {
+        "timestamp": utc_now(),
+        "packet_id": packet_id,
+        "repo": repo,
+        "decision": "ALLOW" if allow else "DENY",
+        "reason_codes": reasons,
+        "errors": errors,
+    }
+
+    gate_dir.mkdir(parents=True, exist_ok=True)
+    write_json(gate_dir / "decision.json", decision)
+
+    if not allow:
+        raise SystemExit(2)
+
+    contract = build_contract(pre_contract)
+    write_json(out_dir / "contract.json", contract)
+
+    exec_prompt = build_exec_prompt(pre_contract, out_dir)
+    write_text(out_dir / "exec-prompt.md", exec_prompt)
+
+    packet = {
+        "packet_id": packet_id,
+        "repo": repo,
+        "pre_contract_path": str(pre_path),
+        "pre_contract_sha256": sha256_file(pre_path),
+        "generated_at": utc_now(),
+    }
+    write_json(out_dir / "packet.json", packet)
+
+
+if __name__ == "__main__":
+    main()
