@@ -8,6 +8,10 @@ roots (config, state, data).
   `ctrlex` and `plant-a` roots may remain briefly for compatibility).
 - **Target-aware:** All execution operates on an explicit target repo.
 - **No repo-local roots:** xtrl must not create or depend on `./.codex/` or `./.quint/`.
+- **Approvals policy:** Do not request approval for `git push`. Writes outside
+  writable roots are allowed but should be handled safely (e.g., create backups
+  before overwriting). Only request approval for genuinely destructive actions
+  outside the workspace.
 
 ## Directory structure (global)
 - `$CODEX_DATA/vendor/xtrl/README.md` - repository purpose and entry points
