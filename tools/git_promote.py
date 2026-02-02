@@ -214,7 +214,7 @@ def main() -> int:
         write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": False})
         return 2
 
-    if not run_ok(["git", "apply", "--index", str(out_dir / "git" / "patch.diff")], cwd=repo_root):
+    if has_patch and not run_ok(["git", "apply", "--index", str(out_dir / "git" / "patch.diff")], cwd=repo_root):
         promotion = {
             "timestamp": utc_now(),
             "packet_id": packet_id,
@@ -240,8 +240,32 @@ def main() -> int:
         trailers.append(f"Packet: {trailer_packet}")
     trailers.append(f"Evidence: {out_dir}/")
     message = f"promote({packet_id}): apply patch\n\n" + "\n".join(trailers) + "\n"
-    run_cmd(["git", "commit", "-m", message], cwd=repo_root)
+    if has_patch:
+        run_cmd(["git", "commit", "-m", message], cwd=repo_root)
 
+    # fast-forward main (or current branch) to temp and push
+    ff_branch = current_branch or "main"
+    ff_ok = run_ok(["git", "checkout", ff_branch], cwd=repo_root) and run_ok(
+        ["git", "merge", "--ff-only", temp_branch], cwd=repo_root
+    )
+    push_ok = False
+    if ff_ok:
+        push_ok = run_ok(["git", "push", "origin", ff_branch], cwd=repo_root)
+
+    if ff_ok and push_ok:
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "PASS",
+            "reason_codes": [],
+            "note": f"FF-only push succeeded to {ff_branch}.",
+            "dry_run": False,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": False})
+        return 0
+
+    # restore branch if FF failed
     if current_branch:
         run_cmd(["git", "checkout", current_branch], cwd=repo_root)
 
@@ -250,7 +274,7 @@ def main() -> int:
         "packet_id": packet_id,
         "status": "BLOCKED",
         "reason_codes": ["PROMOTE_NOT_PUSHED"],
-        "note": "Commit created on temp branch; FF-only push not implemented.",
+        "note": "Commit created on temp branch; FF-only push failed or not executed.",
         "dry_run": False,
     }
     write_json(out_dir / "git" / "promotion.json", promotion)
