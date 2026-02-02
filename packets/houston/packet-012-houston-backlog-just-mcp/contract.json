@@ -1,0 +1,64 @@
+{
+  "packet_id": "packet-012-houston-backlog-just-mcp",
+  "area": "houston",
+  "repo": "fatb4f/xtrl",
+  "base_ref": "HEAD",
+  "branch": "packet/packet-012-houston-backlog-just-mcp",
+  "budgets": {
+    "max_changed_files": 10,
+    "max_changed_lines": 500
+  },
+  "allowed_paths": [
+    "templates/Justfile.tmpl",
+    "dot_config/codex/just/xtrl.just",
+    "dot_config/codex/xtrl/MCP.md",
+    "xtrl"
+  ],
+  "forbidden_outputs": [
+    ".codex/**",
+    ".quint/**"
+  ],
+  "net_ops_required": false,
+  "github_ops_required": false,
+  "network_policy": {
+    "internet_access": "off",
+    "domain_allowlist_preset": "none",
+    "additional_domains": [],
+    "allowed_http_methods": []
+  },
+  "github": {
+    "repo": "fatb4f/xtrl",
+    "issue": {
+      "title": "packet-012-houston-backlog-just-mcp",
+      "body": "",
+      "template": "packet-default.yml",
+      "labels": [],
+      "milestone": "",
+      "ensure": false,
+      "comment_on_run": false,
+      "close_on_success": false
+    }
+  },
+  "evidence": {
+    "out_dir": "$CODEX_STATE/xtrl/out",
+    "include_git_diff_patch": false
+  },
+  "worktree_policy": {
+    "mode": "strict",
+    "worktree_root": "$CODEX_STATE/xtrl/worktrees",
+    "deny_if_worktree_exists": true,
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": []
+  },
+  "run": {
+    "regen_cmd": "",
+    "test_cmd": "",
+    "commands": [
+      "python ./xtrl just render --out /tmp/xtrl.Justfile",
+      "just -f /tmp/xtrl.Justfile --list | grep -q 'ctrl\\.backlog\\.hydrate'",
+      "just -f /tmp/xtrl.Justfile --list | grep -q 'ctrl\\.backlog\\.sync'",
+      "grep -q 'ctrl\\.backlog\\.hydrate' templates/Justfile.tmpl",
+      "grep -q 'ctrl\\.backlog\\.sync' templates/Justfile.tmpl"
+    ]
+  }
+}
