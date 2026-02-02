@@ -7,7 +7,7 @@ import argparse
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from path_utils import resolve_codex_state, resolve_repo_root, resolve_state_root
 from subprocess import run
@@ -31,11 +31,19 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def run_cmd(argv: List[str], cwd: Path | None = None) -> str:
+def run_cmd(argv: List[str], cwd: Path | None = None) -> Tuple[int, str, str]:
     proc = run(argv, cwd=str(cwd) if cwd else None, text=True, capture_output=True)
-    if proc.returncode != 0:
-        return ""
-    return proc.stdout
+    return proc.returncode, proc.stdout, proc.stderr
+
+
+def run_ok(argv: List[str], cwd: Path | None = None) -> bool:
+    rc, _, _ = run_cmd(argv, cwd=cwd)
+    return rc == 0
+
+
+def stdout_or_empty(argv: List[str], cwd: Path | None = None) -> str:
+    rc, out, _ = run_cmd(argv, cwd=cwd)
+    return out if rc == 0 else ""
 
 
 def main() -> int:
@@ -74,7 +82,7 @@ def main() -> int:
     gates = []
 
     # ensure clean
-    status = run_cmd(["git", "status", "--porcelain"], cwd=repo_root)
+    status = stdout_or_empty(["git", "status", "--porcelain"], cwd=repo_root)
     clean_ok = not status.strip()
     gates.append({"id": "clean_repo", "status": "PASS" if clean_ok else "FAIL"})
     if not clean_ok:
@@ -90,7 +98,7 @@ def main() -> int:
         return 2
 
     # binary diff detection
-    numstat = run_cmd(["git", "diff", "--numstat", f"{base_ref}..HEAD"], cwd=repo_root)
+    numstat = stdout_or_empty(["git", "diff", "--numstat", f"{base_ref}..HEAD"], cwd=repo_root)
     binary = any(line.split("\t")[0] == "-" or line.split("\t")[1] == "-" for line in numstat.splitlines() if line)
     gates.append({"id": "no_binary_diffs", "status": "PASS" if not binary else "FAIL"})
     if binary:
@@ -106,7 +114,7 @@ def main() -> int:
         return 2
 
     # submodule detection
-    raw = run_cmd(["git", "diff", "--raw", f"{base_ref}..HEAD"], cwd=repo_root)
+    raw = stdout_or_empty(["git", "diff", "--raw", f"{base_ref}..HEAD"], cwd=repo_root)
     has_submodule = "160000" in raw
     gates.append({"id": "no_submodules", "status": "PASS" if not has_submodule else "FAIL"})
     if has_submodule:
@@ -121,22 +129,113 @@ def main() -> int:
         write_json(out_dir / "git" / "gates.json", {"gates": gates})
         return 2
 
-    patch = run_cmd(["git", "diff", "--binary", f"{base_ref}..HEAD"], cwd=repo_root)
-    diffstat = run_cmd(["git", "diff", "--stat", f"{base_ref}..HEAD"], cwd=repo_root)
+    patch = stdout_or_empty(["git", "diff", "--binary", f"{base_ref}..HEAD"], cwd=repo_root)
+    diffstat = stdout_or_empty(["git", "diff", "--stat", f"{base_ref}..HEAD"], cwd=repo_root)
 
     write_text(out_dir / "git" / "patch.diff", patch)
     write_text(out_dir / "git" / "diffstat.txt", diffstat)
+
+    # base ref resolvable
+    base_ok = run_ok(["git", "rev-parse", "--verify", base_ref], cwd=repo_root)
+    gates.append({"id": "base_ref_resolves", "status": "PASS" if base_ok else "FAIL"})
+    if not base_ok:
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "DENY",
+            "reason_codes": ["BASE_REF_MISSING"],
+            "dry_run": args.dry_run,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": args.dry_run})
+        return 2
+
+    # patch apply check
+    apply_ok = run_ok(["git", "apply", "--check", str(out_dir / "git" / "patch.diff")], cwd=repo_root)
+    gates.append({"id": "patch_applies", "status": "PASS" if apply_ok else "FAIL"})
+    if not apply_ok:
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "DENY",
+            "reason_codes": ["PATCH_APPLY_FAILED"],
+            "dry_run": args.dry_run,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": args.dry_run})
+        return 2
+
+    if args.dry_run:
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "BLOCKED",
+            "reason_codes": ["DRY_RUN_ONLY"],
+            "note": "Dry-run: patch is applicable; commit/push not performed.",
+            "dry_run": True,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": True})
+        return 3
+
+    # non-dry-run: create temp branch, apply patch, commit, then reset to original branch
+    rc, current_branch, _ = run_cmd(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_root)
+    current_branch = current_branch.strip() if rc == 0 else ""
+    temp_branch = f"promote/{packet_id}"
+
+    if not run_ok(["git", "checkout", "-B", temp_branch, base_ref], cwd=repo_root):
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "DENY",
+            "reason_codes": ["CHECKOUT_FAILED"],
+            "dry_run": False,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": False})
+        return 2
+
+    if not run_ok(["git", "apply", "--index", str(out_dir / "git" / "patch.diff")], cwd=repo_root):
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "DENY",
+            "reason_codes": ["PATCH_APPLY_FAILED"],
+            "dry_run": False,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": False})
+        return 2
+
+    trailer_packet = None
+    pre_contract_path = packet_meta.get("pre_contract_path")
+    if pre_contract_path:
+        try:
+            pre = read_json(Path(pre_contract_path))
+            trailer_packet = pre.get("inputs", {}).get("promotion_trailer_packet")
+        except Exception:
+            trailer_packet = None
+
+    trailers = []
+    if trailer_packet:
+        trailers.append(f"Packet: {trailer_packet}")
+    trailers.append(f"Evidence: {out_dir}/")
+    message = f"promote({packet_id}): apply patch\n\n" + "\n".join(trailers) + "\n"
+    run_cmd(["git", "commit", "-m", message], cwd=repo_root)
+
+    if current_branch:
+        run_cmd(["git", "checkout", current_branch], cwd=repo_root)
 
     promotion = {
         "timestamp": utc_now(),
         "packet_id": packet_id,
         "status": "BLOCKED",
-        "reason_codes": ["PROMOTE_NOT_IMPLEMENTED"] if not args.dry_run else ["DRY_RUN_ONLY"],
-        "note": "Promotion DAG not yet implemented; patch captured for review.",
-        "dry_run": args.dry_run,
+        "reason_codes": ["PROMOTE_NOT_PUSHED"],
+        "note": "Commit created on temp branch; FF-only push not implemented.",
+        "dry_run": False,
     }
     write_json(out_dir / "git" / "promotion.json", promotion)
-    write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": args.dry_run})
+    write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": False})
     return 3
 
 
