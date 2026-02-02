@@ -68,3 +68,5 @@ worktree entry, execution, evidence, and promotion.
 - `tools/validate_plant.py` - plant manifest validation for drift prevention.
 - `tools/validate_exec_prompt.py` - validate EXEC_PROMPT metadata blocks.
 - `tools/migrate_flat_packets.py` - migrate flat packets to directory layout (dry-run by default).
+
+Backlog.md workflow: use Backlog.md in `./backlog/` as SSOT, prefer MCP resources (e.g., `backlog://docs/task-workflow`), and do not create new agent instruction files.
