@@ -1,0 +1,52 @@
+{
+  "packet_id": "packet-015-backlogmd-run",
+  "area": "engineering",
+  "repo": "local:xtrl",
+  "base_ref": "main",
+  "branch": "packet/packet-015-backlogmd-run",
+  "github_ops_required": false,
+  "net_ops_required": false,
+  "allowed_paths": [
+    "backlog/**",
+    "backlog.md",
+    ".backlog/**",
+    "docs/**",
+    "packets/**",
+    "README.md"
+  ],
+  "forbidden_outputs": [
+    ".codex/**",
+    ".quint/**"
+  ],
+  "worktree_policy": {
+    "mode": "strict",
+    "worktree_root": "$CODEX_STATE/xtrl/worktrees",
+    "deny_if_worktree_exists": true,
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": []
+  },
+  "network_policy": {
+    "internet_access": "off",
+    "domain_allowlist_preset": "none",
+    "additional_domains": [],
+    "allowed_http_methods": []
+  },
+  "run": {
+    "regen_cmd": "",
+    "test_cmd": "",
+    "commands": [
+      "backlog --help",
+      "backlog list --help",
+      "backlog board --help",
+      "backlog browser --help"
+    ]
+  },
+  "budgets": {
+    "max_changed_files": 20,
+    "max_changed_lines": 1000
+  },
+  "evidence": {
+    "out_dir": "$CODEX_STATE/xtrl/out",
+    "include_git_diff_patch": false
+  }
+}

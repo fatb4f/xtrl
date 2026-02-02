@@ -1,0 +1,57 @@
+{
+  "packet_id": "packet-013-backlogmd-install",
+  "area": "engineering",
+  "repo": "local:xtrl",
+  "base_ref": "main",
+  "branch": "packet/packet-013-backlogmd-install",
+  "github_ops_required": false,
+  "net_ops_required": true,
+  "allowed_paths": [
+    "docs/**",
+    "tools/**",
+    "tests/**",
+    "packets/**",
+    "README.md"
+  ],
+  "forbidden_outputs": [
+    ".codex/**",
+    ".quint/**"
+  ],
+  "worktree_policy": {
+    "mode": "strict",
+    "worktree_root": "$CODEX_STATE/xtrl/worktrees",
+    "deny_if_worktree_exists": true,
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": []
+  },
+  "network_policy": {
+    "internet_access": "on",
+    "domain_allowlist_preset": "custom",
+    "additional_domains": [
+      "registry.npmjs.org",
+      "github.com",
+      "api.github.com"
+    ],
+    "allowed_http_methods": [
+      "GET"
+    ]
+  },
+  "run": {
+    "regen_cmd": "",
+    "test_cmd": "",
+    "commands": [
+      "npm i -g backlog.md",
+      "backlog --help",
+      "backlog --version",
+      "backlog mcp start --help"
+    ]
+  },
+  "budgets": {
+    "max_changed_files": 10,
+    "max_changed_lines": 300
+  },
+  "evidence": {
+    "out_dir": "$CODEX_STATE/xtrl/out",
+    "include_git_diff_patch": false
+  }
+}
