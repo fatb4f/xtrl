@@ -59,11 +59,6 @@
       "pytest",
       "-q",
       "tests/smoke_xdg_paths.py"
-    ],
-    "format": [
-      "ruff",
-      "format",
-      "."
     ]
   },
   "evidence": {
