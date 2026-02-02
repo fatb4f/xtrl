@@ -2,14 +2,14 @@
 from __future__ import annotations
 
 import argparse
-import os
-from pathlib import Path
 
 from path_utils import resolve_codex_state, resolve_state_root
 
 
 def parse_args() -> argparse.Namespace:
-    ap = argparse.ArgumentParser(description="List available packet contracts under CODEX_STATE.")
+    ap = argparse.ArgumentParser(
+        description="List available packet contracts under CODEX_STATE."
+    )
     ap.add_argument("--codex-state", help="Override CODEX_STATE root.")
     return ap.parse_args()
 

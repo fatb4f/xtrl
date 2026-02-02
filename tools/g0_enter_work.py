@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
-import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -18,12 +17,20 @@ from path_utils import (
     resolve_state_root,
 )
 
+
 def utc_now() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return (
+        datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 
 def run(cmd: List[str], cwd: Optional[Path] = None) -> Tuple[int, str, str]:
-    p = subprocess.run(cmd, cwd=str(cwd) if cwd else None, text=True, capture_output=True)
+    p = subprocess.run(
+        cmd, cwd=str(cwd) if cwd else None, text=True, capture_output=True
+    )
     return p.returncode, p.stdout, p.stderr
 
 
@@ -122,9 +129,13 @@ def default_evidence_path(contract: Optional[Dict[str, Any]], state_root: Path) 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Enter WORK (G0) gate.")
-    parser.add_argument("--contract", required=True, help="Path to packet contract JSON.")
+    parser.add_argument(
+        "--contract", required=True, help="Path to packet contract JSON."
+    )
     parser.add_argument("--evidence-out", help="Override evidence output path.")
-    parser.add_argument("--repo-root", help="Target repo root (defaults to git rev-parse).")
+    parser.add_argument(
+        "--repo-root", help="Target repo root (defaults to git rev-parse)."
+    )
     parser.add_argument("--codex-home", help="Override CODEX_HOME config root.")
     parser.add_argument("--codex-state", help="Override CODEX_STATE root.")
     args = parser.parse_args()
@@ -142,7 +153,11 @@ def main() -> int:
             if alt.exists():
                 contract_path = alt
     contract, contract_err = safe_read_json(contract_path)
-    evidence_path = Path(args.evidence_out) if args.evidence_out else default_evidence_path(contract, state_root)
+    evidence_path = (
+        Path(args.evidence_out)
+        if args.evidence_out
+        else default_evidence_path(contract, state_root)
+    )
     evidence_path.parent.mkdir(parents=True, exist_ok=True)
 
     packet_id = ""
@@ -160,10 +175,14 @@ def main() -> int:
         base_ref = str(contract.get("base_ref") or "")
         github_ops_required = bool(contract.get("github_ops_required", False))
         policy = contract.get("worktree_policy") or {}
-        worktree_root = str(resolve_state_path(policy.get("worktree_root"), state_root, "worktrees"))
+        worktree_root = str(
+            resolve_state_path(policy.get("worktree_root"), state_root, "worktrees")
+        )
         deny_if_exists = bool(policy.get("deny_if_worktree_exists", True))
         if not packet_id or not branch or not base_ref:
-            decision.deny("WORKTREE_MISMATCH", "contract missing packet_id/branch/base_ref")
+            decision.deny(
+                "WORKTREE_MISMATCH", "contract missing packet_id/branch/base_ref"
+            )
 
     wt_root = Path(worktree_root)
     wt_path = (wt_root / packet_id) if packet_id else None
@@ -178,13 +197,17 @@ def main() -> int:
         wt_list = parse_worktree_list(repo_root)
 
     if decision.allow and wt_path and wt_path.exists() and deny_if_exists:
-        decision.deny("WORKTREE_COLLISION", "worktree exists and deny_if_worktree_exists=true")
+        decision.deny(
+            "WORKTREE_COLLISION", "worktree exists and deny_if_worktree_exists=true"
+        )
 
     if decision.allow and wt_path and wt_path.exists():
         registered_paths = {Path(p).resolve() for p in wt_list.keys()}
         if wt_path.resolve() not in registered_paths:
             collision = True
-            decision.deny("WORKTREE_COLLISION", "worktree path exists but is not registered")
+            decision.deny(
+                "WORKTREE_COLLISION", "worktree path exists but is not registered"
+            )
 
     if decision.allow and wt_path and wt_path.exists():
         entry = wt_list.get(str(wt_path)) or wt_list.get(str(wt_path.resolve()))
@@ -206,7 +229,10 @@ def main() -> int:
             cmd = ["git", "worktree", "add", "-b", branch, str(wt_path), base_ref]
         rc, out, err = run(cmd, cwd=repo_root)
         if rc != 0:
-            decision.deny("WORKTREE_MISMATCH", f"git worktree add failed: {err.strip() or out.strip()}")
+            decision.deny(
+                "WORKTREE_MISMATCH",
+                f"git worktree add failed: {err.strip() or out.strip()}",
+            )
         else:
             worktree_created = True
 
@@ -233,7 +259,9 @@ def main() -> int:
             else:
                 base_is_ancestor = False
             if base_is_ancestor is False:
-                decision.deny("WORKTREE_MISMATCH", "base_ref is not an ancestor of worktree HEAD")
+                decision.deny(
+                    "WORKTREE_MISMATCH", "base_ref is not an ancestor of worktree HEAD"
+                )
 
     push_probe: Dict[str, Any] = {}
     if decision.allow and wt_path:
@@ -267,7 +295,9 @@ def main() -> int:
         "deny_code": decision.deny_code,
         "message": decision.message,
     }
-    evidence_path.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    evidence_path.write_text(
+        json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
     return 0 if decision.allow else 2
 

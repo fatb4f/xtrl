@@ -3,19 +3,27 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 from pathlib import Path
 
-from path_utils import resolve_contract_path, resolve_repo_root, resolve_state_path, resolve_state_root
+from path_utils import (
+    resolve_contract_path,
+    resolve_repo_root,
+    resolve_state_path,
+    resolve_state_root,
+)
 
 
 def parse_args() -> argparse.Namespace:
-    ap = argparse.ArgumentParser(description="Resolve evidence path for a packet contract.")
+    ap = argparse.ArgumentParser(
+        description="Resolve evidence path for a packet contract."
+    )
     ap.add_argument("contract", help="Path to packet contract JSON.")
     ap.add_argument("--repo-root", help="Target repo root (defaults to git rev-parse).")
     ap.add_argument("--codex-state", help="Override CODEX_STATE root.")
     ap.add_argument("--codex-home", help="Override CODEX_HOME config root.")
-    ap.add_argument("--ls", action="store_true", help="List evidence directory contents if present.")
+    ap.add_argument(
+        "--ls", action="store_true", help="List evidence directory contents if present."
+    )
     return ap.parse_args()
 
 

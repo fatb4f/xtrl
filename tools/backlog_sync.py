@@ -11,7 +11,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Iterable
 
 
 @dataclass
@@ -61,7 +61,9 @@ def now_iso() -> str:
 
 def write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def load_contract(contract_path: Path) -> dict:
@@ -109,7 +111,7 @@ def extract_title(text: str) -> str | None:
             return None
         if line.lower().startswith("title:"):
             value = line.split(":", 1)[1].strip()
-            if (value.startswith("\"") and value.endswith("\"")) or (
+            if (value.startswith('"') and value.endswith('"')) or (
                 value.startswith("'") and value.endswith("'")
             ):
                 value = value[1:-1]

@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -32,7 +32,9 @@ def validate_prompt(prompt_path: Path) -> Optional[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate EXEC_PROMPT metadata block.")
-    parser.add_argument("--contract", required=True, help="Path to packet contract JSON.")
+    parser.add_argument(
+        "--contract", required=True, help="Path to packet contract JSON."
+    )
     parser.add_argument("--prompt", help="Override EXEC_PROMPT path.")
     args = parser.parse_args()
 
@@ -42,7 +44,9 @@ def main() -> int:
         print(err)
         return 2
 
-    prompt_path = Path(args.prompt) if args.prompt else resolve_exec_prompt_path(contract_path)
+    prompt_path = (
+        Path(args.prompt) if args.prompt else resolve_exec_prompt_path(contract_path)
+    )
     if not prompt_path.exists():
         print(f"exec_prompt missing: {prompt_path}")
         return 2

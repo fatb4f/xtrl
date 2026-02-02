@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -16,7 +15,12 @@ from path_utils import resolve_codex_state, resolve_repo_root, resolve_state_roo
 
 
 def utc_now() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return (
+        datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 
 def read_json(path: Path) -> Dict[str, Any]:
@@ -25,7 +29,9 @@ def read_json(path: Path) -> Dict[str, Any]:
 
 def write_json(path: Path, payload: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def write_text(path: Path, text: str) -> None:
@@ -43,7 +49,9 @@ def sha256_file(path: Path) -> str:
 
 def run_cmd(argv: List[str], cwd: Path | None = None) -> Tuple[int, str, str]:
     try:
-        proc = subprocess.run(argv, cwd=str(cwd) if cwd else None, text=True, capture_output=True)
+        proc = subprocess.run(
+            argv, cwd=str(cwd) if cwd else None, text=True, capture_output=True
+        )
         return proc.returncode, proc.stdout, proc.stderr
     except FileNotFoundError as exc:
         return 127, "", f"{exc}"
@@ -68,7 +76,9 @@ def main() -> int:
     ap.add_argument("packet_id")
     ap.add_argument("--repo-root", default=None)
     ap.add_argument("--codex-state", default=None)
-    ap.add_argument("--action", default=None, help="Run a single action from contract actions.")
+    ap.add_argument(
+        "--action", default=None, help="Run a single action from contract actions."
+    )
     args = ap.parse_args()
 
     repo_root = resolve_repo_root(args.repo_root)
@@ -151,14 +161,19 @@ def main() -> int:
         except Exception:
             pass
 
-    write_text(evidence_dir / "decision.md", f"Status: {status}\nReasonCodes: {', '.join(reason_codes) if reason_codes else 'NONE'}\n")
+    write_text(
+        evidence_dir / "decision.md",
+        f"Status: {status}\nReasonCodes: {', '.join(reason_codes) if reason_codes else 'NONE'}\n",
+    )
 
     # scope
     rc, diffstat, _ = run_cmd(["git", "diff", "--stat"], cwd=repo_root)
     rc, status_out, _ = run_cmd(["git", "status", "--porcelain"], cwd=repo_root)
     scope = {
         "diffstat": diffstat.strip(),
-        "touched_files": [ln[3:].strip() for ln in status_out.splitlines() if ln.strip()],
+        "touched_files": [
+            ln[3:].strip() for ln in status_out.splitlines() if ln.strip()
+        ],
     }
     write_json(evidence_dir / "scope.json", scope)
 
