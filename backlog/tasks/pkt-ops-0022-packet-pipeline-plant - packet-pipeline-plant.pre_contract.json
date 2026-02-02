@@ -7,7 +7,10 @@
   "mode": "NORMAL",
   "budgets": {
     "time_minutes": 90,
-    "diff_budget": { "max_files_changed": 60, "max_lines_changed": 2500 },
+    "diff_budget": {
+      "max_files_changed": 60,
+      "max_lines_changed": 2500
+    },
     "iteration_budget": 2
   },
   "plan_card": {
@@ -15,12 +18,15 @@
     "what": "implement Packet-as-a-Plant composite pipeline from PreContract to Git promote and Backlog completion",
     "why": "make execution deterministic, auditable, and mechanically completable (end_state==Completed)",
     "where": "xtrl repo (controller + tooling surface)",
-    "when": "for all packets that must run through PromoGate → Exec → Promote",
+    "when": "for all packets that must run through PromoGate \u2192 Exec \u2192 Promote",
     "how": "PromoGate deny-fast + OUT_DIR materialization + ACTION-only exec + patch-based promote + completion transition"
   },
   "constraints": {
     "clean_repo_required": true,
-    "deny_repo_local_roots": [".codex", ".quint"],
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
     "allowed_paths": [
       "src/**",
       "tools/**",
@@ -42,9 +48,18 @@
     ]
   },
   "actions": {
-    "test": ["pytest", "-q"],
-    "lint": ["ruff", "check", "."],
-    "format": ["ruff", "format", "."]
+    "lint": [
+      "ruff",
+      "check",
+      "."
+    ],
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/smoke_xdg_paths.py"
+    ]
   },
   "evidence": {
     "required_files": [
@@ -70,7 +85,7 @@
     "task_md_path": "backlog/tasks/pkt-ops-0022-packet-pipeline-plant - packet-pipeline-plant.md",
     "binding_ref": "docs/xtrl-ops_authoritative_binding.md",
     "gitplant_ref": "docs/git_plant_revised_spec_no_overlays.md",
-    "pipeline_binding_ref": "docs/backlog_tightening_pre_contract_→_promo_gate_→_packet_generator_xtrl_ops_binding.md",
+    "pipeline_binding_ref": "docs/backlog_tightening_pre_contract_\u2192_promo_gate_\u2192_packet_generator_xtrl_ops_binding.md",
     "promotion_trailer_packet": "packet-022"
   }
 }
