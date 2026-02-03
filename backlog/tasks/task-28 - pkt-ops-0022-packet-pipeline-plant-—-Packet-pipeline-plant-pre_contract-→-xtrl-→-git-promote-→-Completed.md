@@ -3,10 +3,10 @@ id: TASK-28
 title: >-
   pkt-ops-0022-packet-pipeline-plant — Packet pipeline plant (pre_contract →
   xtrl → git promote → Completed)
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-02 22:42'
-updated_date: '2026-02-02 22:55'
+updated_date: '2026-02-03 00:02'
 labels:
   - xtrl
   - ops
@@ -53,3 +53,11 @@ Plan:
 - [ ] #5 xtrl git promote produces single promoted commit with required trailers and denies binaries/submodules
 - [ ] #6 Composite Completed predicate is mechanically checkable and true only when all conditions hold
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Promotion PASS: /home/src404/.local/state/codex/xtrl/out/xtrl/pkt-ops-0022-packet-pipeline-plant/git/promotion.json
+
+Evidence: /home/src404/.local/state/codex/xtrl/out/xtrl/pkt-ops-0022-packet-pipeline-plant/
+<!-- SECTION:NOTES:END -->
