@@ -197,10 +197,25 @@ def main() -> int:
         write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": True})
         return 3
 
-    # non-dry-run: create temp branch, apply patch, commit, then reset to original branch
+    # non-dry-run: if already applied on current branch, push directly
     rc, current_branch, _ = run_cmd(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_root)
     current_branch = current_branch.strip() if rc == 0 else ""
     temp_branch = f"promote/{packet_id}"
+
+    if already_applied and current_branch:
+        push_ok = run_ok(["git", "push", "origin", current_branch], cwd=repo_root)
+        if push_ok:
+            promotion = {
+                "timestamp": utc_now(),
+                "packet_id": packet_id,
+                "status": "PASS",
+                "reason_codes": [],
+                "note": f"Patch already applied on {current_branch}; pushed.",
+                "dry_run": False,
+            }
+            write_json(out_dir / "git" / "promotion.json", promotion)
+            write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": False})
+            return 0
 
     if not run_ok(["git", "checkout", "-B", temp_branch, base_ref], cwd=repo_root):
         promotion = {
