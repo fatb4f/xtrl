@@ -1,0 +1,38 @@
+{
+  "packet_id": "pkt-exec-0002-promogate-evaluator",
+  "phase": "P0.4",
+  "title": "Implement PromoGate evaluator (deny-fast) + GateDecision emission",
+  "depends_on": [
+    "pkt-exec-0001-precontract-schema-examples",
+    "pkt-binding-0001-binding-ssot-schemas"
+  ],
+  "mode": "WORK",
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "constraints": {
+    "argv_only": true,
+    "forbid_binary_diffs": true,
+    "forbid_submodules": true
+  },
+  "commands": [
+    [
+      "python",
+      "-m",
+      "xtrl.promogate",
+      "eval",
+      "--pre-contract",
+      "<path>",
+      "--out",
+      "<out_dir>"
+    ]
+  ],
+  "evidence": {
+    "required": [
+      "evidence.json",
+      "decision_trace.md",
+      "signals.json"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "packet_id": "pkt-binding-0002-gen-derived-views-ci-regen-compare",
+  "phase": "P0.4",
+  "title": "Generate derived binding views + CI regen-and-compare",
+  "depends_on": [
+    "pkt-binding-0001-binding-ssot-schemas"
+  ],
+  "mode": "WORK",
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "constraints": {
+    "argv_only": true,
+    "forbid_binary_diffs": true,
+    "forbid_submodules": true
+  },
+  "commands": [
+    [
+      "python",
+      "tools/gen_binding_views.py"
+    ],
+    [
+      "python",
+      "tools/ci_regen_compare.py",
+      "--paths",
+      "control/plant/binding_dag.json",
+      "control/plant/binding_dag.mmd"
+    ]
+  ],
+  "evidence": {
+    "required": [
+      "evidence.json",
+      "decision_trace.md",
+      "signals.json"
+    ]
+  }
+}

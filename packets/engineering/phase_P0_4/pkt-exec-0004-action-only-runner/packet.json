@@ -1,0 +1,35 @@
+{
+  "packet_id": "pkt-exec-0004-action-only-runner",
+  "phase": "P0.4",
+  "title": "ACTION-only runner reading OUT_DIR/contract.json; argv-only execution",
+  "depends_on": [
+    "pkt-exec-0003-packet-generator"
+  ],
+  "mode": "WORK",
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "constraints": {
+    "argv_only": true,
+    "forbid_binary_diffs": true,
+    "forbid_submodules": true
+  },
+  "commands": [
+    [
+      "python",
+      "-m",
+      "xtrl.exec",
+      "run",
+      "--packet-id",
+      "<packet_id>"
+    ]
+  ],
+  "evidence": {
+    "required": [
+      "evidence.json",
+      "decision_trace.md",
+      "signals.json"
+    ]
+  }
+}

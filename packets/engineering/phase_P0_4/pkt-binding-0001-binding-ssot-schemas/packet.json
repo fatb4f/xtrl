@@ -1,0 +1,37 @@
+{
+  "packet_id": "pkt-binding-0001-binding-ssot-schemas",
+  "phase": "P0.4",
+  "title": "Binding SSOT schemas + seed instances",
+  "depends_on": [],
+  "mode": "WORK",
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "constraints": {
+    "argv_only": true,
+    "forbid_binary_diffs": true,
+    "forbid_submodules": true
+  },
+  "commands": [
+    [
+      "python",
+      "-m",
+      "tools.validate_schema",
+      "control/spec/binding/plant_spec.json"
+    ],
+    [
+      "python",
+      "-m",
+      "tools.validate_schema",
+      "control/spec/binding/ruleset.json"
+    ]
+  ],
+  "evidence": {
+    "required": [
+      "evidence.json",
+      "decision_trace.md",
+      "signals.json"
+    ]
+  }
+}

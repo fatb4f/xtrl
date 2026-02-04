@@ -1,0 +1,36 @@
+{
+  "packet_id": "pkt-git-0003-promote-actuator",
+  "phase": "P0.4",
+  "title": "Patch-based promotion actuator (deny binaries/submodules; test+lint; FF-only push)",
+  "depends_on": [
+    "pkt-git-0002-worktree-commands",
+    "pkt-evidence-0001-evidencecapsule-minimum"
+  ],
+  "mode": "WORK",
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "constraints": {
+    "argv_only": true,
+    "forbid_binary_diffs": true,
+    "forbid_submodules": true
+  },
+  "commands": [
+    [
+      "python",
+      "-m",
+      "xtrl.git",
+      "promote",
+      "--packet-id",
+      "<packet_id>"
+    ]
+  ],
+  "evidence": {
+    "required": [
+      "evidence.json",
+      "decision_trace.md",
+      "signals.json"
+    ]
+  }
+}

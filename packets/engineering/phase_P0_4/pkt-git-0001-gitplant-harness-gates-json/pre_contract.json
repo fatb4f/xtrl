@@ -1,0 +1,31 @@
+{
+  "schema": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-git-0001-gitplant-harness-gates-json",
+  "phase": "P0.4",
+  "intent": "GitPlant harness + dry-run gates.json emission",
+  "allowed_paths": [],
+  "forbidden_roots": [
+    ".git",
+    ".codex",
+    ".quint"
+  ],
+  "actions": [
+    [
+      "python",
+      "-m",
+      "xtrl.git",
+      "dry-run",
+      "--out",
+      "<out_dir>"
+    ]
+  ],
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "evidence_required": [
+    "evidence.json",
+    "decision_trace.md",
+    "signals.json"
+  ]
+}

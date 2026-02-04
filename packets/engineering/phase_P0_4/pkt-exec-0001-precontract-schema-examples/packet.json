@@ -1,0 +1,39 @@
+{
+  "packet_id": "pkt-exec-0001-precontract-schema-examples",
+  "phase": "P0.4",
+  "title": "PreContract schema + examples (xtrl.pre_contract/v0.2)",
+  "depends_on": [
+    "pkt-binding-0001-binding-ssot-schemas"
+  ],
+  "mode": "WORK",
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "constraints": {
+    "argv_only": true,
+    "forbid_binary_diffs": true,
+    "forbid_submodules": true
+  },
+  "commands": [
+    [
+      "python",
+      "-m",
+      "tools.validate_schema",
+      "control/spec/pre_contract.schema.json"
+    ],
+    [
+      "python",
+      "-m",
+      "tools.validate_schema",
+      "control/spec/examples/pre_contract.example.json"
+    ]
+  ],
+  "evidence": {
+    "required": [
+      "evidence.json",
+      "decision_trace.md",
+      "signals.json"
+    ]
+  }
+}

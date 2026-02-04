@@ -1,0 +1,34 @@
+{
+  "packet_id": "pkt-release-0001-tag-release-on-main",
+  "phase": "P0.4",
+  "title": "Release: tag-based automation on push to main (optional)",
+  "depends_on": [
+    "pkt-git-0003-promote-actuator"
+  ],
+  "mode": "WORK",
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "constraints": {
+    "argv_only": true,
+    "forbid_binary_diffs": true,
+    "forbid_submodules": true
+  },
+  "commands": [
+    [
+      "python",
+      "-m",
+      "xtrl.release",
+      "tag",
+      "--from-main"
+    ]
+  ],
+  "evidence": {
+    "required": [
+      "evidence.json",
+      "decision_trace.md",
+      "signals.json"
+    ]
+  }
+}

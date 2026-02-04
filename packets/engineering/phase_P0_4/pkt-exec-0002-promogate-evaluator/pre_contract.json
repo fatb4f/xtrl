@@ -1,0 +1,33 @@
+{
+  "schema": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-exec-0002-promogate-evaluator",
+  "phase": "P0.4",
+  "intent": "Implement PromoGate evaluator (deny-fast) + GateDecision emission",
+  "allowed_paths": [],
+  "forbidden_roots": [
+    ".git",
+    ".codex",
+    ".quint"
+  ],
+  "actions": [
+    [
+      "python",
+      "-m",
+      "xtrl.promogate",
+      "eval",
+      "--pre-contract",
+      "<path>",
+      "--out",
+      "<out_dir>"
+    ]
+  ],
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "evidence_required": [
+    "evidence.json",
+    "decision_trace.md",
+    "signals.json"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "allowed_paths": [
+    "/home/src404/src"
+  ],
+  "area": "ops",
+  "base_ref": "main",
+  "branch": "packet/pkt-evidence-0001-evidencecapsule-minimum",
+  "budgets": {},
+  "evidence": {
+    "include_git_diff_patch": true,
+    "out_dir": "out"
+  },
+  "forbidden_outputs": [
+    ".git",
+    ".codex",
+    ".quint"
+  ],
+  "github_ops_required": false,
+  "net_ops_required": false,
+  "network_policy": {
+    "additional_domains": [],
+    "allowed_http_methods": [],
+    "domain_allowlist_preset": "none",
+    "internet_access": "off"
+  },
+  "packet_id": "pkt-evidence-0001-evidencecapsule-minimum",
+  "repo": "fatb4f/xtrl",
+  "run": {
+    "commands": [
+      "python -m xtrl.evidence emit --packet-id '<packet_id>'",
+      "python -m xtrl.evidence check --packet-id '<packet_id>'"
+    ],
+    "regen_cmd": "",
+    "test_cmd": ""
+  },
+  "worktree_policy": {
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": [],
+    "deny_if_worktree_exists": true,
+    "mode": "strict",
+    "worktree_root": "$CODEX_STATE/xtrl/worktrees"
+  }
+}

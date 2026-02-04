@@ -1,0 +1,51 @@
+{
+  "packet_id": "pkt-git-0002-worktree-commands",
+  "phase": "P0.4",
+  "title": "Git worktree commands: doctor|wt create|wt status",
+  "depends_on": [
+    "pkt-git-0001-gitplant-harness-gates-json"
+  ],
+  "mode": "WORK",
+  "budgets": {
+    "diff_lines_max": 800,
+    "commands_max": 20
+  },
+  "constraints": {
+    "argv_only": true,
+    "forbid_binary_diffs": true,
+    "forbid_submodules": true
+  },
+  "commands": [
+    [
+      "python",
+      "-m",
+      "xtrl.git",
+      "doctor"
+    ],
+    [
+      "python",
+      "-m",
+      "xtrl.git",
+      "wt",
+      "create",
+      "--packet-id",
+      "<packet_id>"
+    ],
+    [
+      "python",
+      "-m",
+      "xtrl.git",
+      "wt",
+      "status",
+      "--packet-id",
+      "<packet_id>"
+    ]
+  ],
+  "evidence": {
+    "required": [
+      "evidence.json",
+      "decision_trace.md",
+      "signals.json"
+    ]
+  }
+}
