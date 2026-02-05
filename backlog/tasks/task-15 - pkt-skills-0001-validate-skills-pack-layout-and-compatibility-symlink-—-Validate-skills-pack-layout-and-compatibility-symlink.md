@@ -6,7 +6,7 @@ title: >-
 status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:19'
+updated_date: '2026-02-05 18:28'
 labels:
   - packet
   - skills
@@ -22,9 +22,9 @@ Verify skills-pack canonical paths and allow skills/ as a compatibility layer.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Skills-pack canonical paths validated at runtime.
-- [ ] #2 Compatibility symlink layer supported (skills/ -> skills-pack) without breaking canonical path usage.
-- [ ] #3 Failure modes emit actionable error messages.
+- [x] #1 Skills-pack canonical paths validated at runtime.
+- [x] #2 Compatibility symlink layer supported (skills/ -> skills-pack) without breaking canonical path usage.
+- [x] #3 Failure modes emit actionable error messages.
 <!-- AC:END -->
 
 ## Definition of Done

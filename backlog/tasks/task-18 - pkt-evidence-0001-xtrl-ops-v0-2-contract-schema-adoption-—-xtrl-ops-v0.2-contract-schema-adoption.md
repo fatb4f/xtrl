@@ -6,7 +6,7 @@ title: >-
 status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:23'
+updated_date: '2026-02-05 18:28'
 labels:
   - packet
   - evidence
@@ -22,9 +22,9 @@ Add constraints/actions/evidence.required_files to contract schema and update va
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Contract schema includes constraints/actions/evidence.required_files.
-- [ ] #2 Validators updated to enforce new fields.
-- [ ] #3 Backward-compat path exists for older contracts (migration or defaulting).
+- [x] #1 Contract schema includes constraints/actions/evidence.required_files.
+- [x] #2 Validators updated to enforce new fields.
+- [x] #3 Backward-compat path exists for older contracts (migration or defaulting).
 <!-- AC:END -->
 
 ## Definition of Done

@@ -6,7 +6,7 @@ title: >-
 status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:26'
+updated_date: '2026-02-05 18:28'
 labels:
   - packet
   - paths
@@ -22,9 +22,9 @@ Default OUT_DIR to $CODEX_STATE/xtrl/out/<repo>/<packet_id> with backward-compat
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Default OUT_DIR uses $CODEX_STATE/xtrl/out/<repo>/<packet_id>.
-- [ ] #2 Backward-compatible handling for legacy OUT_DIR paths exists.
-- [ ] #3 Repo namespace correctly derived for local and remote URLs.
+- [x] #1 Default OUT_DIR uses $CODEX_STATE/xtrl/out/<repo>/<packet_id>.
+- [x] #2 Backward-compatible handling for legacy OUT_DIR paths exists.
+- [x] #3 Repo namespace correctly derived for local and remote URLs.
 <!-- AC:END -->
 
 ## Definition of Done

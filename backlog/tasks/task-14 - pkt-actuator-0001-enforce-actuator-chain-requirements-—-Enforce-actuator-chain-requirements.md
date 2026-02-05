@@ -6,7 +6,7 @@ title: >-
 status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:18'
+updated_date: '2026-02-05 18:28'
 labels:
   - packet
   - actuator
@@ -22,9 +22,9 @@ Ensure invocation paths are via just → xtrl with explicit repo/root/state args
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Invocation path enforced (just -> xtrl) with explicit repo/root/state args.
-- [ ] #2 Non-compliant invocation is rejected with clear reason code.
-- [ ] #3 Coverage includes at least one positive and one negative path test.
+- [x] #1 Invocation path enforced (just -> xtrl) with explicit repo/root/state args.
+- [x] #2 Non-compliant invocation is rejected with clear reason code.
+- [x] #3 Coverage includes at least one positive and one negative path test.
 <!-- AC:END -->
 
 ## Definition of Done

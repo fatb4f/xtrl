@@ -6,7 +6,7 @@ title: >-
 status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:25'
+updated_date: '2026-02-05 18:28'
 labels:
   - packet
   - evidence
@@ -22,9 +22,9 @@ Emit required EvidenceCapsule directory layout and minimum signals under OUT_DIR
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 EvidenceCapsule v0.2 directory layout emitted under OUT_DIR.
-- [ ] #2 Minimum required signals are always emitted for PASS and FAIL.
-- [ ] #3 Layout matches schema expectations for v0.2.
+- [x] #1 EvidenceCapsule v0.2 directory layout emitted under OUT_DIR.
+- [x] #2 Minimum required signals are always emitted for PASS and FAIL.
+- [x] #3 Layout matches schema expectations for v0.2.
 <!-- AC:END -->
 
 ## Definition of Done

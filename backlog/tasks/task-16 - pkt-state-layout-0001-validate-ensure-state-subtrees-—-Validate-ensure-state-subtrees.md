@@ -6,7 +6,7 @@ title: >-
 status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:21'
+updated_date: '2026-02-05 18:28'
 labels:
   - packet
   - state-layout
@@ -22,9 +22,9 @@ Create/validate sessions/history/tmp state subtrees when used.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 State subtrees (sessions/history/tmp) are created when first used.
-- [ ] #2 Validation detects missing or invalid subtrees and repairs or errors deterministically.
-- [ ] #3 Behavior is consistent across platforms/OS paths.
+- [x] #1 State subtrees (sessions/history/tmp) are created when first used.
+- [x] #2 Validation detects missing or invalid subtrees and repairs or errors deterministically.
+- [x] #3 Behavior is consistent across platforms/OS paths.
 <!-- AC:END -->
 
 ## Definition of Done
