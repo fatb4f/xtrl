@@ -23,11 +23,8 @@
   "component": "xtrl-ops",
   "constraints": {
     "allowed_paths": [
-      "tools/**",
-      "schemas/**",
-      "control/**",
-      "docs/**",
-      "packets/**"
+      "/home/src404/src/**",
+      "/tmp/**"
     ],
     "clean_repo_required": true,
     "deny_repo_local_roots": [
@@ -36,6 +33,12 @@
     ],
     "forbidden_paths": [
       ".git/**"
+    ],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
     ]
   },
   "evidence": {
@@ -59,7 +62,13 @@
       "Keep changes additive; prefer small deterministic helpers under tools/."
     ]
   },
-  "mode": "WORK",
+  "mode": "NORMAL",
+  "network_policy": {
+    "additional_domains": [],
+    "allowed_http_methods": [],
+    "domain_allowlist_preset": "none",
+    "internet_access": "on"
+  },
   "packet_id": "pkt-compat-0002-contract-v0-2-materializer-compat",
   "plan_card": {
     "how": "additive shim/adapters + verifier; no backlog refactor",
@@ -70,5 +79,5 @@
     "why": "Ensure downstream runner/gate always sees a v0.2 contract shape regardless of legacy inputs"
   },
   "repo": "fatb4f/xtrl",
-  "schema_version": "pre_contract/v0.2"
+  "schema_version": "xtrl.pre_contract/v0.2"
 }
