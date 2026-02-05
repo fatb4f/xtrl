@@ -15,6 +15,8 @@ import sys
 from pathlib import Path
 from typing import Iterable, List, Tuple
 
+import fnmatch
+
 from path_utils import resolve_repo_root
 
 
@@ -33,13 +35,38 @@ def is_under(path: Path, root: Path) -> bool:
         return False
 
 
+DIR_NAMES = {
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".mypy_cache",
+    ".hypothesis",
+    "htmlcov",
+}
+
+FILE_NAMES = {
+    ".coverage",
+    ".coverage.xml",
+    "pytestdebug.log",
+}
+
+FILE_PATTERNS = {
+    ".coverage.*",
+    "*.pyc",
+}
+
+
+def matches_file_patterns(name: str) -> bool:
+    return any(fnmatch.fnmatch(name, pat) for pat in FILE_PATTERNS)
+
+
 def collect_cleanup_targets(root: Path) -> List[Path]:
     targets: List[Path] = []
     for p in iter_paths(root):
         name = p.name
-        if p.is_dir() and name == "__pycache__":
+        if p.is_dir() and name in DIR_NAMES:
             targets.append(p)
-        elif p.is_file() and name.endswith(".pyc"):
+        elif p.is_file() and (name in FILE_NAMES or matches_file_patterns(name)):
             targets.append(p)
     return targets
 
