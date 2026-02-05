@@ -3,10 +3,10 @@ id: TASK-20
 title: >-
   pkt-paths-0001-update-out-dir-to-include-repo-namespace — Update OUT_DIR to
   include repo namespace
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 17:25'
+updated_date: '2026-02-05 18:25'
 labels:
   - packet
   - paths
