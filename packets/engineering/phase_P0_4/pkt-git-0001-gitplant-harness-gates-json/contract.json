@@ -27,7 +27,7 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.git dry-run --out '<out_dir>'"
+      "PYTHONDONTWRITEBYTECODE=1 python tools/git_cli.py dry-run --out '/tmp/gitplant'"
     ],
     "regen_cmd": "",
     "test_cmd": ""
