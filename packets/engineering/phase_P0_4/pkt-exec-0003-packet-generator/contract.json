@@ -27,7 +27,7 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "python -m xtrl.packet generate --pre-contract '<path>' --out '<out_dir>'"
+      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.packet generate --pre-contract '<path>' --out '<out_dir>'"
     ],
     "regen_cmd": "",
     "test_cmd": ""

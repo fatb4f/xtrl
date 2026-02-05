@@ -27,8 +27,8 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "python -m xtrl.evidence emit --packet-id '<packet_id>'",
-      "python -m xtrl.evidence check --packet-id '<packet_id>'"
+      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.evidence emit --packet-id '<packet_id>'",
+      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.evidence check --packet-id '<packet_id>'"
     ],
     "regen_cmd": "",
     "test_cmd": ""

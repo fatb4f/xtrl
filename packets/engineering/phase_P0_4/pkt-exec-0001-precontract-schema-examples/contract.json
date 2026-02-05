@@ -27,8 +27,8 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "python -m tools.validate_schema control/spec/pre_contract.schema.json",
-      "python -m tools.validate_schema control/spec/examples/pre_contract.example.json"
+      "PYTHONDONTWRITEBYTECODE=1 python -m tools.validate_schema control/spec/pre_contract.schema.json",
+      "PYTHONDONTWRITEBYTECODE=1 python -m tools.validate_schema control/spec/examples/pre_contract.example.json"
     ],
     "regen_cmd": "",
     "test_cmd": ""

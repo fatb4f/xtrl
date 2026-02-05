@@ -27,7 +27,7 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "python -m xtrl.git promote --packet-id '<packet_id>'"
+      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.git promote --packet-id '<packet_id>'"
     ],
     "regen_cmd": "",
     "test_cmd": ""

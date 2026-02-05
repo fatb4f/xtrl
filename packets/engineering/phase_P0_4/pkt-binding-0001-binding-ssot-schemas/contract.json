@@ -27,8 +27,8 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "python -m tools.validate_schema control/spec/binding/plant_spec.json",
-      "python -m tools.validate_schema control/spec/binding/ruleset.json"
+      "PYTHONDONTWRITEBYTECODE=1 python -m tools.validate_schema control/spec/binding/plant_spec.json",
+      "PYTHONDONTWRITEBYTECODE=1 python -m tools.validate_schema control/spec/binding/ruleset.json"
     ],
     "regen_cmd": "",
     "test_cmd": ""

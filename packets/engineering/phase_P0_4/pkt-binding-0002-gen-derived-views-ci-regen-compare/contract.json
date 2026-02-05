@@ -27,8 +27,8 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "python tools/gen_binding_views.py",
-      "python tools/ci_regen_compare.py --paths control/plant/binding_dag.json control/plant/binding_dag.mmd"
+      "PYTHONDONTWRITEBYTECODE=1 python tools/gen_binding_views.py",
+      "PYTHONDONTWRITEBYTECODE=1 python tools/ci_regen_compare.py --paths control/plant/binding_dag.json control/plant/binding_dag.mmd"
     ],
     "regen_cmd": "",
     "test_cmd": ""
