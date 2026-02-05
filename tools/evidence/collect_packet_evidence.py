@@ -206,6 +206,13 @@ def main() -> int:
             normalized_allowed.append(str(raw))
             continue
         if p.is_absolute():
+            # If allowed path is a parent of repo_root, allow all repo paths.
+            try:
+                repo_root.relative_to(p)
+                normalized_allowed.append("**")
+                continue
+            except Exception:
+                pass
             try:
                 rel = p.relative_to(repo_root)
                 normalized_allowed.append(str(rel))
