@@ -1,0 +1,74 @@
+{
+  "actions": {
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ],
+    "verify": [
+      "python",
+      "tools/verify_skills_layout.py"
+    ]
+  },
+  "base_ref": "origin/main",
+  "budgets": {
+    "diff_budget": {
+      "max_files_changed": 30,
+      "max_lines_changed": 800
+    },
+    "iteration_budget": 2,
+    "time_minutes": 45
+  },
+  "component": "xtrl-ops",
+  "constraints": {
+    "allowed_paths": [
+      "skills-pack/**",
+      "skills/**",
+      "tools/**",
+      "docs/**",
+      "README.md"
+    ],
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "forbidden_paths": [
+      ".git/**"
+    ]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "notes": [
+      "This pre_contract defines a compat/reuse-port shim packet.",
+      "Keep changes additive; prefer small deterministic helpers under tools/."
+    ]
+  },
+  "mode": "WORK",
+  "packet_id": "pkt-compat-0004-skills-symlink-compat",
+  "plan_card": {
+    "how": "additive shim/adapters + verifier; no backlog refactor",
+    "what": "Convert skills/ into a compatibility symlink layer to skills-pack/; add validation for resolution",
+    "when": "compat/reuse-port stabilization pass (post xtrl-ops v0.2)",
+    "where": "skills-pack/** + skills/** + tool resolver",
+    "who": "xtrl controller",
+    "why": "Conform to binding layout while preserving existing references"
+  },
+  "repo": "fatb4f/xtrl",
+  "schema_version": "pre_contract/v0.2"
+}

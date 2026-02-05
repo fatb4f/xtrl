@@ -1,0 +1,78 @@
+{
+  "actions": {
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ],
+    "verify": [
+      "python",
+      "tools/verify_out_dir.py",
+      "--mode",
+      "namespaced"
+    ]
+  },
+  "base_ref": "origin/main",
+  "budgets": {
+    "diff_budget": {
+      "max_files_changed": 30,
+      "max_lines_changed": 800
+    },
+    "iteration_budget": 2,
+    "time_minutes": 45
+  },
+  "component": "xtrl-ops",
+  "constraints": {
+    "allowed_paths": [
+      "tools/**",
+      "docs/**",
+      "schemas/**",
+      "control/**",
+      "packets/**",
+      "README.md",
+      "CHANGELOG.md"
+    ],
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "forbidden_paths": [
+      ".git/**"
+    ]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "notes": [
+      "This pre_contract defines a compat/reuse-port shim packet.",
+      "Keep changes additive; prefer small deterministic helpers under tools/."
+    ]
+  },
+  "mode": "WORK",
+  "packet_id": "pkt-compat-0001-outdir-compat-migrate",
+  "plan_card": {
+    "how": "additive shim/adapters + verifier; no backlog refactor",
+    "what": "Implement OUT_DIR legacy detection + optional migrate-to-namespaced shim; ensure all writers target out/<repo>/<packet_id>/",
+    "when": "compat/reuse-port stabilization pass (post xtrl-ops v0.2)",
+    "where": "tools/path resolution + evidence harness",
+    "who": "xtrl controller",
+    "why": "Eliminate split-brain evidence locations; guarantee namespaced outputs while preserving legacy reads for resumes"
+  },
+  "repo": "fatb4f/xtrl",
+  "schema_version": "pre_contract/v0.2"
+}
