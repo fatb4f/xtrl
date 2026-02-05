@@ -3,10 +3,10 @@ id: TASK-14
 title: >-
   pkt-actuator-0001-enforce-actuator-chain-requirements — Enforce actuator chain
   requirements
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 17:25'
+updated_date: '2026-02-05 18:18'
 labels:
   - packet
   - actuator

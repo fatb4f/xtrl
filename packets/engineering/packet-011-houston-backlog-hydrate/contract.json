@@ -1,11 +1,4 @@
 {
-  "packet_id": "packet-011-houston-backlog-hydrate",
-  "area": "engineering",
-  "repo": "local:xtrl",
-  "base_ref": "main",
-  "branch": "packet/packet-011-houston-backlog-hydrate",
-  "github_ops_required": false,
-  "net_ops_required": true,
   "allowed_paths": [
     "backlog.md",
     "data/**",
@@ -17,53 +10,60 @@
     "README.md",
     "CHANGELOG.md"
   ],
+  "area": "engineering",
+  "base_ref": "main",
+  "branch": "packet/packet-011-houston-backlog-hydrate",
+  "budgets": {
+    "max_changed_files": 60,
+    "max_changed_lines": 4000
+  },
+  "evidence": {
+    "include_git_diff_patch": false,
+    "out_dir": "out"
+  },
   "forbidden_outputs": [
     ".codex/**",
     ".quint/**"
   ],
-  "worktree_policy": {
-    "mode": "strict",
-    "worktree_root": "$CODEX_STATE/xtrl/worktrees",
-    "deny_if_worktree_exists": true,
-    "allow_dirty_globs": [],
-    "allow_untracked_globs": []
-  },
+  "github_ops_required": false,
+  "net_ops_required": true,
   "network_policy": {
-    "internet_access": "on",
-    "domain_allowlist_preset": "custom",
     "additional_domains": [
       "api.github.com",
       "github.com"
     ],
     "allowed_http_methods": [
       "GET"
-    ]
-  },
-  "run": {
-    "regen_cmd": "",
-    "test_cmd": "python -m pytest -q && python -m compileall tools",
-    "commands": [
-      "python tools/houston/hydrate.py --help",
-      "python tools/houston/render.py --help"
-    ]
-  },
-  "budgets": {
-    "max_changed_files": 60,
-    "max_changed_lines": 4000
-  },
-  "evidence": {
-    "out_dir": "$CODEX_STATE/xtrl/out",
-    "include_git_diff_patch": false
+    ],
+    "domain_allowlist_preset": "custom",
+    "internet_access": "on"
   },
   "notes": {
-    "cache_root_expected": "$CODEX_STATE/xtrl/cache/houston",
     "auth_expectations": [
       "Prefer GH_TOKEN or GITHUB_TOKEN for auth if used by gh/api calls",
       "Hydrator must support --offline (cache-only) and --dry-run modes"
     ],
+    "cache_root_expected": "$CODEX_STATE/xtrl/cache/houston",
     "hard_invariants": [
       "No writes outside $CODEX_STATE/xtrl/cache/houston for hydration artifacts",
       "Renderer output must remain deterministic (same packet + same cache => same markdown)"
     ]
+  },
+  "packet_id": "packet-011-houston-backlog-hydrate",
+  "repo": "local:xtrl",
+  "run": {
+    "commands": [
+      "python tools/houston/hydrate.py --help",
+      "python tools/houston/render.py --help"
+    ],
+    "regen_cmd": "",
+    "test_cmd": "python -m pytest -q && python -m compileall tools"
+  },
+  "worktree_policy": {
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": [],
+    "deny_if_worktree_exists": true,
+    "mode": "strict",
+    "worktree_root": "$CODEX_STATE/xtrl/worktrees"
   }
 }

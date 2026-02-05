@@ -1,13 +1,4 @@
 {
-  "packet_id": "packet-012-github-module",
-  "area": "engineering",
-  "repo": "fatb4f/xtrl",
-
-  "base_ref": "main",
-  "branch": "packet/packet-012-github-module",
-  "github_ops_required": true,
-  "net_ops_required": false,
-
   "allowed_paths": [
     "tools/github/**",
     "schemas/contract.schema.json",
@@ -17,41 +8,44 @@
     "README.md",
     "backlog.md"
   ],
-  "forbidden_outputs": [],
-
-  "worktree_policy": {
-    "mode": "strict",
-    "worktree_root": "$CODEX_STATE/xtrl/worktrees",
-    "deny_if_worktree_exists": true,
-    "allow_dirty_globs": [],
-    "allow_untracked_globs": []
-  },
-
-  "network_policy": {
-    "internet_access": "on",
-    "domain_allowlist_preset": "public",
-    "additional_domains": [],
-    "allowed_http_methods": ["GET"]
-  },
-
-  "run": {
-    "regen_cmd": "",
-    "test_cmd": "",
-    "commands": [
-      "python tests/smoke_xdg_paths.py",
-      "python tests/smoke_github_module.py",
-      "python -m compileall xtrl tools"
-    ]
-  },
-
+  "area": "engineering",
+  "base_ref": "main",
+  "branch": "packet/packet-012-github-module",
   "budgets": {
     "max_changed_files": 120,
     "max_changed_lines": 12000
   },
-
   "evidence": {
-    "out_dir": "$CODEX_STATE/xtrl/out",
-    "include_git_diff_patch": true
+    "include_git_diff_patch": true,
+    "out_dir": "out"
+  },
+  "forbidden_outputs": [],
+  "github_ops_required": true,
+  "net_ops_required": false,
+  "network_policy": {
+    "additional_domains": [],
+    "allowed_http_methods": [
+      "GET"
+    ],
+    "domain_allowlist_preset": "public",
+    "internet_access": "on"
+  },
+  "packet_id": "packet-012-github-module",
+  "repo": "fatb4f/xtrl",
+  "run": {
+    "commands": [
+      "python tests/smoke_xdg_paths.py",
+      "python tests/smoke_github_module.py",
+      "python -m compileall xtrl tools"
+    ],
+    "regen_cmd": "",
+    "test_cmd": ""
+  },
+  "worktree_policy": {
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": [],
+    "deny_if_worktree_exists": true,
+    "mode": "strict",
+    "worktree_root": "$CODEX_STATE/xtrl/worktrees"
   }
 }
-

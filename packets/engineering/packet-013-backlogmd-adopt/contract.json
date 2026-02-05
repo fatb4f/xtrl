@@ -1,11 +1,4 @@
 {
-  "packet_id": "packet-013-backlogmd-adopt",
-  "area": "engineering",
-  "repo": "fatb4f/xtrl",
-  "base_ref": "main",
-  "branch": "packet/packet-013-backlogmd-adopt",
-  "github_ops_required": false,
-  "net_ops_required": false,
   "allowed_paths": [
     "backlog/**",
     "backlog.md",
@@ -15,50 +8,57 @@
     "GEMINI.md",
     ".github/copilot-instructions.md"
   ],
-  "forbidden_outputs": [
-    ".codex/**",
-    ".quint/**"
-  ],
+  "area": "engineering",
+  "base_ref": "main",
+  "branch": "packet/packet-013-backlogmd-adopt",
   "budgets": {
     "max_changed_files": 120,
     "max_changed_lines": 12000
   },
-  "network_policy": {
-    "internet_access": "off",
-    "domain_allowlist_preset": "none",
-    "additional_domains": [],
-    "allowed_http_methods": []
-  },
-  "worktree_policy": {
-    "mode": "strict",
-    "worktree_root": "$CODEX_STATE/xtrl/worktrees",
-    "deny_if_worktree_exists": true,
-    "allow_dirty_globs": [],
-    "allow_untracked_globs": []
-  },
-  "run": {
-    "commands": [],
-    "regen_cmd": "",
-    "test_cmd": ""
-  },
   "evidence": {
-    "out_dir": "$CODEX_STATE/xtrl/out",
-    "include_git_diff_patch": true
+    "include_git_diff_patch": true,
+    "out_dir": "out"
   },
+  "forbidden_outputs": [
+    ".codex/**",
+    ".quint/**"
+  ],
   "github": {
-    "repo": "fatb4f/xtrl",
     "issue": {
-      "title": "packet-013-backlogmd-adopt",
       "body": "",
-      "template": "packet-default.yml",
+      "close_on_success": false,
+      "comment_on_run": false,
+      "ensure": false,
       "labels": [
         "engineering",
         "backlog"
       ],
       "milestone": "",
-      "ensure": false,
-      "comment_on_run": false,
-      "close_on_success": false
-    }
+      "template": "packet-default.yml",
+      "title": "packet-013-backlogmd-adopt"
+    },
+    "repo": "fatb4f/xtrl"
+  },
+  "github_ops_required": false,
+  "net_ops_required": false,
+  "network_policy": {
+    "additional_domains": [],
+    "allowed_http_methods": [],
+    "domain_allowlist_preset": "none",
+    "internet_access": "off"
+  },
+  "packet_id": "packet-013-backlogmd-adopt",
+  "repo": "fatb4f/xtrl",
+  "run": {
+    "commands": [],
+    "regen_cmd": "",
+    "test_cmd": ""
+  },
+  "worktree_policy": {
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": [],
+    "deny_if_worktree_exists": true,
+    "mode": "strict",
+    "worktree_root": "$CODEX_STATE/xtrl/worktrees"
   }
 }

@@ -15,7 +15,7 @@
   },
   "evidence": {
     "include_git_diff_patch": false,
-    "out_dir": "$CODEX_STATE/xtrl/out"
+    "out_dir": "out"
   },
   "forbidden_outputs": [
     ".codex/**",
