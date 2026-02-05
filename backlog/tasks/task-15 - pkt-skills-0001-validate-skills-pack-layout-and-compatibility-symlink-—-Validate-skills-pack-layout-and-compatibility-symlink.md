@@ -6,6 +6,7 @@ title: >-
 status: To Do
 assignee: []
 created_date: '2026-02-02 21:59'
+updated_date: '2026-02-05 17:25'
 labels:
   - packet
   - skills
@@ -18,3 +19,16 @@ dependencies: []
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Verify skills-pack canonical paths and allow skills/ as a compatibility layer.
 <!-- SECTION:DESCRIPTION:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Skills-pack canonical paths validated at runtime.
+- [ ] #2 Compatibility symlink layer supported (skills/ -> skills-pack) without breaking canonical path usage.
+- [ ] #3 Failure modes emit actionable error messages.
+<!-- AC:END -->
+
+## Definition of Done
+<!-- DOD:BEGIN -->
+- [ ] #1 Validation checks implemented with tests or fixtures.
+- [ ] #2 Docs or help text updated to describe layout expectations.
+<!-- DOD:END -->

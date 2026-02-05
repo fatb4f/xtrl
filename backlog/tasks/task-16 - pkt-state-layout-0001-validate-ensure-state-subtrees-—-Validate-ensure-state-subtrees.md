@@ -6,6 +6,7 @@ title: >-
 status: To Do
 assignee: []
 created_date: '2026-02-02 21:59'
+updated_date: '2026-02-05 17:25'
 labels:
   - packet
   - state-layout
@@ -18,3 +19,16 @@ dependencies: []
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Create/validate sessions/history/tmp state subtrees when used.
 <!-- SECTION:DESCRIPTION:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 State subtrees (sessions/history/tmp) are created when first used.
+- [ ] #2 Validation detects missing or invalid subtrees and repairs or errors deterministically.
+- [ ] #3 Behavior is consistent across platforms/OS paths.
+<!-- AC:END -->
+
+## Definition of Done
+<!-- DOD:BEGIN -->
+- [ ] #1 State subtree logic covered by tests or scripted checks.
+- [ ] #2 No regressions in existing state usage paths.
+<!-- DOD:END -->

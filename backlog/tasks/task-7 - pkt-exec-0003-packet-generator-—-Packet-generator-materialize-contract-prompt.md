@@ -3,10 +3,10 @@ id: TASK-7
 title: >-
   pkt-exec-0003-packet-generator — Packet generator (materialize contract +
   prompt)
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-02-02 21:55'
-updated_date: '2026-02-02 22:06'
+updated_date: '2026-02-05 17:19'
 labels:
   - packet
   - exec
@@ -23,8 +23,8 @@ DoD: generator is the only path to a run-ready contract; outputs always written 
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 packet generate writes contract.json
-- [ ] #2 packet generate writes exec-prompt.md
-- [ ] #3 packet generate writes packet.json
-- [ ] #4 Outputs always in OUT_DIR
+- [x] #1 packet generate writes contract.json
+- [x] #2 packet generate writes exec-prompt.md
+- [x] #3 packet generate writes packet.json
+- [x] #4 Outputs always in OUT_DIR
 <!-- AC:END -->

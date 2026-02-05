@@ -3,10 +3,10 @@ id: TASK-4
 title: >-
   pkt-binding-0002-gen-derived-views-ci-regen-compare — Generate derived views +
   CI regen-compare gate
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-02-02 21:55'
-updated_date: '2026-02-02 22:06'
+updated_date: '2026-02-05 17:19'
 labels:
   - packet
   - binding
@@ -23,7 +23,7 @@ DoD: CI fails on drift; generated views match SSOT.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 gen_binding_views.py produces DAG + PlanCards
-- [ ] #2 CI fails on drift
-- [ ] #3 Generated views match SSOT
+- [x] #1 gen_binding_views.py produces DAG + PlanCards
+- [x] #2 CI fails on drift
+- [x] #3 Generated views match SSOT
 <!-- AC:END -->

@@ -1,0 +1,31 @@
+{
+  "actions": {},
+  "base_ref": "origin/main",
+  "budgets": {},
+  "component": "evidence",
+  "constraints": {},
+  "evidence": {
+    "required_files": [
+      "summary.md",
+      "commands.log",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "task_md_path": "backlog/tasks/task-18 - pkt-evidence-0001-xtrl-ops-v0-2-contract-schema-adoption-\u2014-xtrl-ops-v0.2-contract-schema-adoption.md"
+  },
+  "mode": "NORMAL",
+  "packet_id": "pkt-evidence-0001-xtrl-ops-v0-2-contract-schema-adoption",
+  "plan_card": {
+    "how": "implement and validate required behaviors",
+    "what": "Adopt xtrl-ops v0.2 contract schema fields and validation.",
+    "when": "during packet execution",
+    "where": "xtrl repo",
+    "who": "xtrl controller",
+    "why": "Align xtrl behavior with required operational contract."
+  },
+  "repo": "fatb4f/xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
+}

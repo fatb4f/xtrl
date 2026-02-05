@@ -1,10 +1,10 @@
 ---
 id: TASK-5
 title: pkt-exec-0001-precontract-schema-examples — PreContract schema + examples
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-02-02 21:55'
-updated_date: '2026-02-02 22:06'
+updated_date: '2026-02-05 17:19'
 labels:
   - packet
   - exec
@@ -21,7 +21,7 @@ DoD: example validates; required fields enforced.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Schema defined
-- [ ] #2 Example validates
-- [ ] #3 Required fields enforced
+- [x] #1 Schema defined
+- [x] #2 Example validates
+- [x] #3 Required fields enforced
 <!-- AC:END -->

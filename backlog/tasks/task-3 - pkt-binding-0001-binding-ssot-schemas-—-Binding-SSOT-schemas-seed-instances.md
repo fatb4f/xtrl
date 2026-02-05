@@ -1,10 +1,10 @@
 ---
 id: TASK-3
 title: pkt-binding-0001-binding-ssot-schemas — Binding SSOT schemas + seed instances
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-02-02 21:55'
-updated_date: '2026-02-02 22:06'
+updated_date: '2026-02-05 17:19'
 labels:
   - packet
   - binding
@@ -21,7 +21,7 @@ DoD: schemas validate; SSOT files exist; reason codes enumerated.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Schemas validate
-- [ ] #2 PlantSpec + Ruleset instances exist
-- [ ] #3 Reason codes enumerated
+- [x] #1 Schemas validate
+- [x] #2 PlantSpec + Ruleset instances exist
+- [x] #3 Reason codes enumerated
 <!-- AC:END -->

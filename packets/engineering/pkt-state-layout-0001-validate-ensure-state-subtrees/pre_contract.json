@@ -1,0 +1,31 @@
+{
+  "actions": {},
+  "base_ref": "origin/main",
+  "budgets": {},
+  "component": "state-layout",
+  "constraints": {},
+  "evidence": {
+    "required_files": [
+      "summary.md",
+      "commands.log",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "task_md_path": "backlog/tasks/task-16 - pkt-state-layout-0001-validate-ensure-state-subtrees-\u2014-Validate-ensure-state-subtrees.md"
+  },
+  "mode": "NORMAL",
+  "packet_id": "pkt-state-layout-0001-validate-ensure-state-subtrees",
+  "plan_card": {
+    "how": "implement and validate required behaviors",
+    "what": "Validate and ensure sessions/history/tmp state subtrees.",
+    "when": "during packet execution",
+    "where": "xtrl repo",
+    "who": "xtrl controller",
+    "why": "Align xtrl behavior with required operational contract."
+  },
+  "repo": "fatb4f/xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
+}

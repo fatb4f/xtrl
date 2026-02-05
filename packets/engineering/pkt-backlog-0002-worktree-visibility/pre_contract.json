@@ -1,0 +1,31 @@
+{
+  "actions": {},
+  "base_ref": "origin/main",
+  "budgets": {},
+  "component": "backlog",
+  "constraints": {},
+  "evidence": {
+    "required_files": [
+      "summary.md",
+      "commands.log",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "task_md_path": "backlog/tasks/task-17 - pkt-backlog-0002-worktree-visibility-\u2014-Worktree-visibility.md"
+  },
+  "mode": "NORMAL",
+  "packet_id": "pkt-backlog-0002-worktree-visibility",
+  "plan_card": {
+    "how": "implement and validate required behaviors",
+    "what": "Map worktrees to backlog tasks with deterministic visibility.",
+    "when": "during packet execution",
+    "where": "xtrl repo",
+    "who": "xtrl controller",
+    "why": "Align xtrl behavior with required operational contract."
+  },
+  "repo": "fatb4f/xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
+}

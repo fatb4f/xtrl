@@ -1,0 +1,34 @@
+{
+  "area": "engineering",
+  "base_ref": "main",
+  "branch": "packet/pkt-paths-0001-update-out-dir-to-include-repo-namespace",
+  "budgets": {
+    "max_changed_files": 200,
+    "max_changed_lines": 20000
+  },
+  "evidence": {
+    "include_git_diff_patch": false,
+    "out_dir": "$CODEX_STATE/xtrl/out"
+  },
+  "github": {
+    "issue": {
+      "body": "",
+      "close_on_success": false,
+      "comment_on_run": false,
+      "ensure": false,
+      "labels": [],
+      "milestone": "",
+      "template": "packet-default.yml",
+      "title": "pkt-paths-0001-update-out-dir-to-include-repo-namespace"
+    },
+    "repo": "<org>/<repo>"
+  },
+  "github_ops_required": false,
+  "packet_id": "pkt-paths-0001-update-out-dir-to-include-repo-namespace",
+  "repo": "fatb4f/xtrl",
+  "run": {
+    "commands": [],
+    "regen_cmd": "",
+    "test_cmd": ""
+  }
+}

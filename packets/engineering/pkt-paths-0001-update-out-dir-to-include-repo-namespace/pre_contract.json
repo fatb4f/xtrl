@@ -1,0 +1,31 @@
+{
+  "actions": {},
+  "base_ref": "origin/main",
+  "budgets": {},
+  "component": "paths",
+  "constraints": {},
+  "evidence": {
+    "required_files": [
+      "summary.md",
+      "commands.log",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "task_md_path": "backlog/tasks/task-20 - pkt-paths-0001-update-out-dir-to-include-repo-namespace-\u2014-Update-OUT_DIR-to-include-repo-namespace.md"
+  },
+  "mode": "NORMAL",
+  "packet_id": "pkt-paths-0001-update-out-dir-to-include-repo-namespace",
+  "plan_card": {
+    "how": "implement and validate required behaviors",
+    "what": "Update OUT_DIR to include repo namespace with backward compatibility.",
+    "when": "during packet execution",
+    "where": "xtrl repo",
+    "who": "xtrl controller",
+    "why": "Align xtrl behavior with required operational contract."
+  },
+  "repo": "fatb4f/xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
+}

@@ -1,0 +1,31 @@
+{
+  "actions": {},
+  "base_ref": "origin/main",
+  "budgets": {},
+  "component": "actuator",
+  "constraints": {},
+  "evidence": {
+    "required_files": [
+      "summary.md",
+      "commands.log",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "task_md_path": "backlog/tasks/task-14 - pkt-actuator-0001-enforce-actuator-chain-requirements-\u2014-Enforce-actuator-chain-requirements.md"
+  },
+  "mode": "NORMAL",
+  "packet_id": "pkt-actuator-0001-enforce-actuator-chain-requirements",
+  "plan_card": {
+    "how": "implement and validate required behaviors",
+    "what": "Enforce actuator chain invocation via just -> xtrl with explicit repo/root/state args.",
+    "when": "during packet execution",
+    "where": "xtrl repo",
+    "who": "xtrl controller",
+    "why": "Align xtrl behavior with required operational contract."
+  },
+  "repo": "fatb4f/xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
+}
