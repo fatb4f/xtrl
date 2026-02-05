@@ -6,11 +6,9 @@
       "python -m pytest -q || true"
     ],
     "verify": [
-      "python",
-      "xtrl",
-      "state",
-      "doctor",
-      "--print"
+      "bash",
+      "-lc",
+      "XTRL_ROOT=. ./xtrl state doctor --print"
     ]
   },
   "base_ref": "origin/main",
