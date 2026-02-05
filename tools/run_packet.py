@@ -586,15 +586,23 @@ def main(argv: List[str]) -> int:
         if isinstance(required_files, list) and required_files:
             ensure_required_files(out_base, required_files)
         evidence_path = out_base / "evidence.json"
-        if not evidence_path.exists():
-            write_json(
-                evidence_path,
-                {
-                    "schema_version": "xtrl.evidence/v0.2",
-                    "packet_id": packet_id,
-                    "generated_at_utc": _dt.datetime.now(_dt.timezone.utc).isoformat().replace("+00:00", "Z"),
-                },
-            )
+        seed = {
+            "schema_version": "xtrl.evidence/v0.2",
+            "packet_id": packet_id,
+            "generated_at_utc": _dt.datetime.now(_dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        }
+        if evidence_path.exists():
+            try:
+                payload = read_json(evidence_path)
+            except Exception:
+                payload = {}
+            if not isinstance(payload, dict):
+                payload = {}
+            if payload.get("schema_version") != seed["schema_version"]:
+                payload.update(seed)
+                write_json(evidence_path, payload)
+        else:
+            write_json(evidence_path, seed)
 
         # Pre-run snapshot inside worktree
         head_before = git_rev_parse("HEAD", cwd=wt_path)
