@@ -329,6 +329,9 @@ def collect_packet_evidence(
 
 def required_evidence_missing(out_base: pathlib.Path) -> List[str]:
     required_files = [
+        out_base / "contract.json",
+        out_base / "exec-prompt.md",
+        out_base / "packet.json",
         out_base / "evidence.json",
         out_base / "evidence.md",
         out_base / "manifest.json",
