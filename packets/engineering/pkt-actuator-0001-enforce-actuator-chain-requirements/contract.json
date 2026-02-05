@@ -1,4 +1,8 @@
 {
+  "allowed_paths": [
+    "/home/src404/src",
+    "/tmp"
+  ],
   "area": "engineering",
   "base_ref": "main",
   "branch": "packet/pkt-actuator-0001-enforce-actuator-chain-requirements",
@@ -24,6 +28,13 @@
     "repo": "<org>/<repo>"
   },
   "github_ops_required": false,
+  "net_ops_required": true,
+  "network_policy": {
+    "additional_domains": [],
+    "allowed_http_methods": [],
+    "domain_allowlist_preset": "none",
+    "internet_access": "on"
+  },
   "packet_id": "pkt-actuator-0001-enforce-actuator-chain-requirements",
   "repo": "fatb4f/xtrl",
   "run": {
