@@ -3,7 +3,7 @@ id: TASK-23
 title: >-
   pkt-exec-0002-enforce-budgets-time-diff-iteration — Enforce budgets
   (time/diff/iteration)
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-02-02 21:59'
 updated_date: '2026-02-05 18:52'
