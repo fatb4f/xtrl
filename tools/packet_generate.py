@@ -192,7 +192,9 @@ def main() -> None:
     write_json(out_dir / "contract.json", contract)
 
     exec_prompt = build_exec_prompt(pre_contract, out_dir)
+    # Write both variants for runner compatibility.
     write_text(out_dir / "exec-prompt.md", exec_prompt)
+    write_text(out_dir / "EXEC_PROMPT.md", exec_prompt)
 
     packet = {
         "packet_id": packet_id,
