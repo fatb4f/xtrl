@@ -3,10 +3,10 @@ id: TASK-15
 title: >-
   pkt-skills-0001-validate-skills-pack-layout-and-compatibility-symlink —
   Validate skills-pack layout and compatibility symlink
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:18'
+updated_date: '2026-02-05 18:19'
 labels:
   - packet
   - skills
