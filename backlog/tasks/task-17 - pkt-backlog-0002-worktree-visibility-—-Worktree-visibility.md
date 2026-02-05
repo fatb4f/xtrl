@@ -1,10 +1,10 @@
 ---
 id: TASK-17
 title: pkt-backlog-0002-worktree-visibility — Worktree visibility
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 17:25'
+updated_date: '2026-02-05 18:21'
 labels:
   - packet
   - backlog
