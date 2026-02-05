@@ -58,6 +58,10 @@ def read_text(p: Path) -> str:
     return p.read_text(encoding="utf-8", errors="replace")
 
 
+def read_json(p: Path) -> Any:
+    return json.loads(read_text(p))
+
+
 def resolve_out_root_from_packet_json(packet_id: str, state_root: Path) -> Path | None:
     out_root = state_root / "out"
     for candidate in out_root.rglob("packet.json"):
@@ -180,6 +184,54 @@ def git_capture(wt: Path, args: List[str]) -> str:
     return out
 
 
+def write_junit_xml(path: Path, test_cmd: str, test_rc: Optional[int], test_result: str) -> None:
+    name = test_cmd or "tests"
+    if not test_cmd:
+        content = (
+            f'<testsuite name="{name}" tests="1" skipped="1" failures="0" errors="0">\n'
+            f'  <testcase classname="xtrl" name="tests">\n'
+            f'    <skipped message="no test_cmd configured" />\n'
+            f'  </testcase>\n'
+            f"</testsuite>\n"
+        )
+        write_text(path, content)
+        return
+    failures = 1 if test_result == "FAIL" else 0
+    content = (
+        f'<testsuite name="{name}" tests="1" skipped="0" failures="{failures}" errors="0">\n'
+        f'  <testcase classname="xtrl" name="tests">\n'
+    )
+    if test_result == "FAIL":
+        rc = test_rc if isinstance(test_rc, int) else "unknown"
+        content += f'    <failure message="exit_code={rc}" />\n'
+    content += "  </testcase>\n</testsuite>\n"
+    write_text(path, content)
+
+
+def write_commands_log(path: Path, raw_dir: Path) -> None:
+    run_commands_path = raw_dir / "run_commands.json"
+    if not run_commands_path.exists():
+        write_text(path, "No commands captured.\n")
+        return
+    try:
+        payload = read_json(run_commands_path)
+    except Exception:
+        write_text(path, "Commands captured but could not be parsed.\n")
+        return
+    lines: List[str] = []
+    commands = payload.get("commands") if isinstance(payload, dict) else None
+    if isinstance(commands, list):
+        for item in commands:
+            name = item.get("name") if isinstance(item, dict) else None
+            argv = item.get("argv") if isinstance(item, dict) else None
+            rc = item.get("rc") if isinstance(item, dict) else None
+            lines.append(f"name={name} rc={rc} argv={argv}")
+    final_rc = payload.get("final_rc") if isinstance(payload, dict) else None
+    if final_rc is not None:
+        lines.append(f"final_rc={final_rc}")
+    write_text(path, "\n".join(lines) + ("\n" if lines else ""))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--contract", required=True)
@@ -211,7 +263,7 @@ def main() -> int:
                 contract_path = alt
 
     try:
-        contract = json.loads(read_text(contract_path))
+        contract = read_json(contract_path)
     except Exception as e:
         out_dir = resolve_state_path(None, state_root, "out") / "unknown"
         (out_dir / "raw").mkdir(parents=True, exist_ok=True)
@@ -281,6 +333,7 @@ def main() -> int:
             "generated_at": utc_now(),
         }
         write_json(out_dir / "packet.json", packet_stub)
+        packet_src = out_dir / "packet.json"
 
     # Load meta if present (provides worktree path, test exit code, runner version)
     meta: Dict[str, Any] = {}
@@ -495,6 +548,48 @@ def main() -> int:
 
     write_json(out_dir / "evidence.json", evidence)
     write_text(out_dir / "evidence.md", "\n".join(md) + "\n")
+
+    # EvidenceCapsule v0.2 layout (minimum required signals)
+    evidence_dir = out_dir / "evidence"
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+
+    plan_lines = ["# PlanCard", ""]
+    plan_card: Dict[str, Any] = {}
+    pre_contract_path = None
+    try:
+        packet_meta = read_json(packet_src) if packet_src else {}
+        pre_contract_path = packet_meta.get("pre_contract_path")
+    except Exception:
+        pre_contract_path = None
+    if pre_contract_path:
+        try:
+            pre = read_json(Path(str(pre_contract_path)))
+            plan_card = pre.get("plan_card") or {}
+        except Exception:
+            plan_card = {}
+    if plan_card:
+        for key in ("who", "what", "why", "where", "when", "how"):
+            if key in plan_card:
+                plan_lines.append(f"- {key}: {plan_card[key]}")
+    else:
+        plan_lines.append("- note: plan_card unavailable")
+    write_text(evidence_dir / "plan.md", "\n".join(plan_lines) + "\n")
+
+    decision_lines = [
+        f"Status: {decision}",
+        f"Reasons: {', '.join(reasons) if reasons else 'NONE'}",
+    ]
+    write_text(evidence_dir / "decision.md", "\n".join(decision_lines) + "\n")
+
+    scope = {"diffstat": diff_stat, "touched_files": changed_paths}
+    write_json(evidence_dir / "scope.json", scope)
+
+    write_json(evidence_dir / "integrity.json", {"status": "unknown", "note": "integrity not computed"})
+    write_text(evidence_dir / "regression.md", "Regression: not run\n")
+    write_junit_xml(evidence_dir / "tests.junit.xml", test_cmd, test_rc, test_result)
+
+    write_commands_log(out_dir / "commands.log", raw_dir)
+    write_text(out_dir / "summary.md", f"Decision: {decision}\nTests: {test_result}\n")
 
     # Manifest (exclude manifest.* itself)
     entries = []
