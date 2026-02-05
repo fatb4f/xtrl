@@ -27,7 +27,7 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.packet generate --pre-contract '<path>' --out '<out_dir>'"
+      "PYTHONDONTWRITEBYTECODE=1 python tools/packet_generate.py 'backlog/tasks/pkt-ops-0022-packet-pipeline-plant - packet-pipeline-plant.pre_contract.json'"
     ],
     "regen_cmd": "",
     "test_cmd": ""
