@@ -272,6 +272,15 @@ def main() -> int:
     packet_src = find_packet_json(packet_id, state_root)
     if packet_src:
         copy_if_missing(packet_src, out_dir / "packet.json")
+    else:
+        packet_stub = {
+            "packet_id": packet_id,
+            "repo": str(contract.get("repo") or "unknown"),
+            "contract_path": str(contract_src),
+            "exec_prompt_path": str(prompt_src),
+            "generated_at": utc_now(),
+        }
+        write_json(out_dir / "packet.json", packet_stub)
 
     # Load meta if present (provides worktree path, test exit code, runner version)
     meta: Dict[str, Any] = {}
