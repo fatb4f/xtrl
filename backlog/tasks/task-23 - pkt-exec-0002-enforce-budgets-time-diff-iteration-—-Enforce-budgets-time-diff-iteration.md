@@ -6,10 +6,11 @@ title: >-
 status: To Do
 assignee: []
 created_date: '2026-02-02 21:59'
+updated_date: '2026-02-05 18:52'
 labels:
   - packet
   - exec
-milestone: P1
+milestone: ctrlv2-schema-normalization
 dependencies: []
 ---
 

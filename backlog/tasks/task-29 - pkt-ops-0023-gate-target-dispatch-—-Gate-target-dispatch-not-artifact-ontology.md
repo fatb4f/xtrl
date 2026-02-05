@@ -6,12 +6,13 @@ title: >-
 status: To Do
 assignee: []
 created_date: '2026-02-03 00:04'
+updated_date: '2026-02-05 18:52'
 labels:
   - xtrl
   - ops
   - control
   - schema
-milestone: oscal
+milestone: ctrlv2-schema-normalization
 dependencies: []
 ---
 
