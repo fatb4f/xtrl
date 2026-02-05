@@ -3,10 +3,10 @@ id: TASK-19
 title: >-
   pkt-evidence-0002-implement-evidencecapsule-v0-2-layout — Implement
   EvidenceCapsule v0.2 layout
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:24'
+updated_date: '2026-02-05 18:25'
 labels:
   - packet
   - evidence
