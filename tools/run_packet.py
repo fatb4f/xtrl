@@ -347,6 +347,19 @@ def read_json(path: pathlib.Path) -> Dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def resolve_out_root_from_packet_json(packet_id: str, state_root: pathlib.Path) -> pathlib.Path | None:
+    out_root = state_root / "out"
+    for candidate in out_root.rglob("packet.json"):
+        try:
+            data = read_json(candidate)
+        except Exception:
+            continue
+        if data.get("packet_id") == packet_id:
+            repo = data.get("repo") or "unknown"
+            return (out_root / repo).resolve()
+    return None
+
+
 def parse_args(argv: List[str]) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Run a Codex packet.")
     ap.add_argument("contract_path", help="Path to packet contract JSON.")
@@ -428,7 +441,12 @@ def main(argv: List[str]) -> int:
     evidence_cfg = require(contract, "evidence", dict)
     github_cfg = contract.get("github") if isinstance(contract.get("github"), dict) else None
 
-    out_dir = str(resolve_state_path(evidence_cfg.get("out_dir"), state_root, "out"))
+    out_dir_raw = evidence_cfg.get("out_dir")
+    if out_dir_raw:
+        out_dir = str(resolve_state_path(out_dir_raw, state_root, "out"))
+    else:
+        resolved_root = resolve_out_root_from_packet_json(packet_id, state_root)
+        out_dir = str(resolved_root or resolve_state_path(None, state_root, "out"))
     out_base = pathlib.Path(out_dir) / packet_id
     raw_dir = out_base / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)

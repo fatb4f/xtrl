@@ -58,6 +58,19 @@ def read_text(p: Path) -> str:
     return p.read_text(encoding="utf-8", errors="replace")
 
 
+def resolve_out_root_from_packet_json(packet_id: str, state_root: Path) -> Path | None:
+    out_root = state_root / "out"
+    for candidate in out_root.rglob("packet.json"):
+        try:
+            data = read_json(candidate)
+        except Exception:
+            continue
+        if data.get("packet_id") == packet_id:
+            repo = data.get("repo") or "unknown"
+            return (out_root / repo).resolve()
+    return None
+
+
 def write_text(p: Path, text: str) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(text, encoding="utf-8")
@@ -195,7 +208,12 @@ def main() -> int:
     run_cfg = dict(contract.get("run") or {})
     evidence_cfg = dict(contract.get("evidence") or {})
 
-    out_root = str(resolve_state_path(evidence_cfg.get("out_dir"), state_root, "out"))
+    out_dir_raw = evidence_cfg.get("out_dir")
+    if out_dir_raw:
+        out_root = str(resolve_state_path(out_dir_raw, state_root, "out"))
+    else:
+        resolved_root = resolve_out_root_from_packet_json(packet_id, state_root)
+        out_root = str(resolved_root or resolve_state_path(None, state_root, "out"))
 
     # Normalize absolute allowed_paths to repo-relative if they point inside the repo.
     normalized_allowed: List[str] = []

@@ -12,7 +12,7 @@
   },
   "evidence": {
     "include_git_diff_patch": false,
-    "out_dir": "out"
+    "out_dir": "out/fatb4f/xtrl"
   },
   "forbidden_outputs": [],
   "github": {
