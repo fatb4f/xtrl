@@ -27,7 +27,7 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.promogate eval --pre-contract '<path>' --out '<out_dir>'"
+      "PYTHONDONTWRITEBYTECODE=1 python -m tools.promogate eval --pre-contract 'backlog/tasks/pkt-ops-0022-packet-pipeline-plant - packet-pipeline-plant.pre_contract.json' --out '/tmp/promogate'"
     ],
     "regen_cmd": "",
     "test_cmd": ""
