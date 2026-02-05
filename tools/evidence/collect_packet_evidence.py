@@ -93,6 +93,25 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 
+def find_packet_json(packet_id: str, state_root: Path) -> Optional[Path]:
+    out_root = state_root / "out"
+    for candidate in out_root.rglob("packet.json"):
+        try:
+            data = read_json(candidate)
+        except Exception:
+            continue
+        if data.get("packet_id") == packet_id:
+            return candidate
+    return None
+
+
+def copy_if_missing(src: Path, dest: Path) -> None:
+    if not src.exists() or dest.exists():
+        return
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(src.read_bytes())
+
+
 def list_files(root: Path) -> List[Path]:
     out: List[Path] = []
     for p in root.rglob("*"):
@@ -244,6 +263,15 @@ def main() -> int:
     out_dir = (Path(out_root) / packet_id).resolve()
     raw_dir = out_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
+
+    # Ensure contract artifacts exist in the namespaced OUT_DIR.
+    contract_src = Path(contract_path)
+    copy_if_missing(contract_src, out_dir / "contract.json")
+    prompt_src = contract_src.parent / "EXEC_PROMPT.md"
+    copy_if_missing(prompt_src, out_dir / "exec-prompt.md")
+    packet_src = find_packet_json(packet_id, state_root)
+    if packet_src:
+        copy_if_missing(packet_src, out_dir / "packet.json")
 
     # Load meta if present (provides worktree path, test exit code, runner version)
     meta: Dict[str, Any] = {}
