@@ -29,7 +29,7 @@
     "repo": "<org>/<repo>"
   },
   "github_ops_required": false,
-  "net_ops_required": true,
+  "net_ops_required": false,
   "network_policy": {
     "additional_domains": [],
     "allowed_http_methods": [],
