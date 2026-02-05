@@ -27,8 +27,8 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.evidence emit --packet-id '<packet_id>'",
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.evidence check --packet-id '<packet_id>'"
+      "PYTHONDONTWRITEBYTECODE=1 python tools/evidence_cli.py emit --packet-id pkt-ops-0022-packet-pipeline-plant",
+      "PYTHONDONTWRITEBYTECODE=1 python tools/evidence_cli.py check --packet-id pkt-ops-0022-packet-pipeline-plant"
     ],
     "regen_cmd": "",
     "test_cmd": ""
