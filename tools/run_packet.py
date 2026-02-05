@@ -327,6 +327,20 @@ def run_gate(
     return p.returncode
 
 
+def ensure_required_files(out_dir: pathlib.Path, required: List[str]) -> None:
+    for rel in required:
+        path = out_dir / rel
+        if path.exists():
+            continue
+        if path.suffix in {".json"}:
+            write_json(path, {})
+        elif path.suffix in {".md", ".txt", ".log", ".xml"}:
+            write_text(path, "")
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch()
+
+
 def run_commands(run_cfg: Dict[str, Any], cwd: str, out_log: List[str]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Runs regen_cmd, test_cmd, then run.commands (in that order)."""
 
@@ -566,6 +580,21 @@ def main(argv: List[str]) -> int:
             base_sha = g0_evidence.get("base_sha") or git_rev_parse(base_ref, cwd=str(repo_root))
         if not wt_path:
             raise SystemExit("worktree_path not set by G0")
+
+        # Pre-run evidence scaffolding for v0.2 layout
+        required_files = contract.get("evidence_required") or []
+        if isinstance(required_files, list) and required_files:
+            ensure_required_files(out_base, required_files)
+        evidence_path = out_base / "evidence.json"
+        if not evidence_path.exists():
+            write_json(
+                evidence_path,
+                {
+                    "schema_version": "xtrl.evidence/v0.2",
+                    "packet_id": packet_id,
+                    "generated_at_utc": _dt.datetime.now(_dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+                },
+            )
 
         # Pre-run snapshot inside worktree
         head_before = git_rev_parse("HEAD", cwd=wt_path)
