@@ -25,7 +25,8 @@
   "constraints": {
     "allowed_paths": [
       "/home/src404/src/**",
-      "/tmp/**"
+      "/tmp/**",
+      "/home/src404/.local/state/codex/**"
     ],
     "clean_repo_required": true,
     "deny_repo_local_roots": [
