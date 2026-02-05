@@ -27,7 +27,7 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.exec run --packet-id '<packet_id>'"
+      "PYTHONDONTWRITEBYTECODE=1 python tools/exec_packet.py pkt-ops-0022-packet-pipeline-plant"
     ],
     "regen_cmd": "",
     "test_cmd": ""
