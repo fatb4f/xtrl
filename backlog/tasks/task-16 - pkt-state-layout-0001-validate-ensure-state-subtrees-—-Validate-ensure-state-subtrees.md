@@ -3,10 +3,10 @@ id: TASK-16
 title: >-
   pkt-state-layout-0001-validate-ensure-state-subtrees — Validate/ensure state
   subtrees
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 17:25'
+updated_date: '2026-02-05 18:20'
 labels:
   - packet
   - state-layout
