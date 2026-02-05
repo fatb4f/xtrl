@@ -30,7 +30,7 @@ from path_utils import (
     resolve_state_root,
 )
 
-RUNNER_VERSION = "0.1.3"  # Packet-002
+RUNNER_VERSION = "0.1.4"  # Packet-002
 PLANT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
@@ -162,6 +162,25 @@ def git_rev_parse(ref: str, cwd: str | None = None) -> str:
     if rc != 0:
         raise SystemExit(f"git rev-parse failed for {ref}: {err.strip()}")
     return out.strip()
+
+
+def run_repo_sanitizer(repo_root: pathlib.Path, worktree_root: pathlib.Path) -> Tuple[bool, str]:
+    sanitizer = repo_root / "tools" / "repo_sanitizer.py"
+    if not sanitizer.exists():
+        return False, f"missing sanitizer: {sanitizer}"
+    argv = [
+        sys.executable,
+        str(sanitizer),
+        "--repo-root",
+        str(repo_root),
+        "--worktree-root",
+        str(worktree_root),
+        "--apply",
+    ]
+    rc, out, err = sh(argv, cwd=str(repo_root))
+    if rc != 0:
+        return False, (err or out).strip() or "sanitizer failed"
+    return True, (out or err).strip() or "sanitizer ok"
 
 
 def gh_available() -> bool:
@@ -668,6 +687,19 @@ def main(argv: List[str]) -> int:
             reasons.append(f"github_ops_failed:{gh_ops['error']}")
 
     meta["github_ops"] = gh_ops
+    meta["sanitizer"] = {"attempted": False}
+
+    # Post-success cleanup: only after PASS and when worktree points at HEAD.
+    if final_status == "PASS":
+        sanitizer_reason = ""
+        try:
+            git_rev_parse("HEAD", cwd=wt_path)
+            worktree_root = resolve_state_path(None, state_root, "worktrees")
+            ok, msg = run_repo_sanitizer(repo_root, worktree_root)
+            meta["sanitizer"] = {"attempted": True, "ok": ok, "message": msg}
+        except Exception as exc:
+            sanitizer_reason = str(exc)
+            meta["sanitizer"] = {"attempted": True, "ok": False, "message": sanitizer_reason}
     write_json(meta_path, meta)
 
     return 0 if final_status == "PASS" else 2
