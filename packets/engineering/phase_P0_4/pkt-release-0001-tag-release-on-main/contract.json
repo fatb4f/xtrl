@@ -27,7 +27,7 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.release tag --from-main"
+      "PYTHONDONTWRITEBYTECODE=1 python tools/release_cli.py tag --from-main"
     ],
     "regen_cmd": "",
     "test_cmd": ""
