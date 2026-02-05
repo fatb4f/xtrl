@@ -39,6 +39,6 @@
     "allow_untracked_globs": [],
     "deny_if_worktree_exists": true,
     "mode": "strict",
-    "worktree_root": "$CODEX_STATE/xtrl/worktrees"
+    "worktree_root": "worktrees"
   }
 }
