@@ -3,10 +3,10 @@ id: TASK-26
 title: >-
   pkt-evidence-0003-align-evidence-json-with-v0-2-schema — Align evidence.json
   with v0.2 schema
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 19:03'
+updated_date: '2026-02-05 19:04'
 labels:
   - packet
   - evidence
