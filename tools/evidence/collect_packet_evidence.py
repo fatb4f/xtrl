@@ -31,6 +31,7 @@ import hashlib
 import json
 import subprocess
 import sys
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -230,6 +231,22 @@ def write_commands_log(path: Path, raw_dir: Path) -> None:
     if final_rc is not None:
         lines.append(f"final_rc={final_rc}")
     write_text(path, "\n".join(lines) + ("\n" if lines else ""))
+
+
+def migrate_legacy_out_dir(
+    out_dir: Path, state_root: Path, packet_id: str, repo: str
+) -> Path:
+    legacy = (state_root / "out" / packet_id).resolve()
+    namespaced = (state_root / "out" / repo / packet_id).resolve()
+    if out_dir.resolve() != legacy:
+        return out_dir
+    if repo in ("", "unknown"):
+        return out_dir
+    if legacy.exists() and not namespaced.exists():
+        namespaced.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(legacy), str(namespaced))
+        return namespaced
+    return out_dir
 
 
 def main() -> int:
@@ -483,7 +500,13 @@ def main() -> int:
     if violations and meta.get("decision") == "ALLOW":
         reasons = list(reasons) + ["constraint_violations"]
 
+    repo_name = str(contract.get("repo") or "unknown")
+    out_dir = migrate_legacy_out_dir(out_dir, state_root, packet_id, repo_name)
+    raw_dir = out_dir / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+
     evidence: Dict[str, Any] = {
+        "schema_version": "xtrl.evidence/v0.2",
         "packet_id": packet_id,
         "generated_at_utc": utc_now(),
         "repo": {"root": str(repo_root), "base_ref": base_ref, "heads": {"before": head_before, "after": head_after}},

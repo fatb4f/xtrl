@@ -259,6 +259,44 @@ def write_json(path: pathlib.Path, obj: Any) -> None:
     path.write_text(json.dumps(obj, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def write_visibility_index(
+    state_root: pathlib.Path,
+    packet_id: str,
+    repo: str,
+    worktree_path: str | None,
+    out_dir: pathlib.Path,
+    pre_contract_path: str | None,
+) -> None:
+    visibility_dir = state_root / "visibility"
+    visibility_dir.mkdir(parents=True, exist_ok=True)
+    index_path = visibility_dir / "index.json"
+
+    entry = {
+        "packet_id": packet_id,
+        "repo": repo,
+        "worktree_path": worktree_path,
+        "out_dir": str(out_dir),
+        "pre_contract_path": pre_contract_path,
+    }
+
+    items: List[Dict[str, Any]] = []
+    if index_path.exists():
+        try:
+            payload = json.loads(index_path.read_text(encoding="utf-8"))
+            if isinstance(payload, dict) and isinstance(payload.get("items"), list):
+                items = payload["items"]
+        except Exception:
+            items = []
+
+    by_id = {str(it.get("packet_id")): it for it in items if isinstance(it, dict)}
+    by_id[packet_id] = entry
+    merged = [by_id[k] for k in sorted(by_id.keys())]
+    write_json(index_path, {"items": merged})
+
+    link_path = out_dir / "link.json"
+    write_json(link_path, entry)
+
+
 def gate_evidence_path(out_dir: str, packet_id: str, name: str) -> pathlib.Path:
     return pathlib.Path(out_dir) / packet_id / f"{name}.json"
 
@@ -700,6 +738,27 @@ def main(argv: List[str]) -> int:
         except Exception as exc:
             sanitizer_reason = str(exc)
             meta["sanitizer"] = {"attempted": True, "ok": False, "message": sanitizer_reason}
+
+    # Visibility index + link.json (best-effort)
+    pre_contract_path = None
+    try:
+        pkt_path = out_base / "packet.json"
+        if pkt_path.exists():
+            pkt = read_json(pkt_path)
+            pre_contract_path = pkt.get("pre_contract_path")
+    except Exception:
+        pre_contract_path = None
+    try:
+        write_visibility_index(
+            state_root=state_root,
+            packet_id=packet_id,
+            repo=str(contract.get("repo") or ""),
+            worktree_path=wt_path,
+            out_dir=out_base,
+            pre_contract_path=pre_contract_path,
+        )
+    except Exception:
+        pass
     write_json(meta_path, meta)
 
     return 0 if final_status == "PASS" else 2

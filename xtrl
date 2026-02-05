@@ -281,6 +281,20 @@ def handle_git_promote(args: argparse.Namespace, script_dir: Path) -> None:
     )
 
 
+def handle_state_doctor(args: argparse.Namespace, script_dir: Path) -> None:
+    codex_state = resolve_codex_state(args.codex_state)
+    xtrl_root = resolve_xtrl_root(script_dir)
+    script = xtrl_root / "tools" / "state_doctor.py"
+    run_script(
+        script,
+        [
+            "--codex-state",
+            str(codex_state),
+            *(["--print"] if args.print else []),
+        ],
+    )
+
+
 def handle_doctor(args: argparse.Namespace, script_dir: Path) -> None:
     repo_root = resolve_repo_root(args.repo_root)
     codex_home = resolve_codex_home(args.codex_home)
@@ -433,6 +447,14 @@ def main() -> None:
     sync.add_argument("contract")
     sync.add_argument("--dry-run", action="store_true")
     sync.set_defaults(func=lambda args: handle_backlog_sync(args, script_dir))
+
+    state = subparsers.add_parser("state")
+    state_sub = state.add_subparsers(dest="state_cmd", required=True)
+
+    state_doctor = state_sub.add_parser("doctor")
+    state_doctor.add_argument("--codex-state", default=None)
+    state_doctor.add_argument("--print", action="store_true")
+    state_doctor.set_defaults(func=lambda args: handle_state_doctor(args, script_dir))
 
     doctor = subparsers.add_parser("doctor")
     command_common_args(doctor)
