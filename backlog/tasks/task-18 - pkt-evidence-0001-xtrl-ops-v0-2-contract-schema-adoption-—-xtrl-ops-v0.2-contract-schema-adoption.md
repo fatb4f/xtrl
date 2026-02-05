@@ -3,7 +3,7 @@ id: TASK-18
 title: >-
   pkt-evidence-0001-xtrl-ops-v0-2-contract-schema-adoption — xtrl-ops v0.2
   contract schema adoption
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
 updated_date: '2026-02-05 18:23'
