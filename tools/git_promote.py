@@ -195,7 +195,7 @@ def main() -> int:
         }
         write_json(out_dir / "git" / "promotion.json", promotion)
         write_json(out_dir / "git" / "gates.json", {"gates": gates, "dry_run": True})
-        return 3
+        return 0
 
     # non-dry-run: if already applied on current branch, push directly
     rc, current_branch, _ = run_cmd(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_root)
