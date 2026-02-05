@@ -604,6 +604,27 @@ def main(argv: List[str]) -> int:
         else:
             write_json(evidence_path, seed)
 
+        # Pre-run visibility index + link.json
+        pre_contract_path = None
+        try:
+            pkt_path = out_base / "packet.json"
+            if pkt_path.exists():
+                pkt = read_json(pkt_path)
+                pre_contract_path = pkt.get("pre_contract_path")
+        except Exception:
+            pre_contract_path = None
+        try:
+            write_visibility_index(
+                state_root=state_root,
+                packet_id=packet_id,
+                repo=str(contract.get("repo") or ""),
+                worktree_path=wt_path,
+                out_dir=out_base,
+                pre_contract_path=pre_contract_path,
+            )
+        except Exception:
+            pass
+
         # Pre-run snapshot inside worktree
         head_before = git_rev_parse("HEAD", cwd=wt_path)
         status_before = git_porcelain(cwd=wt_path)
