@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import shlex
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
@@ -120,14 +121,64 @@ def promo_gate(pre_contract: Dict[str, Any]) -> Tuple[bool, List[str], List[str]
 
 
 def build_contract(pre_contract: Dict[str, Any]) -> Dict[str, Any]:
-    return {
-        "schema_version": "xtrl.contract/v0.2",
-        "packet_id": pre_contract["packet_id"],
+    repo = pre_contract["repo"]
+    packet_id = pre_contract["packet_id"]
+    constraints = pre_contract["constraints"]
+    budgets = pre_contract.get("budgets") or {}
+    diff_budget = budgets.get("diff_budget") if isinstance(budgets, dict) else {}
+    actions = pre_contract.get("actions") or {}
+
+    run_cfg: Dict[str, Any] = {"regen_cmd": "", "test_cmd": "", "commands": []}
+    if isinstance(actions, dict):
+        for name, argv in actions.items():
+            if not isinstance(argv, list) or not argv or any(not isinstance(x, str) for x in argv):
+                continue
+            cmd = shlex.join(argv)
+            if name == "test" and not run_cfg["test_cmd"]:
+                run_cfg["test_cmd"] = cmd
+            else:
+                run_cfg["commands"].append(cmd)
+
+    forbidden_outputs = constraints.get("forbidden_paths") if isinstance(constraints, dict) else []
+
+    evidence_required = (pre_contract.get("evidence") or {}).get("required_files")
+    contract = {
+        "packet_id": packet_id,
+        "area": "engineering",
+        "repo": repo,
         "base_ref": pre_contract["base_ref"],
-        "constraints": pre_contract["constraints"],
-        "actions": pre_contract["actions"],
-        "evidence": pre_contract["evidence"],
+        "branch": f"packet/{packet_id}",
+        "github_ops_required": False,
+        "net_ops_required": False,
+        "allowed_paths": constraints.get("allowed_paths") if isinstance(constraints, dict) else [],
+        "forbidden_outputs": forbidden_outputs or [],
+        "worktree_policy": {
+            "mode": "strict",
+            "worktree_root": "worktrees",
+            "deny_if_worktree_exists": True,
+            "allow_dirty_globs": [],
+            "allow_untracked_globs": [],
+        },
+        "network_policy": pre_contract.get("network_policy")
+        or {
+            "internet_access": "off",
+            "domain_allowlist_preset": "none",
+            "additional_domains": [],
+            "allowed_http_methods": [],
+        },
+        "run": run_cfg,
+        "budgets": {
+            "max_changed_files": int(diff_budget.get("max_files_changed", 0)),
+            "max_changed_lines": int(diff_budget.get("max_lines_changed", 0)),
+        },
+        "evidence": {
+            "out_dir": f"out/{repo}",
+            "include_git_diff_patch": False,
+        },
     }
+    if isinstance(evidence_required, list) and evidence_required:
+        contract["evidence_required"] = evidence_required
+    return contract
 
 
 def build_exec_prompt(pre_contract: Dict[str, Any], out_dir: Path) -> str:
