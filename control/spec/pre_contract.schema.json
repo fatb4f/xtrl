@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PreContract",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "packet_id",
+    "repo",
+    "component",
+    "base_ref",
+    "mode",
+    "budgets",
+    "plan_card",
+    "constraints",
+    "actions",
+    "evidence",
+    "inputs"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "packet_id": {"type": "string", "minLength": 1},
+    "repo": {"type": "string", "minLength": 1},
+    "component": {"type": "string", "minLength": 1},
+    "base_ref": {"type": "string", "minLength": 1},
+    "mode": {"type": "string", "minLength": 1},
+    "budgets": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "time_minutes": {"type": "integer", "minimum": 0},
+        "diff_budget": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "max_files_changed": {"type": "integer", "minimum": 0},
+            "max_lines_changed": {"type": "integer", "minimum": 0}
+          }
+        },
+        "iteration_budget": {"type": "integer", "minimum": 0}
+      }
+    },
+    "plan_card": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["who", "what", "why", "where", "when", "how"],
+      "properties": {
+        "who": {"type": "string"},
+        "what": {"type": "string"},
+        "why": {"type": "string"},
+        "where": {"type": "string"},
+        "when": {"type": "string"},
+        "how": {"type": "string"}
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "clean_repo_required": {"type": "boolean"},
+        "deny_repo_local_roots": {"type": "array", "items": {"type": "string"}},
+        "allowed_paths": {"type": "array", "items": {"type": "string"}},
+        "forbidden_paths": {"type": "array", "items": {"type": "string"}},
+        "forbidden_patterns": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "actions": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "test": {"type": "array", "items": {"type": "string"}},
+        "lint": {"type": "array", "items": {"type": "string"}},
+        "format": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "required_files": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "task_md_path": {"type": "string"},
+        "binding_ref": {"type": "string"}
+      }
+    }
+  }
+}

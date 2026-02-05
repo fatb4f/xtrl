@@ -1,0 +1,63 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-exec-0001-enforce-action-only-execution",
+  "repo": "xtrl",
+  "component": "exec",
+  "base_ref": "origin/main",
+  "mode": "NORMAL",
+  "budgets": {
+    "time_minutes": 45,
+    "diff_budget": {"max_files_changed": 20, "max_lines_changed": 600},
+    "iteration_budget": 2
+  },
+  "plan_card": {
+    "who": "xtrl controller",
+    "what": "enforce ACTION-only execution; deny arbitrary shell",
+    "why": "prevent uncontrolled actuation; make runs auditable",
+    "where": "xtrl repo (controller surface)",
+    "when": "on ctrl.exec / xtrl exec",
+    "how": "argv-only actions resolved from contract.json"
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [".codex", ".quint"],
+    "allowed_paths": [
+      "tools/**",
+      "src/**",
+      "docs/**",
+      "tests/**",
+      "pyproject.toml"
+    ],
+    "forbidden_paths": [".git/**", "backlog/**"],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "actions": {
+    "test": ["pytest", "-q"],
+    "lint": ["ruff", "check", "."],
+    "format": ["ruff", "format", "."]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "task_md_path": "tasks/pkt-exec-0001-enforce-action-only-execution - enforce-action-only-execution.md",
+    "binding_ref": "docs/xtrl-ops_authoritative_binding.md"
+  }
+}
