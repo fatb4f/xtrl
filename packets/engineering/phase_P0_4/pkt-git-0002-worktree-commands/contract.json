@@ -27,9 +27,9 @@
   "repo": "fatb4f/xtrl",
   "run": {
     "commands": [
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.git doctor",
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.git wt create --packet-id '<packet_id>'",
-      "PYTHONDONTWRITEBYTECODE=1 python -m xtrl.git wt status --packet-id '<packet_id>'"
+      "PYTHONDONTWRITEBYTECODE=1 python tools/git_cli.py doctor",
+      "PYTHONDONTWRITEBYTECODE=1 python tools/git_cli.py wt create --packet-id pkt-git-0002-worktree-commands",
+      "PYTHONDONTWRITEBYTECODE=1 python tools/git_cli.py wt status --packet-id pkt-git-0002-worktree-commands"
     ],
     "regen_cmd": "",
     "test_cmd": ""
