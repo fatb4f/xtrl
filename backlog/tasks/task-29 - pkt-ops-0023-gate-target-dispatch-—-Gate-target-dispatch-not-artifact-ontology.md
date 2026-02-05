@@ -3,10 +3,10 @@ id: TASK-29
 title: >-
   pkt-ops-0023-gate-target-dispatch — Gate target dispatch (not artifact
   ontology)
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-03 00:04'
-updated_date: '2026-02-05 19:06'
+updated_date: '2026-02-05 19:07'
 labels:
   - xtrl
   - ops
