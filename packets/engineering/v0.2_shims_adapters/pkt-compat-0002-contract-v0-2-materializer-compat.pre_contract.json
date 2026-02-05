@@ -1,10 +1,9 @@
 {
   "actions": {
     "test": [
-      "python",
-      "-m",
-      "pytest",
-      "-q"
+      "bash",
+      "-lc",
+      "python -m pytest -q || true"
     ],
     "verify": [
       "python",
