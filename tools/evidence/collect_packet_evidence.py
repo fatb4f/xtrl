@@ -196,6 +196,24 @@ def main() -> int:
     evidence_cfg = dict(contract.get("evidence") or {})
 
     out_root = str(resolve_state_path(evidence_cfg.get("out_dir"), state_root, "out"))
+
+    # Normalize absolute allowed_paths to repo-relative if they point inside the repo.
+    normalized_allowed: List[str] = []
+    for raw in allowed_paths:
+        try:
+            p = Path(str(raw))
+        except Exception:
+            normalized_allowed.append(str(raw))
+            continue
+        if p.is_absolute():
+            try:
+                rel = p.relative_to(repo_root)
+                normalized_allowed.append(str(rel))
+                continue
+            except Exception:
+                pass
+        normalized_allowed.append(str(raw))
+    allowed_paths = normalized_allowed
     include_patch = bool(evidence_cfg.get("include_git_diff_patch", False))
 
     out_dir = (Path(out_root) / packet_id).resolve()
