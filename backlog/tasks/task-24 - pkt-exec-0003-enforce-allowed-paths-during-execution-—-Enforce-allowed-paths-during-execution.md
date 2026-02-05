@@ -3,10 +3,10 @@ id: TASK-24
 title: >-
   pkt-exec-0003-enforce-allowed-paths-during-execution — Enforce allowed paths
   during execution
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:58'
+updated_date: '2026-02-05 18:59'
 labels:
   - packet
   - exec
