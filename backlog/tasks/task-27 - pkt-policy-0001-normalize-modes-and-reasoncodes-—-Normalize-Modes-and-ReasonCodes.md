@@ -3,10 +3,10 @@ id: TASK-27
 title: >-
   pkt-policy-0001-normalize-modes-and-reasoncodes — Normalize Modes and
   ReasonCodes
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-02-02 21:59'
-updated_date: '2026-02-05 18:52'
+updated_date: '2026-02-05 19:05'
 labels:
   - packet
   - policy
