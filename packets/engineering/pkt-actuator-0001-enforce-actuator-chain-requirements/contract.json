@@ -12,8 +12,9 @@
   },
   "evidence": {
     "include_git_diff_patch": false,
-    "out_dir": "$CODEX_STATE/xtrl/out"
+    "out_dir": "out"
   },
+  "forbidden_outputs": [],
   "github": {
     "issue": {
       "body": "",
@@ -41,5 +42,12 @@
     "commands": [],
     "regen_cmd": "",
     "test_cmd": ""
+  },
+  "worktree_policy": {
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": [],
+    "deny_if_worktree_exists": true,
+    "mode": "strict",
+    "worktree_root": "worktrees"
   }
 }
