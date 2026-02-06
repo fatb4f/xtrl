@@ -638,9 +638,11 @@ def main(argv: List[str]) -> int:
         events_path = out_base / "evidence" / "events.jsonl"
         if events_path.exists() and events_path.stat().st_size == 0:
             run_id = meta_path.stem if meta_path else "unknown"
-            helper_path = str((repo_root / "tools").resolve())
-            helper_target = pathlib.Path(helper_path)
-            helper_hash = sha256_path(helper_target) if helper_target.exists() else ""
+            helper_target = (repo_root / "tools" / "verify_helper_created.py").resolve()
+            if not helper_target.exists():
+                helper_target = (repo_root / "tools").resolve()
+            helper_path = str(helper_target)
+            helper_hash = sha256_path(helper_target) if helper_target.exists() and helper_target.is_file() else ""
             gate_ref = gate_evidence_path(out_dir, packet_id, "g0_enter_work")
             prompt_ref = out_base / "exec-prompt.md"
             event = {
