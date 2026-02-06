@@ -16,3 +16,4 @@
 5. `[To Do]` `pkt-compat-0005-state-doctor-subtrees` — Centralize state path resolver and ensure required state subtrees (sessions/history/tmp/logs/cache/worktrees/out) exist; add state-doctor command
 6. `[To Do]` `pkt-compat-0006-visibility-index-backlog-worktree-out` — Emit deterministic visibility index mapping backlog task ↔ packet_id ↔ worktree ↔ out_dir; write link.json under namespaced OUT_DIR
 7. `[To Do]` `pkt-compat-0007-closure-run-verification` — Add a single verification command that asserts namespaced OUT_DIR contains contract.json, packet.json, exec-prompt.md, and full EvidenceCapsule v0.2 tree for a given packet_id
+8. `[To Do]` `pkt-compat-0008-helper-created-event` — Emit helper_created event record with hashes + gate decision linkage for audit-grade telemetry.

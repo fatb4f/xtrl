@@ -1,0 +1,83 @@
+{
+  "actions": {
+    "test": [
+      "bash",
+      "-lc",
+      "python -m pytest -q || true"
+    ],
+    "verify": [
+      "python",
+      "tools/verify_helper_created.py"
+    ]
+  },
+  "base_ref": "origin/main",
+  "budgets": {
+    "diff_budget": {
+      "max_files_changed": 30,
+      "max_lines_changed": 800
+    },
+    "iteration_budget": 2,
+    "time_minutes": 45
+  },
+  "component": "xtrl-ops",
+  "constraints": {
+    "allowed_paths": [
+      "tools/**",
+      "docs/**",
+      "schemas/**",
+      "control/**",
+      "packets/**",
+      "README.md",
+      "CHANGELOG.md"
+    ],
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "forbidden_paths": [
+      ".git/**"
+    ],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "evidence/events.jsonl",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "inputs": {
+    "notes": [
+      "Add helper_created event in events.jsonl with fields: packet_id, run_id, base_ref/base_sha, helper_path, helper_hash, trigger_reason_code, gate_decision_ref, prompt_ref, touched_paths, diffstat (or patch_hash).",
+      "Include DENY GateDecision artifact (or hash+path) in context_evidence.sources.",
+      "Verifier: tools/verify_helper_created.py asserts events.jsonl helper_created record with hashes and refs."
+    ]
+  },
+  "mode": "NORMAL",
+  "packet_id": "pkt-compat-0008-helper-created-event",
+  "plan_card": {
+    "how": "emit helper_created into events.jsonl with hashes and gate decision refs",
+    "what": "Add helper_created event record emitted at creation-time with required fields and evidence linkage",
+    "when": "compat/reuse-port stabilization pass",
+    "where": "tools/event logging + evidence context",
+    "who": "xtrl controller",
+    "why": "Make helper births auditable and reproducible without inference"
+  },
+  "repo": "fatb4f/xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
+}
