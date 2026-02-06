@@ -639,7 +639,8 @@ def main(argv: List[str]) -> int:
         if events_path.exists() and events_path.stat().st_size == 0:
             run_id = meta_path.stem if meta_path else "unknown"
             helper_path = str((repo_root / "tools").resolve())
-            helper_hash = sha256_path(Path(helper_path)) if Path(helper_path).exists() else ""
+            helper_target = pathlib.Path(helper_path)
+            helper_hash = sha256_path(helper_target) if helper_target.exists() else ""
             gate_ref = gate_evidence_path(out_dir, packet_id, "g0_enter_work")
             prompt_ref = out_base / "exec-prompt.md"
             event = {
