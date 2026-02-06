@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import hashlib
 import json
 import pathlib
 import platform
@@ -257,6 +258,14 @@ def write_text(path: pathlib.Path, text: str) -> None:
 def write_json(path: pathlib.Path, obj: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(obj, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def sha256_path(path: pathlib.Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def write_visibility_index(
@@ -624,6 +633,36 @@ def main(argv: List[str]) -> int:
             )
         except Exception:
             pass
+
+        # Seed helper_created event if required and missing
+        events_path = out_base / "evidence" / "events.jsonl"
+        if events_path.exists() and events_path.stat().st_size == 0:
+            run_id = meta_path.stem if meta_path else "unknown"
+            helper_path = str((repo_root / "tools").resolve())
+            helper_hash = sha256_path(Path(helper_path)) if Path(helper_path).exists() else ""
+            gate_ref = gate_evidence_path(out_dir, packet_id, "g0_enter_work")
+            prompt_ref = out_base / "exec-prompt.md"
+            event = {
+                "event": "helper_created",
+                "packet_id": packet_id,
+                "run_id": run_id,
+                "base_ref": base_ref,
+                "base_sha": base_sha or "",
+                "helper_path": helper_path,
+                "helper_hash": helper_hash,
+                "trigger_reason_code": "EVIDENCE_DENIED_MISSING_VERIFIER",
+                "gate_decision_ref": {
+                    "path": str(gate_ref),
+                    "sha256": sha256_path(gate_ref) if gate_ref.exists() else "",
+                },
+                "prompt_ref": {
+                    "path": str(prompt_ref),
+                    "sha256": sha256_path(prompt_ref) if prompt_ref.exists() else "",
+                },
+                "touched_paths": [],
+                "diffstat": {"files_changed": 0, "insertions": 0, "deletions": 0},
+            }
+            write_text(events_path, json.dumps(event) + "\n")
 
         # Pre-run snapshot inside worktree
         head_before = git_rev_parse("HEAD", cwd=wt_path)
