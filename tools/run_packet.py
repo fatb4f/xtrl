@@ -634,38 +634,6 @@ def main(argv: List[str]) -> int:
         except Exception:
             pass
 
-        # Seed helper_created event if required and missing
-        events_path = out_base / "evidence" / "events.jsonl"
-        if events_path.exists() and events_path.stat().st_size == 0:
-            run_id = meta_path.stem if meta_path else "unknown"
-            helper_target = (repo_root / "tools" / "verify_helper_created.py").resolve()
-            if not helper_target.exists():
-                helper_target = (repo_root / "tools").resolve()
-            helper_path = str(helper_target)
-            helper_hash = sha256_path(helper_target) if helper_target.exists() and helper_target.is_file() else ""
-            gate_ref = gate_evidence_path(out_dir, packet_id, "g0_enter_work")
-            prompt_ref = out_base / "exec-prompt.md"
-            event = {
-                "event": "helper_created",
-                "packet_id": packet_id,
-                "run_id": run_id,
-                "base_ref": base_ref,
-                "base_sha": base_sha or "",
-                "helper_path": helper_path,
-                "helper_hash": helper_hash,
-                "trigger_reason_code": "EVIDENCE_DENIED_MISSING_VERIFIER",
-                "gate_decision_ref": {
-                    "path": str(gate_ref),
-                    "sha256": sha256_path(gate_ref) if gate_ref.exists() else "",
-                },
-                "prompt_ref": {
-                    "path": str(prompt_ref),
-                    "sha256": sha256_path(prompt_ref) if prompt_ref.exists() else "",
-                },
-                "touched_paths": [],
-                "diffstat": {"files_changed": 0, "insertions": 0, "deletions": 0},
-            }
-            write_text(events_path, json.dumps(event) + "\n")
 
         # Pre-run snapshot inside worktree
         head_before = git_rev_parse("HEAD", cwd=wt_path)
