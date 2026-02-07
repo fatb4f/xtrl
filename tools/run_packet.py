@@ -367,12 +367,11 @@ def maybe_emit_helper_created(
     out_dir: str,
     out_base: pathlib.Path,
 ) -> None:
-    if not base_sha:
-        return
-    rc, out, _ = sh(["git", "diff", "--name-status", f"{base_sha}..HEAD"], cwd=wt_path)
-    if rc != 0:
-        return
-    new_paths = _parse_name_status(out.splitlines())
+    new_paths: List[str] = []
+    if base_sha:
+        rc, out, _ = sh(["git", "diff", "--name-status", f"{base_sha}..HEAD"], cwd=wt_path)
+        if rc == 0:
+            new_paths = _parse_name_status(out.splitlines())
     # Include untracked files
     rc_status, status_out, _ = sh(["git", "status", "--porcelain"], cwd=wt_path)
     if rc_status == 0:
@@ -399,7 +398,7 @@ def maybe_emit_helper_created(
                 existing.add(obj.get("helper_path"))
 
     # Compute diffstat
-    rc, numstat, _ = sh(["git", "diff", "--numstat", f"{base_sha}..HEAD"], cwd=wt_path)
+    rc, numstat, _ = sh(["git", "diff", "--numstat", f"{base_sha}..HEAD"], cwd=wt_path) if base_sha else (1, "", "")
     files_changed = 0
     insertions = 0
     deletions = 0
@@ -418,7 +417,7 @@ def maybe_emit_helper_created(
         files_changed = len(touched_paths)
 
     # touched_paths
-    rc, name_only, _ = sh(["git", "diff", "--name-only", f"{base_sha}..HEAD"], cwd=wt_path)
+    rc, name_only, _ = sh(["git", "diff", "--name-only", f"{base_sha}..HEAD"], cwd=wt_path) if base_sha else (1, "", "")
     touched_paths = [ln.strip() for ln in name_only.splitlines() if ln.strip()] if rc == 0 else []
     touched_paths = sorted(set(touched_paths + [p for p in new_paths if p]))
 
