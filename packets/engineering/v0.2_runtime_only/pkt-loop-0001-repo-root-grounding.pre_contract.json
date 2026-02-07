@@ -1,0 +1,78 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-loop-0001-repo-root-grounding",
+  "component": "xtrl",
+  "repo": "xtrl",
+  "base_ref": "origin/main",
+  "mode": "NORMAL",
+  "budgets": {
+    "time_minutes": 45,
+    "iteration_budget": 2,
+    "diff_budget": {
+      "max_files_changed": 20,
+      "max_lines_changed": 600
+    }
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "allowed_paths": [
+      "tools/**",
+      "schemas/**",
+      "control/**",
+      "docs/**",
+      "README.md"
+    ],
+    "forbidden_paths": [
+      ".git/**"
+    ],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "actions": {
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "evidence/events.jsonl",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "plan_card": {
+    "why": "Eliminate 'project_root' ambiguity by making repo_root a controller-derived constant and anchoring all paths under it.",
+    "what": "Emit repo_capsule.json and enforce repo-relative paths for helper_created refs, evidence refs, and action path operands.",
+    "how": "Use git rev-parse --show-toplevel in controller; add resolve_under(root, path) helpers; deny traversal/absolute refs.",
+    "where": "Controller/runner path resolution and any verifier that interprets helper_path/gate_decision_ref/prompt_ref.",
+    "who": "xtrl runner + verifiers",
+    "when": "Before PLAN/EXEC (PRECHECK) and during CHECK verification"
+  },
+  "inputs": {
+    "notes": [
+      "Add repo_capsule.json (repo_root, repo_key, base_ref, base_sha) to evidence or raw, and make it referenced by summary/decision trace.",
+      "Enforce that helper_created.helper_path and all {path,sha256} refs are repo-relative and resolve under repo_root (or under out_dir for evidence refs).",
+      "Add reason code ROOT_MISMATCH / PATH_ESCAPES_ROOT on violation."
+    ]
+  }
+}

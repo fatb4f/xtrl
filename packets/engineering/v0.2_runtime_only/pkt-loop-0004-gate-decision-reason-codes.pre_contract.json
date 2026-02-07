@@ -1,0 +1,77 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-loop-0004-gate-decision-reason-codes",
+  "component": "xtrl",
+  "repo": "xtrl",
+  "base_ref": "origin/main",
+  "mode": "NORMAL",
+  "budgets": {
+    "time_minutes": 45,
+    "iteration_budget": 2,
+    "diff_budget": {
+      "max_files_changed": 25,
+      "max_lines_changed": 800
+    }
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "allowed_paths": [
+      "tools/**",
+      "schemas/**",
+      "control/**",
+      "docs/**"
+    ],
+    "forbidden_paths": [
+      ".git/**"
+    ],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "actions": {
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "evidence/events.jsonl",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "plan_card": {
+    "why": "Make ALLOW/DENY decisions machine-actionable and stable across iterations.",
+    "what": "Emit GateDecision (ALLOW|DENY) with reason_codes[] and a 5\u201310 line decision_trace; keep summary.md consistent.",
+    "how": "Gate reads EvidenceCapsule signals; produces decision.json + explain/trace; denial must set next_base_ref pointer.",
+    "where": "CHECK/GATE stage outputs under out/<repo_key>/<packet_id>/evidence/",
+    "who": "controller gate",
+    "when": "GATE"
+  },
+  "inputs": {
+    "notes": [
+      "Introduce/normalize GateDecision artifact: decision (ALLOW|DENY), reason_codes[], decision_trace (5\u201310 lines).",
+      "On DENY: include next_base_ref/patch pointer for ITERATE.",
+      "Denials must be deterministic: missing evidence => DENY with EVIDENCE_MISSING."
+    ]
+  }
+}

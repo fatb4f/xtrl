@@ -1,0 +1,76 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-loop-0003-argv-only-actions",
+  "component": "xtrl",
+  "repo": "xtrl",
+  "base_ref": "origin/main",
+  "mode": "NORMAL",
+  "budgets": {
+    "time_minutes": 45,
+    "iteration_budget": 2,
+    "diff_budget": {
+      "max_files_changed": 30,
+      "max_lines_changed": 900
+    }
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "allowed_paths": [
+      "tools/**",
+      "schemas/**",
+      "control/**"
+    ],
+    "forbidden_paths": [
+      ".git/**"
+    ],
+    "forbidden_patterns": [
+      "bash\\s+-lc",
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "actions": {
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "evidence/events.jsonl",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "plan_card": {
+    "why": "Make execution deterministic and non-ambiguous by banning shell wrappers in actions.",
+    "what": "Require every action to be an argv vector executed directly; deny bash -lc patterns.",
+    "how": "Precheck: validate actions are arrays of strings; reject known shell wrappers; exec uses subprocess without shell.",
+    "where": "Contract schema validation + runner exec",
+    "who": "controller",
+    "when": "PRECHECK + EXEC"
+  },
+  "inputs": {
+    "notes": [
+      "Add/enable a precheck rule ACTION_ARGV_ONLY that denies any action argv starting with bash -lc or similar wrappers.",
+      "Update any tests/contracts to pass without bash -lc."
+    ]
+  }
+}

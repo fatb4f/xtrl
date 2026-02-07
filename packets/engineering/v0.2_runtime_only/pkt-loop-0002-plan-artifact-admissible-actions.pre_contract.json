@@ -1,0 +1,77 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-loop-0002-plan-artifact-admissible-actions",
+  "component": "xtrl",
+  "repo": "xtrl",
+  "base_ref": "origin/main",
+  "mode": "NORMAL",
+  "budgets": {
+    "time_minutes": 45,
+    "iteration_budget": 2,
+    "diff_budget": {
+      "max_files_changed": 25,
+      "max_lines_changed": 800
+    }
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "allowed_paths": [
+      "tools/**",
+      "schemas/**",
+      "control/**",
+      "docs/**"
+    ],
+    "forbidden_paths": [
+      ".git/**"
+    ],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "actions": {
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "evidence/events.jsonl",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "plan_card": {
+    "why": "Stop Codex from inventing actions by forcing PLAN to reference only contract-declared argv actions.",
+    "what": "Materialize a plan artifact (plan.json) and enforce that EXEC dispatches only actions declared in contract.json.",
+    "how": "Planner emits plan.json listing steps {action, argv_ref, expected_evidence}; controller validates plan against contract before exec.",
+    "where": "xtrl runner: PLAN stage + pre-exec validation",
+    "who": "Codex planner + controller",
+    "when": "Immediately before EXEC"
+  },
+  "inputs": {
+    "notes": [
+      "Introduce plan.json as a run artifact (raw/plan.json or evidence/plan.json) containing only action names that exist in contract.json actions{}.",
+      "Controller must deny any plan step referencing an undeclared action or argv mismatch (reason PLAN_ILLEGAL_ACTION).",
+      "Keep actions argv-only; no shell wrapper introduction in this packet."
+    ]
+  }
+}
