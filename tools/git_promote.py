@@ -46,6 +46,21 @@ def stdout_or_empty(argv: List[str], cwd: Path | None = None) -> str:
     return out if rc == 0 else ""
 
 
+def tests_exist(repo_root: Path) -> bool:
+    tests_dir = repo_root / "tests"
+    if tests_dir.exists():
+        for p in tests_dir.rglob("test_*.py"):
+            if p.is_file():
+                return True
+        for p in tests_dir.rglob("*.py"):
+            if p.is_file():
+                return True
+    for p in repo_root.rglob("test_*.py"):
+        if p.is_file():
+            return True
+    return False
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("packet_id")
@@ -91,6 +106,21 @@ def main() -> int:
             "packet_id": packet_id,
             "status": "DENY",
             "reason_codes": ["DIRTY_REPO_DENIED"],
+            "dry_run": args.dry_run,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates})
+        return 2
+
+    # tests must exist for promotion
+    has_tests = tests_exist(repo_root)
+    gates.append({"id": "tests_exist", "status": "PASS" if has_tests else "FAIL"})
+    if not has_tests:
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "DENY",
+            "reason_codes": ["TESTS_MISSING"],
             "dry_run": args.dry_run,
         }
         write_json(out_dir / "git" / "promotion.json", promotion)

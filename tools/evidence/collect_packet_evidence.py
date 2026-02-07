@@ -198,13 +198,17 @@ def write_junit_xml(path: Path, test_cmd: str, test_rc: Optional[int], test_resu
         write_text(path, content)
         return
     failures = 1 if test_result == "FAIL" else 0
+    skipped = 1 if test_result == "SKIPPED" else 0
     content = (
-        f'<testsuite name="{name}" tests="1" skipped="0" failures="{failures}" errors="0">\n'
+        f'<testsuite name="{name}" tests="1" skipped="{skipped}" failures="{failures}" errors="0">\n'
         f'  <testcase classname="xtrl" name="tests">\n'
     )
     if test_result == "FAIL":
         rc = test_rc if isinstance(test_rc, int) else "unknown"
         content += f'    <failure message="exit_code={rc}" />\n'
+    elif test_result == "SKIPPED":
+        rc = test_rc if isinstance(test_rc, int) else "unknown"
+        content += f'    <skipped message="exit_code={rc}" />\n'
     content += "  </testcase>\n</testsuite>\n"
     write_text(path, content)
 
@@ -485,8 +489,17 @@ def main() -> int:
     test_rc = meta.get("test_rc")
     tests_path = raw_dir / "tests.txt"
     test_result = "SKIP" if not test_cmd else "UNKNOWN"
+    test_reason = None
+    promotion_eligible = True
     if test_cmd and isinstance(test_rc, int):
-        test_result = "PASS" if test_rc == 0 else "FAIL"
+        if test_rc == 0:
+            test_result = "PASS"
+        elif test_rc == 5:
+            test_result = "SKIPPED"
+            test_reason = "NO_TESTS_COLLECTED"
+            promotion_eligible = False
+        else:
+            test_result = "FAIL"
 
     # Decision (meta decision cannot override harness violations)
     decision_from_meta = meta.get("decision")
@@ -525,8 +538,10 @@ def main() -> int:
             "command": test_cmd,
             "exit_code": test_rc,
             "result": test_result,
+            "reason": test_reason,
             "raw_path": "raw/tests.txt" if tests_path.exists() else None,
         },
+        "promotion_eligible": promotion_eligible,
         "runner": {
             "version": meta.get("runner_version"),
             "python": meta.get("python"),
@@ -557,8 +572,11 @@ def main() -> int:
     md.append("## Tests")
     md.append(f"- Command: `{test_cmd}`" if test_cmd else "- Command: *(none)*")
     md.append(f"- Result: **{test_result}**")
+    if test_reason:
+        md.append(f"- Reason: `{test_reason}`")
     if isinstance(test_rc, int):
         md.append(f"- Exit code: `{test_rc}`")
+    md.append(f"- Promotion eligible: `{promotion_eligible}`")
     md.append("")
     md.append("## Constraint violations")
     if violations:
@@ -612,7 +630,10 @@ def main() -> int:
     write_junit_xml(evidence_dir / "tests.junit.xml", test_cmd, test_rc, test_result)
 
     write_commands_log(out_dir / "commands.log", raw_dir)
-    write_text(out_dir / "summary.md", f"Decision: {decision}\nTests: {test_result}\n")
+    write_text(
+        out_dir / "summary.md",
+        f"Decision: {decision}\nTests: {test_result}\nPromotion eligible: {promotion_eligible}\n",
+    )
 
     # Manifest (exclude manifest.* itself)
     entries = []

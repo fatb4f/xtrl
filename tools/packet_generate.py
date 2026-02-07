@@ -146,6 +146,7 @@ def build_contract(pre_contract: Dict[str, Any]) -> Dict[str, Any]:
         "packet_id": packet_id,
         "area": "engineering",
         "repo": repo,
+        "mode": pre_contract.get("mode"),
         "base_ref": pre_contract["base_ref"],
         "branch": f"packet/{packet_id}",
         "github_ops_required": False,
