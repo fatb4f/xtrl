@@ -424,9 +424,10 @@ def maybe_emit_helper_created(
     gate_ref = gate_evidence_path(out_dir, packet_id, "g0_enter_work")
     prompt_ref = out_base / "exec-prompt.md"
 
+    wt_root = pathlib.Path(wt_path).resolve()
     helper_candidates: List[pathlib.Path] = []
     for rel_path in helper_files:
-        helper_abs = (pathlib.Path(wt_path) / rel_path).resolve()
+        helper_abs = (wt_root / rel_path).resolve()
         if helper_abs.is_dir():
             for p in helper_abs.rglob("*"):
                 if p.is_file():
@@ -435,7 +436,7 @@ def maybe_emit_helper_created(
             helper_candidates.append(helper_abs)
 
     for helper_abs in helper_candidates:
-        rel_path = helper_abs.relative_to(repo_root).as_posix()
+        rel_path = helper_abs.relative_to(wt_root).as_posix()
         if rel_path in existing:
             continue
         if not helper_abs.exists() or not helper_abs.is_file():
