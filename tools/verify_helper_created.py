@@ -70,15 +70,23 @@ def main() -> int:
         raise SystemExit("evidence/events.jsonl not found")
     events_path = sorted(candidates, key=lambda x: x[0], reverse=True)[0][1]
     out_dir = events_path.parents[1]
+    link_path = out_dir / "link.json"
+    worktree_path = None
+    if link_path.exists():
+        try:
+            link = read_json(link_path)
+            worktree_path = link.get("worktree_path")
+        except Exception:
+            worktree_path = None
+
     evidence_path = out_dir / "evidence.json"
-    if not evidence_path.exists():
-        raise SystemExit("evidence.json missing for helper_created verification")
-    evidence = read_json(evidence_path)
-    worktree_path = (
-        evidence.get("worktree", {}).get("path")
-        or evidence.get("runner", {}).get("meta", {}).get("worktree_path")
-        or evidence.get("runner", {}).get("meta", {}).get("resolved", {}).get("worktree_path")
-    )
+    evidence = read_json(evidence_path) if evidence_path.exists() else {}
+    if worktree_path is None:
+        worktree_path = (
+            evidence.get("worktree", {}).get("path")
+            or evidence.get("runner", {}).get("meta", {}).get("worktree_path")
+            or evidence.get("runner", {}).get("meta", {}).get("resolved", {}).get("worktree_path")
+        )
     repo_root = Path(worktree_path or evidence.get("repo", {}).get("root") or ".").resolve()
 
     lines = [ln for ln in events_path.read_text(encoding="utf-8").splitlines() if ln.strip()]
