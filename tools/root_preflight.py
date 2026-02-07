@@ -280,6 +280,7 @@ def validate_contract(contract: Dict[str, Any]) -> Optional[str]:
         "github_ops_required",
         "net_ops_required",
         "mode",
+        "actions",
         "allowed_paths",
         "forbidden_outputs",
         "worktree_policy",

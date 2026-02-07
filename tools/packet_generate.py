@@ -150,6 +150,7 @@ def build_contract(pre_contract: Dict[str, Any]) -> Dict[str, Any]:
         "branch": f"packet/{packet_id}",
         "github_ops_required": False,
         "net_ops_required": False,
+        "actions": actions,
         "allowed_paths": constraints.get("allowed_paths") if isinstance(constraints, dict) else [],
         "forbidden_outputs": forbidden_outputs or [],
         "worktree_policy": {
