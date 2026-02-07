@@ -14,6 +14,7 @@ Notes:
 from __future__ import annotations
 
 import argparse
+import shlex
 import datetime as _dt
 import hashlib
 import json
@@ -535,9 +536,21 @@ def run_commands(
             cmd_str = str(c)
             if not cmd_str.strip():
                 continue
-            cmd_display = cmd_str
+            try:
+                argv = shlex.split(cmd_str)
+            except ValueError:
+                argv = []
+            if not argv:
+                results.append({"name": kind, "argv": None, "cmd": cmd_str, "rc": 2})
+                out_log.append(f"$ {cmd_str}")
+                out_log.append("invalid command: failed to parse argv")
+                break
+            if out_base and "evidence/tests.junit.xml" in argv:
+                idx = argv.index("evidence/tests.junit.xml")
+                argv[idx] = str(out_base / "evidence" / "tests.junit.xml")
+            cmd_display = " ".join(argv)
             out_log.append(f"$ {cmd_display}")
-            rc, out, err = sh(["bash", "-lc", cmd_str], cwd=cwd)
+            rc, out, err = sh(argv, cwd=cwd)
         results.append({"name": kind, "argv": argv, "cmd": cmd_display, "rc": rc})
         if out.strip():
             out_log.append(out.rstrip())

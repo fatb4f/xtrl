@@ -128,16 +128,15 @@ def build_contract(pre_contract: Dict[str, Any]) -> Dict[str, Any]:
     diff_budget = budgets.get("diff_budget") if isinstance(budgets, dict) else {}
     actions = pre_contract.get("actions") or {}
 
-    run_cfg: Dict[str, Any] = {"regen_cmd": "", "test_cmd": "", "commands": []}
+    run_cfg: Dict[str, Any] = {"regen_cmd": [], "test_cmd": [], "commands": []}
     if isinstance(actions, dict):
         for name, argv in actions.items():
             if not isinstance(argv, list) or not argv or any(not isinstance(x, str) for x in argv):
                 continue
-            cmd = shlex.join(argv)
             if name == "test" and not run_cfg["test_cmd"]:
-                run_cfg["test_cmd"] = cmd
+                run_cfg["test_cmd"] = argv
             else:
-                run_cfg["commands"].append(cmd)
+                run_cfg["commands"].append(argv)
 
     forbidden_outputs = constraints.get("forbidden_paths") if isinstance(constraints, dict) else []
 
