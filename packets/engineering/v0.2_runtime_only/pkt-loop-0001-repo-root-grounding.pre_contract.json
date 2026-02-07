@@ -41,7 +41,9 @@
       "python",
       "-m",
       "pytest",
-      "-q"
+      "-q",
+      "--junitxml",
+      "evidence/tests.junit.xml"
     ]
   },
   "evidence": {

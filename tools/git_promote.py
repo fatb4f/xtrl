@@ -112,6 +112,43 @@ def main() -> int:
         write_json(out_dir / "git" / "gates.json", {"gates": gates})
         return 2
 
+    # Gate on evidence decision + reasons (prod deny on TESTS_MISSING)
+    evidence_path = out_dir / "evidence.json"
+    if evidence_path.exists():
+        try:
+            evidence = read_json(evidence_path)
+        except Exception:
+            evidence = {}
+    else:
+        evidence = {}
+    evidence_decision = evidence.get("decision")
+    evidence_reasons = evidence.get("reasons") if isinstance(evidence.get("reasons"), list) else []
+    gates.append({"id": "gate_decision_allow", "status": "PASS" if evidence_decision == "ALLOW" else "FAIL"})
+    if evidence_decision != "ALLOW":
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "DENY",
+            "reason_codes": ["EVIDENCE_DENIED"],
+            "dry_run": args.dry_run,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates})
+        return 2
+    tests_missing = "TESTS_MISSING" in evidence_reasons
+    gates.append({"id": "tests_missing_absent", "status": "PASS" if not tests_missing else "FAIL"})
+    if tests_missing:
+        promotion = {
+            "timestamp": utc_now(),
+            "packet_id": packet_id,
+            "status": "DENY",
+            "reason_codes": ["TESTS_MISSING"],
+            "dry_run": args.dry_run,
+        }
+        write_json(out_dir / "git" / "promotion.json", promotion)
+        write_json(out_dir / "git" / "gates.json", {"gates": gates})
+        return 2
+
     # tests must exist for promotion
     has_tests = tests_exist(repo_root)
     gates.append({"id": "tests_exist", "status": "PASS" if has_tests else "FAIL"})

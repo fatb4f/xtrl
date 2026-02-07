@@ -498,6 +498,8 @@ def main() -> int:
             test_result = "SKIPPED"
             test_reason = "NO_TESTS_COLLECTED"
             promotion_eligible = False
+        elif test_rc in {1, 2, 3, 4}:
+            test_result = "FAIL"
         else:
             test_result = "FAIL"
 
@@ -510,6 +512,8 @@ def main() -> int:
     reasons = meta.get("reasons") or []
     if not isinstance(reasons, list):
         reasons = [str(reasons)]
+    if test_result == "SKIPPED" and "TESTS_MISSING" not in reasons:
+        reasons = list(reasons) + ["TESTS_MISSING"]
     if violations and meta.get("decision") == "ALLOW":
         reasons = list(reasons) + ["constraint_violations"]
 

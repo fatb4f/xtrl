@@ -499,12 +499,14 @@ def run_commands(
     cwd: str,
     out_log: List[str],
     post_cmd: callable | None = None,
+    *,
+    out_base: pathlib.Path | None = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Runs regen_cmd, test_cmd, then run.commands (in that order)."""
 
     cmds: List[Tuple[str, str]] = []  # (kind, cmd)
-    regen = (run_cfg.get("regen_cmd") or "").strip()
-    test = (run_cfg.get("test_cmd") or "").strip()
+    regen = run_cfg.get("regen_cmd")
+    test = run_cfg.get("test_cmd")
     extra = run_cfg.get("commands") or []
 
     if regen:
@@ -512,16 +514,31 @@ def run_commands(
     if test:
         cmds.append(("test", test))
     if isinstance(extra, list):
-        cmds.extend([("cmd", str(x)) for x in extra if str(x).strip()])
+        cmds.extend([("cmd", x) for x in extra if x])
 
     results: List[Dict[str, Any]] = []
     test_rc: int | None = None
     tests_output: str | None = None
 
     for kind, c in cmds:
-        out_log.append(f"$ {c}")
-        rc, out, err = sh(["bash", "-lc", c], cwd=cwd)
-        results.append({"kind": kind, "cmd": c, "rc": rc})
+        argv: List[str] | None = None
+        cmd_display = ""
+        if isinstance(c, list):
+            argv = [str(x) for x in c]
+            if out_base and "evidence/tests.junit.xml" in argv:
+                idx = argv.index("evidence/tests.junit.xml")
+                argv[idx] = str(out_base / "evidence" / "tests.junit.xml")
+            cmd_display = " ".join(argv)
+            out_log.append(f"$ {cmd_display}")
+            rc, out, err = sh(argv, cwd=cwd)
+        else:
+            cmd_str = str(c)
+            if not cmd_str.strip():
+                continue
+            cmd_display = cmd_str
+            out_log.append(f"$ {cmd_display}")
+            rc, out, err = sh(["bash", "-lc", cmd_str], cwd=cwd)
+        results.append({"name": kind, "argv": argv, "cmd": cmd_display, "rc": rc})
         if out.strip():
             out_log.append(out.rstrip())
         if err.strip():
@@ -813,7 +830,13 @@ def main(argv: List[str]) -> int:
                 out_base=out_base,
             )
 
-        cmd_results, run_meta = run_commands(run_cfg, cwd=wt_path, out_log=run_log, post_cmd=_post_cmd)
+        cmd_results, run_meta = run_commands(
+            run_cfg,
+            cwd=wt_path,
+            out_log=run_log,
+            post_cmd=_post_cmd,
+            out_base=out_base,
+        )
 
         test_rc = run_meta.get("test_rc")
         tests_output = run_meta.get("tests_output")
@@ -827,7 +850,18 @@ def main(argv: List[str]) -> int:
         write_text(raw_dir / "status_after.txt", "\n".join(status_after) + ("\n" if status_after else ""))
 
         final_rc = int(cmd_results[-1]["rc"]) if cmd_results else 0
-        decision = "ALLOW" if final_rc == 0 else "DENY"
+        non_test_failed = any(item.get("name") != "test" and item.get("rc") != 0 for item in cmd_results)
+        if non_test_failed:
+            decision = "DENY"
+            reasons.append("non_test_failed")
+        elif test_rc == 5:
+            decision = "ALLOW"
+            reasons.append("TESTS_MISSING")
+        elif isinstance(test_rc, int) and test_rc != 0:
+            decision = "DENY"
+            reasons.append("tests_failed")
+        else:
+            decision = "ALLOW"
 
         # Keep a compact machine-readable run record (the collector handles canonical evidence.json)
         write_json(raw_dir / "run_commands.json", {"commands": cmd_results, "final_rc": final_rc})
