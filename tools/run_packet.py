@@ -718,6 +718,9 @@ def main(argv: List[str]) -> int:
         required_files = contract.get("evidence_required") or []
         if isinstance(required_files, list) and required_files:
             ensure_required_files(out_base, required_files)
+            events_path = out_base / "evidence" / "events.jsonl"
+            if events_path.exists():
+                write_text(events_path, "")
         evidence_path = out_base / "evidence.json"
         seed = {
             "schema_version": "xtrl.evidence/v0.2",
