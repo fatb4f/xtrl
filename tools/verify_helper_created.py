@@ -74,7 +74,12 @@ def main() -> int:
     if not evidence_path.exists():
         raise SystemExit("evidence.json missing for helper_created verification")
     evidence = read_json(evidence_path)
-    repo_root = Path(evidence.get("repo", {}).get("root") or ".").resolve()
+    worktree_path = (
+        evidence.get("worktree", {}).get("path")
+        or evidence.get("runner", {}).get("meta", {}).get("worktree_path")
+        or evidence.get("runner", {}).get("meta", {}).get("resolved", {}).get("worktree_path")
+    )
+    repo_root = Path(worktree_path or evidence.get("repo", {}).get("root") or ".").resolve()
 
     lines = [ln for ln in events_path.read_text(encoding="utf-8").splitlines() if ln.strip()]
     if not lines:
