@@ -426,7 +426,7 @@ def maybe_emit_helper_created(
 
     helper_candidates: List[pathlib.Path] = []
     for rel_path in helper_files:
-        helper_abs = (repo_root / rel_path).resolve()
+        helper_abs = (pathlib.Path(wt_path) / rel_path).resolve()
         if helper_abs.is_dir():
             for p in helper_abs.rglob("*"):
                 if p.is_file():
