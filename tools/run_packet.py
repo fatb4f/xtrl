@@ -373,6 +373,13 @@ def maybe_emit_helper_created(
     if rc != 0:
         return
     new_paths = _parse_name_status(out.splitlines())
+    # Include untracked files
+    rc_status, status_out, _ = sh(["git", "status", "--porcelain"], cwd=wt_path)
+    if rc_status == 0:
+        for ln in status_out.splitlines():
+            ln = ln.strip()
+            if ln.startswith("?? "):
+                new_paths.append(ln[3:].strip())
     helper_roots = ("tools/", "helpers/")
     helper_files = [p for p in new_paths if p.startswith(helper_roots)]
     if not helper_files:
@@ -407,10 +414,13 @@ def maybe_emit_helper_created(
             if d.isdigit():
                 deletions += int(d)
             files_changed += 1
+    else:
+        files_changed = len(touched_paths)
 
     # touched_paths
     rc, name_only, _ = sh(["git", "diff", "--name-only", f"{base_sha}..HEAD"], cwd=wt_path)
     touched_paths = [ln.strip() for ln in name_only.splitlines() if ln.strip()] if rc == 0 else []
+    touched_paths = sorted(set(touched_paths + [p for p in new_paths if p]))
 
     gate_ref = gate_evidence_path(out_dir, packet_id, "g0_enter_work")
     prompt_ref = out_base / "exec-prompt.md"
