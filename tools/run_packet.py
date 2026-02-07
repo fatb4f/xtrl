@@ -372,13 +372,15 @@ def maybe_emit_helper_created(
         rc, out, _ = sh(["git", "diff", "--name-status", f"{base_sha}..HEAD"], cwd=wt_path)
         if rc == 0:
             new_paths = _parse_name_status(out.splitlines())
-    # Include untracked files
-    rc_status, status_out, _ = sh(["git", "status", "--porcelain"], cwd=wt_path)
-    if rc_status == 0:
-        for ln in status_out.splitlines():
+    # Include untracked files (list explicit files, not just directories)
+    untracked_files: List[str] = []
+    rc_untracked, untracked_out, _ = sh(["git", "ls-files", "--others", "--exclude-standard"], cwd=wt_path)
+    if rc_untracked == 0:
+        for ln in untracked_out.splitlines():
             ln = ln.strip()
-            if ln.startswith("?? "):
-                new_paths.append(ln[3:].strip())
+            if ln:
+                untracked_files.append(ln)
+                new_paths.append(ln)
     helper_roots = ("tools/", "helpers/")
     helper_files = [p for p in new_paths if p.startswith(helper_roots)]
     if not helper_files:
@@ -413,7 +415,16 @@ def maybe_emit_helper_created(
             if d.isdigit():
                 deletions += int(d)
             files_changed += 1
-    else:
+    # If only untracked files were added, synthesize diffstat from them.
+    if files_changed == 0 and untracked_files:
+        files_changed = len(untracked_files)
+        for rel_path in untracked_files:
+            try:
+                data = (pathlib.Path(wt_path) / rel_path).read_text(encoding="utf-8")
+                insertions += data.count("\n")
+            except Exception:
+                continue
+    elif rc != 0:
         files_changed = len(touched_paths)
 
     # touched_paths
