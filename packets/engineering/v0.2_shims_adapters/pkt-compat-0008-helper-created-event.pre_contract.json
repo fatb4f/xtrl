@@ -1,5 +1,9 @@
 {
   "actions": {
+    "create_helper": [
+      "python",
+      "tools/emit_helper_stub.py"
+    ],
     "test": [
       "bash",
       "-lc",

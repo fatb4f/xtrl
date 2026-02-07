@@ -336,6 +336,119 @@ def run_gate(
     return p.returncode
 
 
+def _parse_name_status(lines: List[str]) -> List[str]:
+    paths: List[str] = []
+    for ln in lines:
+        ln = ln.strip()
+        if not ln:
+            continue
+        parts = ln.split("\t")
+        if len(parts) < 2:
+            continue
+        status = parts[0]
+        if status.startswith("A"):
+            path = parts[1]
+        elif "->" in ln:
+            # e.g. "R100\told -> new"
+            path = parts[-1].split("->", 1)[1].strip() if "->" in parts[-1] else parts[-1]
+        else:
+            continue
+        paths.append(path)
+    return paths
+
+
+def maybe_emit_helper_created(
+    *,
+    repo_root: pathlib.Path,
+    wt_path: str,
+    base_sha: str,
+    packet_id: str,
+    base_ref: str,
+    out_dir: str,
+    out_base: pathlib.Path,
+) -> None:
+    if not base_sha:
+        return
+    rc, out, _ = sh(["git", "diff", "--name-status", f"{base_sha}..HEAD"], cwd=wt_path)
+    if rc != 0:
+        return
+    new_paths = _parse_name_status(out.splitlines())
+    helper_roots = ("tools/", "helpers/")
+    helper_files = [p for p in new_paths if p.startswith(helper_roots)]
+    if not helper_files:
+        return
+
+    # Read existing events to avoid duplicates
+    events_path = out_base / "evidence" / "events.jsonl"
+    events_path.parent.mkdir(parents=True, exist_ok=True)
+    existing = set()
+    if events_path.exists():
+        for line in events_path.read_text(encoding="utf-8").splitlines():
+            try:
+                obj = json.loads(line)
+            except Exception:
+                continue
+            if obj.get("event") == "helper_created":
+                existing.add(obj.get("helper_path"))
+
+    # Compute diffstat
+    rc, numstat, _ = sh(["git", "diff", "--numstat", f"{base_sha}..HEAD"], cwd=wt_path)
+    files_changed = 0
+    insertions = 0
+    deletions = 0
+    if rc == 0:
+        for ln in numstat.splitlines():
+            parts = ln.split("\t")
+            if len(parts) < 2:
+                continue
+            a, d = parts[0], parts[1]
+            if a.isdigit():
+                insertions += int(a)
+            if d.isdigit():
+                deletions += int(d)
+            files_changed += 1
+
+    # touched_paths
+    rc, name_only, _ = sh(["git", "diff", "--name-only", f"{base_sha}..HEAD"], cwd=wt_path)
+    touched_paths = [ln.strip() for ln in name_only.splitlines() if ln.strip()] if rc == 0 else []
+
+    gate_ref = gate_evidence_path(out_dir, packet_id, "g0_enter_work")
+    prompt_ref = out_base / "exec-prompt.md"
+
+    for rel_path in helper_files:
+        if rel_path in existing:
+            continue
+        helper_abs = (repo_root / rel_path).resolve()
+        if not helper_abs.exists() or not helper_abs.is_file():
+            continue
+        event = {
+            "event": "helper_created",
+            "packet_id": packet_id,
+            "run_id": packet_id,
+            "base_ref": base_ref,
+            "base_sha": base_sha,
+            "helper_path": rel_path,
+            "helper_hash": sha256_path(helper_abs),
+            "trigger_reason_code": "HELPER_BIRTH_DETECTED",
+            "gate_decision_ref": {
+                "path": str(gate_ref),
+                "sha256": sha256_path(gate_ref) if gate_ref.exists() else "",
+            },
+            "prompt_ref": {
+                "path": str(prompt_ref),
+                "sha256": sha256_path(prompt_ref) if prompt_ref.exists() else "",
+            },
+            "touched_paths": touched_paths,
+            "diffstat": {
+                "files_changed": files_changed,
+                "insertions": insertions,
+                "deletions": deletions,
+            },
+        }
+        with events_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(event) + "\n")
+
+
 def ensure_required_files(out_dir: pathlib.Path, required: List[str]) -> None:
     for rel in required:
         path = out_dir / rel
@@ -350,7 +463,12 @@ def ensure_required_files(out_dir: pathlib.Path, required: List[str]) -> None:
             path.touch()
 
 
-def run_commands(run_cfg: Dict[str, Any], cwd: str, out_log: List[str]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+def run_commands(
+    run_cfg: Dict[str, Any],
+    cwd: str,
+    out_log: List[str],
+    post_cmd: callable | None = None,
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Runs regen_cmd, test_cmd, then run.commands (in that order)."""
 
     cmds: List[Tuple[str, str]] = []  # (kind, cmd)
@@ -381,6 +499,12 @@ def run_commands(run_cfg: Dict[str, Any], cwd: str, out_log: List[str]) -> Tuple
         if kind == "test":
             test_rc = rc
             tests_output = (out or "") + ("\n" if out and not out.endswith("\n") else "") + (err or "")
+
+        if post_cmd:
+            try:
+                post_cmd(kind, c, rc)
+            except Exception:
+                pass
 
         if rc != 0:
             break
@@ -642,7 +766,20 @@ def main(argv: List[str]) -> int:
         write_text(raw_dir / "status_before.txt", "\n".join(status_before) + ("\n" if status_before else ""))
 
         run_cfg = contract.get("run", {})
-        cmd_results, run_meta = run_commands(run_cfg, cwd=wt_path, out_log=run_log)
+        def _post_cmd(kind: str, cmd: str, rc: int) -> None:
+            if rc != 0:
+                return
+            maybe_emit_helper_created(
+                repo_root=repo_root,
+                wt_path=wt_path,
+                base_sha=base_sha or "",
+                packet_id=packet_id,
+                base_ref=base_ref,
+                out_dir=out_dir,
+                out_base=out_base,
+            )
+
+        cmd_results, run_meta = run_commands(run_cfg, cwd=wt_path, out_log=run_log, post_cmd=_post_cmd)
 
         test_rc = run_meta.get("test_rc")
         tests_output = run_meta.get("tests_output")
