@@ -38,6 +38,9 @@ def current_packet_id() -> str:
 
 
 def find_out_dir(packet_id: str, repo_root: Path) -> Path:
+    env_out = os.environ.get("XTRL_OUT_DIR")
+    if env_out:
+        return Path(env_out).expanduser().resolve()
     out_root = repo_root / "out"
     for candidate in out_root.rglob("packet.json"):
         try:

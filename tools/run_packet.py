@@ -855,6 +855,7 @@ def main(argv: List[str]) -> int:
                 out_base=out_base,
             )
 
+        os.environ["XTRL_OUT_DIR"] = str(out_base)
         cmd_results, run_meta = run_commands(
             run_cfg,
             cwd=wt_path,
