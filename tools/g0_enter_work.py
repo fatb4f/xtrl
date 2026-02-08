@@ -117,13 +117,16 @@ class Decision:
             self.message = message
 
 
-def default_evidence_path(contract: Optional[Dict[str, Any]], state_root: Path) -> Path:
-    out_dir = str(resolve_state_path(None, state_root, "out"))
+def default_evidence_path(contract: Optional[Dict[str, Any]], repo_root: Path) -> Path:
+    out_dir = str((repo_root / "out").resolve())
     packet_id = "unknown"
     if contract:
         packet_id = str(contract.get("packet_id") or packet_id)
         evidence = contract.get("evidence") or {}
-        out_dir = str(resolve_state_path(evidence.get("out_dir"), state_root, "out"))
+        raw = evidence.get("out_dir")
+        if isinstance(raw, str) and raw:
+            expanded = Path(os.path.expandvars(os.path.expanduser(raw)))
+            out_dir = str(expanded if expanded.is_absolute() else (repo_root / expanded).resolve())
     return Path(out_dir) / packet_id / "g0_enter_work.json"
 
 
@@ -156,7 +159,7 @@ def main() -> int:
     evidence_path = (
         Path(args.evidence_out)
         if args.evidence_out
-        else default_evidence_path(contract, state_root)
+        else default_evidence_path(contract, repo_root)
     )
     evidence_path.parent.mkdir(parents=True, exist_ok=True)
 

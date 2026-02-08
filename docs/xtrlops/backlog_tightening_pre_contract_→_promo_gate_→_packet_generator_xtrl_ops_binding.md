@@ -109,8 +109,8 @@ PromoGate **DENIES** if any are true:
 
 ### Gate outputs (always)
 Write GateDecision to OUT_DIR:
-- `$CODEX_STATE/xtrl/out/<repo>/<packet_id>/gate/decision.json`
-- optional `$CODEX_STATE/xtrl/out/<repo>/<packet_id>/gate/explain.md`
+- `<repo_root>/out/<repo>/<packet_id>/gate/decision.json`
+- optional `<repo_root>/out/<repo>/<packet_id>/gate/explain.md`
 
 ---
 
@@ -127,7 +127,7 @@ Write GateDecision to OUT_DIR:
 
 ### Required materialization target (OUT_DIR)
 Default:
-- `OUT_DIR = $CODEX_STATE/xtrl/out/<repo>/<packet_id>`
+- `OUT_DIR = <repo_root>/out/<repo>/<packet_id>`
 
 On ALLOW, generator writes:
 - `OUT_DIR/contract.json`
@@ -294,4 +294,3 @@ Optional pre-seed (consistent with binding):
   - `completed/<packet_id>/...`
 
 This reduces filesystem quoting risk and makes packet identity purely structural.
-

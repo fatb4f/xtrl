@@ -5,12 +5,7 @@ import argparse
 import json
 from pathlib import Path
 
-from path_utils import (
-    resolve_contract_path,
-    resolve_repo_root,
-    resolve_state_path,
-    resolve_state_root,
-)
+from path_utils import resolve_contract_path, resolve_repo_root, resolve_state_root
 
 
 def parse_args() -> argparse.Namespace:
@@ -30,7 +25,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     repo_root = resolve_repo_root(args.repo_root)
-    state_root = resolve_state_root(args.codex_state, args.codex_home)
+    resolve_state_root(args.codex_state, args.codex_home)
     contract_path = resolve_contract_path(args.contract, repo_root)
     if not contract_path.exists():
         raise SystemExit(f"contract not found: {contract_path}")
@@ -40,7 +35,12 @@ def main() -> int:
     if not packet_id:
         raise SystemExit("packet_id missing from contract")
     evidence_cfg = contract.get("evidence") or {}
-    out_dir = resolve_state_path(evidence_cfg.get("out_dir"), state_root, "out")
+    out_dir_raw = evidence_cfg.get("out_dir")
+    if isinstance(out_dir_raw, str) and out_dir_raw:
+        expanded = Path(out_dir_raw).expanduser()
+        out_dir = expanded if expanded.is_absolute() else (repo_root / expanded).resolve()
+    else:
+        out_dir = (repo_root / "out").resolve()
     evidence_path = (Path(out_dir) / packet_id).resolve()
 
     print(evidence_path)

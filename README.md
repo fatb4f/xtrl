@@ -54,7 +54,7 @@ bash $CODEX_HOME/skills/xtrl.packet-runner/scripts/run_packet.sh \
 ## Evidence output
 Evidence bundles are written under:
 ```
-$CODEX_STATE/xtrl/out/<packet_id>/
+<repo_root>/out/<packet_id>/
 ```
 
 ## Install wrappers (repo-shipped)

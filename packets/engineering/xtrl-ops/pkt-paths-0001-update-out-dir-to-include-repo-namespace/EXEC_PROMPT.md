@@ -6,7 +6,7 @@
   "contract_path": "$CODEX_STATE/xtrl/packets/engineering/pkt-paths-0001-update-out-dir-to-include-repo-namespace/contract.json",
   "worktree_root": "$CODEX_STATE/xtrl/worktrees/pkt-paths-0001-update-out-dir-to-include-repo-namespace/",
   "tasks": [
-    "Default OUT_DIR to $CODEX_STATE/xtrl/out/<repo>/<packet_id>.",
+    "Default OUT_DIR to <repo_root>/out/<repo>/<packet_id>.",
     "Maintain backward compatibility for legacy OUT_DIR paths.",
     "Derive repo namespace correctly for local and remote URLs."
   ],
@@ -27,7 +27,7 @@
 - Worktree root: `$CODEX_STATE/xtrl/worktrees/pkt-paths-0001-update-out-dir-to-include-repo-namespace/`
 
 ## Tasks
-1) Default OUT_DIR to $CODEX_STATE/xtrl/out/<repo>/<packet_id>.
+1) Default OUT_DIR to <repo_root>/out/<repo>/<packet_id>.
 2) Maintain backward compatibility for legacy OUT_DIR paths.
 3) Derive repo namespace correctly for local and remote URLs.
 
@@ -35,6 +35,6 @@
 - OUT_DIR derivation matches the new scheme and legacy path handling remains functional.
 
 ## Evidence
-Required artifacts under `$CODEX_STATE/xtrl/out/<packet_id>/`:
+Required artifacts under `<repo_root>/out/<packet_id>/`:
 - `summary.md`
 - `raw/diffstat.txt`

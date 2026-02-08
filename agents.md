@@ -19,7 +19,7 @@ roots (config, state, data).
 - `$CODEX_DATA/vendor/xtrl/schemas/` - JSON schemas for contracts and the manifest
 - `$CODEX_STATE/xtrl/packets/` - packet templates and example packets
 - `$CODEX_DATA/vendor/xtrl/tools/` - execution tools (preflight, worktree, evidence)
-- `$CODEX_STATE/xtrl/out/<packet_id>/` - evidence bundles
+- `<repo_root>/out/<packet_id>/` - evidence bundles
 - `$CODEX_STATE/xtrl/worktrees/<packet_id>/` - isolated worktrees (WORK zone)
 - `$CODEX_HOME/skills/xtrl.packet-template/` - packet scaffolding skill
 - `$CODEX_HOME/skills/xtrl.packet-runner/` - packet runner skill

@@ -25,7 +25,7 @@ Worktrees live at:
 
 ### D5 — Gate/evidence SSOT location
 Out dir:
-- `$CODEX_STATE/xtrl/out/<repo>/<packet_id>/`
+- `<repo_root>/out/<repo>/<packet_id>/`
 
 Minimum files expected in out dir:
 - `contract.json`

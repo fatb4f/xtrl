@@ -73,7 +73,7 @@ CI: `python tools/gen_binding_views.py` then **regen-and-compare**; deny merge i
     "max_runtime_seconds": 900
   },
   "evidence": {
-    "out_layout": "CODEX_STATE/xtrl/out/<packet_id>/...",
+    "out_layout": "<repo_root>/out/<packet_id>/...",
     "required_files": [
       "contract.json",
       "evidence.json",
@@ -225,4 +225,3 @@ flowchart TD
   - diff budgets overrides (within global maxima)
   - allowed actions subset
 - Overlays must not weaken PlantSpec invariants (e.g., cannot allow `.codex/` or binary diffs).
-

@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from path_utils import resolve_codex_state, resolve_state_root
+from path_utils import resolve_codex_state, resolve_repo_root, resolve_state_root
 
 
 REQUIRED_FIELDS = [
@@ -216,12 +216,13 @@ def main() -> None:
     pre_contract = read_json(pre_path)
 
     codex_state = resolve_codex_state(args.codex_state)
-    state_root = resolve_state_root(str(codex_state))
+    resolve_state_root(str(codex_state))
+    repo_root = resolve_repo_root(None)
 
     repo = pre_contract.get("repo") or "unknown"
     packet_id = pre_contract.get("packet_id") or "unknown"
 
-    out_dir = state_root / "out" / repo / packet_id
+    out_dir = repo_root / "out" / repo / packet_id
     gate_dir = out_dir / "gate"
 
     allow, reasons, errors = promo_gate(pre_contract)

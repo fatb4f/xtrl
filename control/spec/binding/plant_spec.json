@@ -24,7 +24,7 @@
     "max_runtime_seconds": 900
   },
   "evidence": {
-    "out_layout": "CODEX_STATE/xtrl/out/<repo>/<packet_id>/...",
+    "out_layout": "<repo_root>/out/<repo>/<packet_id>/...",
     "required_files": [
       "contract.json",
       "evidence.json",

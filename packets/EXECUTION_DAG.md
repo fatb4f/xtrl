@@ -25,7 +25,7 @@ human-in-the-loop instructions.
 - **S0 Root Preflight**: Validate base invariants (clean root unless contract allows).
 - **G0 Enter WORK**: Provision/validate `$CODEX_STATE/xtrl/worktrees/<packet_id>/`.
 - **S1 Execute in WORK**: Run tasks strictly within the worktree and contract bounds.
-- **S2 Evidence**: Emit required evidence under `$CODEX_STATE/xtrl/out/<packet_id>/`.
+- **S2 Evidence**: Emit required evidence under `<repo_root>/out/<packet_id>/`.
 - **PROMOTE**: Repo-specific integration gate outside xtrl.
 
 ## Tools

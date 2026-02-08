@@ -31,7 +31,7 @@ python -m compileall tools
 
 Evidence
 
-Required artifacts under $CODEX_STATE/xtrl/out/packet-010-houston-backlog-core/:
+Required artifacts under <repo_root>/out/packet-010-houston-backlog-core/:
 
 summary.md
 

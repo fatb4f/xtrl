@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-from path_utils import resolve_codex_state, resolve_state_root
+from path_utils import resolve_repo_root
 
 
 def utc_now() -> str:
@@ -33,8 +33,8 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def find_out_dir(state_root: Path, packet_id: str) -> Path:
-    out_root = state_root / "out"
+def find_out_dir(repo_root: Path, packet_id: str) -> Path:
+    out_root = repo_root / "out"
     for candidate in out_root.rglob("packet.json"):
         try:
             data = read_json(candidate)
@@ -45,8 +45,8 @@ def find_out_dir(state_root: Path, packet_id: str) -> Path:
     return out_root / "unknown" / packet_id
 
 
-def emit(packet_id: str, state_root: Path) -> int:
-    out_dir = find_out_dir(state_root, packet_id)
+def emit(packet_id: str, repo_root: Path) -> int:
+    out_dir = find_out_dir(repo_root, packet_id)
     evidence_path = out_dir / "evidence.json"
     refs: List[Dict[str, Any]] = []
     if evidence_path.exists():
@@ -65,8 +65,8 @@ def emit(packet_id: str, state_root: Path) -> int:
     return 0
 
 
-def check(packet_id: str, state_root: Path) -> int:
-    out_dir = find_out_dir(state_root, packet_id)
+def check(packet_id: str, repo_root: Path) -> int:
+    out_dir = find_out_dir(repo_root, packet_id)
     capsule_path = out_dir / "evidence_capsule.json"
     if not capsule_path.exists():
         raise SystemExit("missing evidence_capsule.json")
@@ -87,13 +87,12 @@ def main(argv: list[str]) -> int:
     ck.add_argument("--packet-id", required=True)
     args = ap.parse_args(argv[1:])
 
-    codex_state = resolve_codex_state(None)
-    state_root = resolve_state_root(str(codex_state))
+    repo_root = resolve_repo_root(None)
 
     if args.cmd == "emit":
-        return emit(args.packet_id, state_root)
+        return emit(args.packet_id, repo_root)
     if args.cmd == "check":
-        return check(args.packet_id, state_root)
+        return check(args.packet_id, repo_root)
     return 2
 
 

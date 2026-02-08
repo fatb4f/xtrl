@@ -35,6 +35,6 @@
 - Schema validation passes for v0.2 examples and legacy examples with migration/defaults.
 
 ## Evidence
-Required artifacts under `$CODEX_STATE/xtrl/out/<packet_id>/`:
+Required artifacts under `<repo_root>/out/<packet_id>/`:
 - `summary.md`
 - `raw/diffstat.txt`

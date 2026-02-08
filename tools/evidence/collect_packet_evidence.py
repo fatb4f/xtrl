@@ -99,8 +99,8 @@ def sha256_file(p: Path) -> str:
     return h.hexdigest()
 
 
-def find_packet_json(packet_id: str, state_root: Path) -> Optional[Path]:
-    out_root = state_root / "out"
+def find_packet_json(packet_id: str, repo_root: Path) -> Optional[Path]:
+    out_root = repo_root / "out"
     for candidate in out_root.rglob("packet.json"):
         try:
             data = read_json(candidate)
@@ -239,10 +239,10 @@ def write_commands_log(path: Path, raw_dir: Path) -> None:
 
 
 def migrate_legacy_out_dir(
-    out_dir: Path, state_root: Path, packet_id: str, repo: str
+    out_dir: Path, repo_root: Path, packet_id: str, repo: str
 ) -> Path:
-    legacy = (state_root / "out" / packet_id).resolve()
-    namespaced = (state_root / "out" / repo / packet_id).resolve()
+    legacy = (repo_root / "out" / packet_id).resolve()
+    namespaced = (repo_root / "out" / repo / packet_id).resolve()
     if out_dir.resolve() != legacy:
         return out_dir
     if repo in ("", "unknown"):
@@ -287,7 +287,7 @@ def main() -> int:
     try:
         contract = read_json(contract_path)
     except Exception as e:
-        out_dir = resolve_state_path(None, state_root, "out") / "unknown"
+        out_dir = (repo_root / "out" / "unknown").resolve()
         (out_dir / "raw").mkdir(parents=True, exist_ok=True)
         write_json(out_dir / "evidence.json", {"generated_at_utc": utc_now(), "error": str(e)})
         return 2
@@ -344,7 +344,7 @@ def main() -> int:
     copy_if_missing(contract_src, out_dir / "contract.json")
     prompt_src = contract_src.parent / "EXEC_PROMPT.md"
     copy_if_missing(prompt_src, out_dir / "exec-prompt.md")
-    packet_src = find_packet_json(packet_id, state_root)
+    packet_src = find_packet_json(packet_id, repo_root)
     if packet_src:
         copy_if_missing(packet_src, out_dir / "packet.json")
     else:
@@ -520,7 +520,7 @@ def main() -> int:
         reasons = list(reasons) + ["constraint_violations"]
 
     repo_name = str(contract.get("repo") or "unknown")
-    out_dir = migrate_legacy_out_dir(out_dir, state_root, packet_id, repo_name)
+    out_dir = migrate_legacy_out_dir(out_dir, repo_root, packet_id, repo_name)
     raw_dir = out_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
 

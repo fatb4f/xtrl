@@ -36,7 +36,7 @@ unambiguous. Replace all placeholders.
 - <command or check> (required)
 
 ## Evidence
-Required artifacts under `$CODEX_STATE/xtrl/out/<packet_id>/`:
+Required artifacts under `<repo_root>/out/<packet_id>/`:
 - `summary.md`
 - `raw/diffstat.txt`
 - <any additional raw outputs>

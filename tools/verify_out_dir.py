@@ -5,11 +5,11 @@ import argparse
 import shutil
 from pathlib import Path
 
-from verify_utils import current_packet_id, find_out_dir, legacy_out_dir, read_json, resolve_state
+from verify_utils import current_packet_id, find_out_dir, legacy_out_dir, read_json, resolve_repo
 
 
-def migrate_legacy(packet_id: str, state_root: Path) -> Path | None:
-    legacy = legacy_out_dir(packet_id, state_root)
+def migrate_legacy(packet_id: str, repo_root: Path) -> Path | None:
+    legacy = legacy_out_dir(packet_id, repo_root)
     if not legacy.exists():
         return None
     packet_json = legacy / "packet.json"
@@ -22,7 +22,7 @@ def migrate_legacy(packet_id: str, state_root: Path) -> Path | None:
     repo = data.get("repo") or "unknown"
     if repo == "unknown":
         return None
-    namespaced = (state_root / "out" / repo / packet_id).resolve()
+    namespaced = (repo_root / "out" / repo / packet_id).resolve()
     if not namespaced.exists():
         namespaced.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(legacy), str(namespaced))
@@ -34,15 +34,14 @@ def main() -> int:
     ap.add_argument("--mode", default="namespaced")
     args = ap.parse_args()
 
-    state_root = resolve_state()
-    repo_root = Path(".").resolve()
+    repo_root = resolve_repo()
     packet_id = current_packet_id(repo_root)
 
-    out_dir = find_out_dir(packet_id, state_root)
+    out_dir = find_out_dir(packet_id, repo_root)
     if out_dir and out_dir.exists():
         return 0
 
-    migrated = migrate_legacy(packet_id, state_root)
+    migrated = migrate_legacy(packet_id, repo_root)
     if migrated and migrated.exists():
         return 0
 

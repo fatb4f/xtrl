@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from verify_utils import find_out_dir, read_json, resolve_state
+from verify_utils import read_json, resolve_repo
 
 
 REQUIRED_FIELDS = [
@@ -57,9 +57,9 @@ def is_repo_relative(path: str, repo_root: Path) -> bool:
 
 
 def main() -> int:
-    state_root = resolve_state()
+    repo_root = resolve_repo()
     # We do not rely on branch -> packet_id; scan latest out_dir for events.jsonl.
-    out_root = state_root / "out"
+    out_root = repo_root / "out"
     candidates = []
     for events_path in out_root.rglob("evidence/events.jsonl"):
         try:
@@ -87,7 +87,7 @@ def main() -> int:
             or evidence.get("runner", {}).get("meta", {}).get("worktree_path")
             or evidence.get("runner", {}).get("meta", {}).get("resolved", {}).get("worktree_path")
         )
-    repo_root = Path(worktree_path or evidence.get("repo", {}).get("root") or ".").resolve()
+    repo_root = Path(worktree_path or evidence.get("repo", {}).get("root") or repo_root).resolve()
 
     lines = [ln for ln in events_path.read_text(encoding="utf-8").splitlines() if ln.strip()]
     if not lines:

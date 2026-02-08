@@ -49,7 +49,7 @@ Add network-enabled backlog hydration for Houston-in-xtrl. Hydrate richer metada
 - python tools/houston/hydrate.py --offline (should exit 0 and report misses)
 - python tools/houston/render.py (should exit 0; if it needs args, provide --help and keep default safe)
 
-## Evidence to emit (under $CODEX_STATE/xtrl/out/packet-011-houston-backlog-hydrate/)
+## Evidence to emit (under <repo_root>/out/packet-011-houston-backlog-hydrate/)
 - summary.md
 - raw/diffstat.txt
 - raw/changed_paths.txt

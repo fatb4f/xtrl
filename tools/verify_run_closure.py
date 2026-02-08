@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from verify_utils import resolve_state
+from verify_utils import resolve_repo
 
 
 REQUIRED = [
@@ -21,8 +21,8 @@ REQUIRED = [
 ]
 
 
-def find_latest_out_dir(state_root: Path) -> Path | None:
-    out_root = state_root / "out"
+def find_latest_out_dir(repo_root: Path) -> Path | None:
+    out_root = repo_root / "out"
     candidates = []
     for evidence in out_root.rglob("evidence.json"):
         try:
@@ -40,12 +40,12 @@ def main() -> int:
     ap.add_argument("--packet-id", default=None)
     args = ap.parse_args()
 
-    state_root = resolve_state()
+    repo_root = resolve_repo()
     out_dir: Path | None = None
     if args.latest:
-        out_dir = find_latest_out_dir(state_root)
+        out_dir = find_latest_out_dir(repo_root)
     if args.packet_id and not out_dir:
-        for candidate in (state_root / "out").rglob(args.packet_id):
+        for candidate in (repo_root / "out").rglob(args.packet_id):
             if candidate.is_dir():
                 out_dir = candidate
                 break

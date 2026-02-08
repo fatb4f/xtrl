@@ -83,12 +83,10 @@ def main() -> int:
 
     repo_root = resolve_repo_root(args.repo_root)
     codex_state = resolve_codex_state(args.codex_state)
-    state_root = resolve_state_root(str(codex_state))
-
     packet_id = args.packet_id
     # packet.json carries repo key
     packet_path = None
-    for candidate in (state_root / "out").rglob("packet.json"):
+    for candidate in (repo_root / "out").rglob("packet.json"):
         try:
             data = read_json(candidate)
         except Exception:
@@ -101,7 +99,7 @@ def main() -> int:
         raise SystemExit(f"packet.json not found for {packet_id}")
 
     repo = packet_meta.get("repo") or "unknown"
-    out_dir = state_root / "out" / repo / packet_id
+    out_dir = repo_root / "out" / repo / packet_id
     contract_path = out_dir / "contract.json"
     contract = read_json(contract_path)
 

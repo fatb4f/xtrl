@@ -25,6 +25,6 @@
 - `python $CODEX_DATA/vendor/xtrl/tools/run_packet.py packets/examples/packet-000-foundation.json --repo-root /path/to/target`
 
 ## Evidence
-Required artifacts under `$CODEX_STATE/xtrl/out/packet-000-foundation/`:
+Required artifacts under `<repo_root>/out/packet-000-foundation/`:
 - `summary.md`
 - `raw/diffstat.txt`

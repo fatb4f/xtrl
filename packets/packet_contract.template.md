@@ -49,5 +49,5 @@ This document describes the packet contract. The single source of truth for gene
 
 ## Evidence (required)
 - evidence:
-    out_dir: "$CODEX_STATE/xtrl/out"         # evidence is written under .../out/<packet_id>/
+    out_dir: "out"         # evidence is written under <repo_root>/out/<packet_id>/
     include_git_diff_patch: false

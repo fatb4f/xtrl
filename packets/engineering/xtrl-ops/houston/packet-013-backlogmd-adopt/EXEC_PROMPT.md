@@ -57,9 +57,9 @@ Optional trailers:
 
 Packet: packet-013-backlogmd-adopt
 
-Evidence: $CODEX_STATE/xtrl/out/packet-013-backlogmd-adopt/
+Evidence: <repo_root>/out/packet-013-backlogmd-adopt/
 
-Evidence collection commands (write to $CODEX_STATE/xtrl/out/packet-013-backlogmd-adopt/)
+Evidence collection commands (write to <repo_root>/out/packet-013-backlogmd-adopt/)
 
 raw/backlog_version.txt: backlog --version
 

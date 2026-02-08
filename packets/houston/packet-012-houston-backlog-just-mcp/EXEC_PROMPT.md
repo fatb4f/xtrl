@@ -36,7 +36,7 @@ Optional trailers:
 
 Packet: packet-012-houston-backlog-just-mcp
 
-Evidence: $CODEX_STATE/xtrl/out/packet-012-houston-backlog-just-mcp/
+Evidence: <repo_root>/out/packet-012-houston-backlog-just-mcp/
 
 Recipe behavior requirements (for implementation)
 
