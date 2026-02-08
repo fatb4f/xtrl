@@ -18,6 +18,7 @@
       "control/**",
       "schemas/**",
       "docs/**",
+      "tests/**",
       "README.md"
     ],
     "forbidden_paths": [".git/**"],
@@ -29,6 +30,7 @@
     ]
   },
   "actions": {
+    "gate_worker": ["python", "tools/emit_gate_worker.py"],
     "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
   },
   "evidence": {
@@ -40,6 +42,8 @@
       "evidence/tests.junit.xml",
       "evidence/regression.md",
       "evidence/events.jsonl",
+      "evidence/stdout.txt",
+      "evidence/stderr.txt",
       "evidence/gate_worker.json",
       "commands.log",
       "summary.md",
@@ -58,6 +62,8 @@
   },
   "inputs": {
     "notes": [
+      "Define a canonical reason code enum (shared across worker + linearizer + replay + fuzz) and enforce it everywhere.",
+      "Add schemas/xtrl.gate_worker.v0.1.schema.json and validate gate_worker.json against it during CHECK.",
       "gate_worker.json must be emitted on every run with decision + reason_code + facts and pointers.",
       "Use deterministic diff metrics and stable reason codes (e.g., DIFF_BUDGET_EXCEEDED, FORBIDDEN_PATH_TOUCHED).",
       "Ensure transcript hygiene: events.jsonl is JSONL-only; stdout/stderr separated."

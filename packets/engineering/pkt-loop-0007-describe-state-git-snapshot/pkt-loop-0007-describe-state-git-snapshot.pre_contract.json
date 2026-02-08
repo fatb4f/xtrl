@@ -18,6 +18,7 @@
       "control/**",
       "schemas/**",
       "docs/**",
+      "tests/**",
       "README.md"
     ],
     "forbidden_paths": [".git/**"],
@@ -29,6 +30,7 @@
     ]
   },
   "actions": {
+    "describe_state": ["python", "tools/describe_state.py", "--base-ref", "origin/main", "--n", "50"],
     "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
   },
   "evidence": {
@@ -52,7 +54,7 @@
   "plan_card": {
     "why": "Describe repo state from git only with deterministic, bounded outputs.",
     "what": "Implement describe_state: git-derived snapshot + trailers via git interpret-trailers, outputs evidence/state_space.{json,md}.",
-    "how": "Read-only tool, argv-only, bounded --n, stable ordering, no writes outside evidence/.",
+    "how": "Read-only tool, argv-only, bounded --n, stable ordering; tool writes only under evidence/, runner emits wrapper files.",
     "where": "tools/describe_state.py + tests; integrate into allowed actions + evidence requirements.",
     "who": "xtrl runner + validators",
     "when": "PRECHECK + CHECK"
@@ -62,7 +64,7 @@
       "Use git rev-parse --show-toplevel and git log <ref> -n N for history.",
       "Parse trailers via git interpret-trailers --parse using full body %B.",
       "Enforce 1 <= --n <= 200; reject >200.",
-      "Write only to ./evidence/state_space.json and ./evidence/state_space.md.",
+      "Tool writes only to ./evidence/state_space.{json,md}; runner may emit commands.log/summary.md/packet.json/contract.json.",
       "Keep output deterministic (stable key ordering + stable commit ordering)."
     ]
   }

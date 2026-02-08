@@ -18,6 +18,7 @@
       "control/**",
       "schemas/**",
       "docs/**",
+      "tests/**",
       "README.md"
     ],
     "forbidden_paths": [".git/**"],
@@ -29,6 +30,7 @@
     ]
   },
   "actions": {
+    "linearizer_replay": ["python", "tools/linearizer_replay.py"],
     "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
   },
   "evidence": {
@@ -40,8 +42,10 @@
       "evidence/tests.junit.xml",
       "evidence/regression.md",
       "evidence/events.jsonl",
-      "evidence/linearizer_replay_report.json",
-      "evidence/linearizer_replay_report.md",
+      "evidence/candidate_index.json",
+      "evidence/promotion_lock.json",
+      "evidence/replay_report.json",
+      "evidence/replay_report.md",
       "commands.log",
       "summary.md",
       "packet.json",
@@ -60,8 +64,10 @@
   "inputs": {
     "notes": [
       "Candidate aggregation must be concurrency-safe and deterministic.",
+      "Record candidate IDs, base_sha used, and stale filtering in evidence/candidate_index.json.",
+      "Record lock acquisition and base head before/after in evidence/promotion_lock.json.",
       "Linearizer must replay patch on clean base and deny on PATCH_APPLY_FAILED.",
-      "Emit replay report under evidence/linearizer_replay_report.{json,md}."
+      "Emit replay report under evidence/replay_report.{json,md}."
     ]
   }
 }

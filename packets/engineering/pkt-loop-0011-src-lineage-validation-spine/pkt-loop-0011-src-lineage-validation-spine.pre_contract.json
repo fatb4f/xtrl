@@ -18,6 +18,7 @@
       "control/**",
       "schemas/**",
       "docs/**",
+      "tests/**",
       "README.md"
     ],
     "forbidden_paths": [".git/**"],
@@ -29,6 +30,9 @@
     ]
   },
   "actions": {
+    "describe_src": ["python", "tools/describe_src.py", "--n", "10"],
+    "src_replay": ["python", "tools/src_replay.py"],
+    "src_fuzz": ["python", "tools/src_fuzz_mutation.py"],
     "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
   },
   "evidence": {
@@ -40,6 +44,9 @@
       "evidence/tests.junit.xml",
       "evidence/regression.md",
       "evidence/events.jsonl",
+      "evidence/dep_graph.json",
+      "evidence/api_surface.json",
+      "evidence/module_manifest.json",
       "evidence/src_state.json",
       "evidence/src_state.md",
       "evidence/src_replay_report.json",
@@ -63,6 +70,8 @@
   },
   "inputs": {
     "notes": [
+      "If Phase E is optional, do not gate milestone completion on this packet.",
+      "Snapshots are emitted as evidence/dep_graph.json, evidence/api_surface.json, evidence/module_manifest.json.",
       "describe_src emits evidence/src_state.{json,md} with lineage pointers.",
       "Replay validation emits evidence/src_replay_report.{json,md}.",
       "Mutation fuzz emits evidence/src_fuzz_mutation_report.{json,md} with stable reason codes."
