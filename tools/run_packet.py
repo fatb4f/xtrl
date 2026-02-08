@@ -256,6 +256,12 @@ def write_text(path: pathlib.Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def append_jsonl(path: pathlib.Path, payload: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, sort_keys=True) + "\n")
+
+
 def write_json(path: pathlib.Path, obj: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(obj, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -1043,6 +1049,47 @@ def main(argv: List[str]) -> int:
             out_dir=out_base,
             pre_contract_path=pre_contract_path,
         )
+    except Exception:
+        pass
+
+    # Ledger + latest state pointer (best-effort).
+    try:
+        ledger_path = state_root / "ledger" / "ledger.jsonl"
+        latest_path = state_root / "state" / "latest.json"
+        promotion_eligible = (
+            decision == "ALLOW"
+            and "TESTS_MISSING" not in reasons
+            and "missing_evidence_outputs" not in reasons
+        )
+        entry = {
+            "schema_version": "xtrl.ledger_entry/v0.1",
+            "timestamp_utc": _dt.datetime.now(_dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+            "packet_id": packet_id,
+            "repo": str(contract.get("repo") or ""),
+            "base_ref": base_ref,
+            "base_sha": base_sha,
+            "decision": decision,
+            "reason_codes": reasons,
+            "final_status": final_status,
+            "out_dir": str(out_base),
+            "promotion_eligible": promotion_eligible,
+            "worktree_path": wt_path,
+        }
+        append_jsonl(ledger_path, entry)
+        latest_payload = {
+            "schema_version": "xtrl.latest_state/v0.1",
+            "timestamp_utc": entry["timestamp_utc"],
+            "packet_id": packet_id,
+            "repo": entry["repo"],
+            "decision": decision,
+            "reason_codes": reasons,
+            "final_status": final_status,
+            "out_dir": str(out_base),
+            "base_ref": base_ref,
+            "base_sha": base_sha,
+            "promotion_eligible": promotion_eligible,
+        }
+        write_json(latest_path, latest_payload)
     except Exception:
         pass
     write_json(meta_path, meta)
