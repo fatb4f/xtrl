@@ -1,38 +1,48 @@
 {
-  "schema_version": "xtrl.pre_contract/v0.2",
-  "packet_id": "pkt-loop-0010-denied-promo-recovery-regression",
-  "component": "xtrl",
-  "repo": "xtrl",
-  "base_ref": "origin/main",
-  "mode": "loop",
-  "budgets": {
-    "time_minutes": 60,
-    "iteration_budget": 2,
-    "diff_budget": { "max_files_changed": 60, "max_lines_changed": 1800 }
-  },
-  "constraints": {
-    "clean_repo_required": true,
-    "deny_repo_local_roots": [".codex", ".quint"],
-    "allowed_paths": [
-      "tools/**",
-      "control/**",
-      "schemas/**",
-      "docs/**",
-      "tests/**",
-      "README.md"
+  "actions": {
+    "fuzz": [
+      "python",
+      "tools/fuzz_mutation.py"
     ],
-    "forbidden_paths": [".git/**"],
+    "replay": [
+      "python",
+      "tools/replay_harness.py"
+    ],
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml",
+      "evidence/tests.junit.xml"
+    ]
+  },
+  "base_ref": "origin/main",
+  "budgets": {
+    "diff_budget": {
+      "max_files_changed": 60,
+      "max_lines_changed": 1800
+    },
+    "iteration_budget": 2,
+    "time_minutes": 60
+  },
+  "component": "xtrl",
+  "constraints": {
+    "allowed_paths": [
+      "**"
+    ],
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "forbidden_paths": [],
     "forbidden_patterns": [
       "subprocess\\.run\\(.*shell\\s*=\\s*True",
       "os\\.system\\(",
       "eval\\(",
       "exec\\("
     ]
-  },
-  "actions": {
-    "replay": ["python", "tools/replay_harness.py"],
-    "fuzz": ["python", "tools/fuzz_mutation.py"],
-    "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
   },
   "evidence": {
     "required_files": [
@@ -56,14 +66,6 @@
       "exec-prompt.md"
     ]
   },
-  "plan_card": {
-    "why": "Make denial actionable and regression-proof.",
-    "what": "Emit deterministic next_iter_plan + replay/fuzz reports + adaptation policy mapping.",
-    "how": "On DENY produce restart plan; run corpus replay + mutation fuzz with stable reason codes.",
-    "where": "controller gate + harness",
-    "who": "xtrl runner",
-    "when": "GATE"
-  },
   "inputs": {
     "notes": [
       "Define DENY trigger scope (worker gate vs promote gate) and emit next_iter_plan.json accordingly.",
@@ -71,5 +73,17 @@
       "Emit corpus replay + mutation fuzz reports with stable reason codes.",
       "Bind failures to deterministic adaptation policy mapping."
     ]
-  }
+  },
+  "mode": "loop",
+  "packet_id": "pkt-loop-0010-denied-promo-recovery-regression",
+  "plan_card": {
+    "how": "On DENY produce restart plan; run corpus replay + mutation fuzz with stable reason codes.",
+    "what": "Emit deterministic next_iter_plan + replay/fuzz reports + adaptation policy mapping.",
+    "when": "GATE",
+    "where": "controller gate + harness",
+    "who": "xtrl runner",
+    "why": "Make denial actionable and regression-proof."
+  },
+  "repo": "xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
 }

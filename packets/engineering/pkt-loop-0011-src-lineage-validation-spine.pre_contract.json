@@ -1,39 +1,54 @@
 {
-  "schema_version": "xtrl.pre_contract/v0.2",
-  "packet_id": "pkt-loop-0011-src-lineage-validation-spine",
-  "component": "xtrl",
-  "repo": "xtrl",
-  "base_ref": "origin/main",
-  "mode": "loop",
-  "budgets": {
-    "time_minutes": 60,
-    "iteration_budget": 2,
-    "diff_budget": { "max_files_changed": 80, "max_lines_changed": 2000 }
-  },
-  "constraints": {
-    "clean_repo_required": true,
-    "deny_repo_local_roots": [".codex", ".quint"],
-    "allowed_paths": [
-      "tools/**",
-      "control/**",
-      "schemas/**",
-      "docs/**",
-      "tests/**",
-      "README.md"
+  "actions": {
+    "describe_src": [
+      "python",
+      "tools/describe_src.py",
+      "--n",
+      "10"
     ],
-    "forbidden_paths": [".git/**"],
+    "src_fuzz": [
+      "python",
+      "tools/src_fuzz_mutation.py"
+    ],
+    "src_replay": [
+      "python",
+      "tools/src_replay.py"
+    ],
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml",
+      "evidence/tests.junit.xml"
+    ]
+  },
+  "base_ref": "origin/main",
+  "budgets": {
+    "diff_budget": {
+      "max_files_changed": 80,
+      "max_lines_changed": 2000
+    },
+    "iteration_budget": 2,
+    "time_minutes": 60
+  },
+  "component": "xtrl",
+  "constraints": {
+    "allowed_paths": [
+      "**"
+    ],
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "forbidden_paths": [],
     "forbidden_patterns": [
       "subprocess\\.run\\(.*shell\\s*=\\s*True",
       "os\\.system\\(",
       "eval\\(",
       "exec\\("
     ]
-  },
-  "actions": {
-    "describe_src": ["python", "tools/describe_src.py", "--n", "10"],
-    "src_replay": ["python", "tools/src_replay.py"],
-    "src_fuzz": ["python", "tools/src_fuzz_mutation.py"],
-    "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
   },
   "evidence": {
     "required_files": [
@@ -60,14 +75,6 @@
       "exec-prompt.md"
     ]
   },
-  "plan_card": {
-    "why": "Optional deterministic src lineage + validation spine.",
-    "what": "describe_src + replay + mutation fuzz with stable reason codes.",
-    "how": "AST snapshots + lineage pointers; replay validation + mutation fuzz with bounded budgets.",
-    "where": "tools/describe_src + validation harness",
-    "who": "xtrl runner",
-    "when": "CHECK"
-  },
   "inputs": {
     "notes": [
       "If Phase E is optional, do not gate milestone completion on this packet.",
@@ -76,5 +83,17 @@
       "Replay validation emits evidence/src_replay_report.{json,md}.",
       "Mutation fuzz emits evidence/src_fuzz_mutation_report.{json,md} with stable reason codes."
     ]
-  }
+  },
+  "mode": "loop",
+  "packet_id": "pkt-loop-0011-src-lineage-validation-spine",
+  "plan_card": {
+    "how": "AST snapshots + lineage pointers; replay validation + mutation fuzz with bounded budgets.",
+    "what": "describe_src + replay + mutation fuzz with stable reason codes.",
+    "when": "CHECK",
+    "where": "tools/describe_src + validation harness",
+    "who": "xtrl runner",
+    "why": "Optional deterministic src lineage + validation spine."
+  },
+  "repo": "xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
 }

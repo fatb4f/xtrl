@@ -74,7 +74,7 @@ def promo_gate(pre_contract: Dict[str, Any]) -> Tuple[bool, List[str], List[str]
         return False, ["PRECONTRACT_MISSING_FIELDS"], errors
 
     mode = pre_contract.get("mode")
-    if mode not in {"NORMAL", "REPAIR", "SAFE"}:
+    if mode not in {"NORMAL", "REPAIR", "SAFE", "loop", "LOOP"}:
         reasons.append("MODE_INVALID")
 
     budgets = pre_contract.get("budgets") or {}
@@ -139,6 +139,7 @@ def build_contract(pre_contract: Dict[str, Any]) -> Dict[str, Any]:
                 run_cfg["commands"].append(argv)
 
     forbidden_outputs = constraints.get("forbidden_paths") if isinstance(constraints, dict) else []
+    allowed_paths = constraints.get("allowed_paths") if isinstance(constraints, dict) else []
 
     evidence_required = (pre_contract.get("evidence") or {}).get("required_files")
     contract = {
@@ -151,7 +152,7 @@ def build_contract(pre_contract: Dict[str, Any]) -> Dict[str, Any]:
         "github_ops_required": False,
         "net_ops_required": False,
         "actions": actions,
-        "allowed_paths": constraints.get("allowed_paths") if isinstance(constraints, dict) else [],
+        "allowed_paths": allowed_paths,
         "forbidden_outputs": forbidden_outputs or [],
         "worktree_policy": {
             "mode": "strict",

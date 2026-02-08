@@ -1,37 +1,48 @@
 {
-  "schema_version": "xtrl.pre_contract/v0.2",
-  "packet_id": "pkt-loop-0007-describe-state-git-snapshot",
-  "component": "xtrl",
-  "repo": "xtrl",
-  "base_ref": "origin/main",
-  "mode": "loop",
-  "budgets": {
-    "time_minutes": 45,
-    "iteration_budget": 2,
-    "diff_budget": { "max_files_changed": 30, "max_lines_changed": 900 }
-  },
-  "constraints": {
-    "clean_repo_required": true,
-    "deny_repo_local_roots": [".codex", ".quint"],
-    "allowed_paths": [
-      "tools/**",
-      "control/**",
-      "schemas/**",
-      "docs/**",
-      "tests/**",
-      "README.md"
+  "actions": {
+    "describe_state": [
+      "python",
+      "tools/describe_state.py",
+      "--base-ref",
+      "origin/main",
+      "--n",
+      "50"
     ],
-    "forbidden_paths": [".git/**"],
+    "test": [
+      "python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml",
+      "evidence/tests.junit.xml"
+    ]
+  },
+  "base_ref": "origin/main",
+  "budgets": {
+    "diff_budget": {
+      "max_files_changed": 30,
+      "max_lines_changed": 900
+    },
+    "iteration_budget": 2,
+    "time_minutes": 45
+  },
+  "component": "xtrl",
+  "constraints": {
+    "allowed_paths": [
+      "**"
+    ],
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [
+      ".codex",
+      ".quint"
+    ],
+    "forbidden_paths": [],
     "forbidden_patterns": [
       "subprocess\\.run\\(.*shell\\s*=\\s*True",
       "os\\.system\\(",
       "eval\\(",
       "exec\\("
     ]
-  },
-  "actions": {
-    "describe_state": ["python", "tools/describe_state.py", "--base-ref", "origin/main", "--n", "50"],
-    "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
   },
   "evidence": {
     "required_files": [
@@ -51,14 +62,6 @@
       "exec-prompt.md"
     ]
   },
-  "plan_card": {
-    "why": "Describe repo state from git only with deterministic, bounded outputs.",
-    "what": "Implement describe_state: git-derived snapshot + trailers via git interpret-trailers, outputs evidence/state_space.{json,md}.",
-    "how": "Read-only tool, argv-only, bounded --n, stable ordering; tool writes only under evidence/, runner emits wrapper files.",
-    "where": "tools/describe_state.py + tests; integrate into allowed actions + evidence requirements.",
-    "who": "xtrl runner + validators",
-    "when": "PRECHECK + CHECK"
-  },
   "inputs": {
     "notes": [
       "Use git rev-parse --show-toplevel and git log <ref> -n N for history.",
@@ -67,5 +70,17 @@
       "Tool writes only to ./evidence/state_space.{json,md}; runner may emit commands.log/summary.md/packet.json/contract.json.",
       "Keep output deterministic (stable key ordering + stable commit ordering)."
     ]
-  }
+  },
+  "mode": "loop",
+  "packet_id": "pkt-loop-0007-describe-state-git-snapshot",
+  "plan_card": {
+    "how": "Read-only tool, argv-only, bounded --n, stable ordering; tool writes only under evidence/, runner emits wrapper files.",
+    "what": "Implement describe_state: git-derived snapshot + trailers via git interpret-trailers, outputs evidence/state_space.{json,md}.",
+    "when": "PRECHECK + CHECK",
+    "where": "tools/describe_state.py + tests; integrate into allowed actions + evidence requirements.",
+    "who": "xtrl runner + validators",
+    "why": "Describe repo state from git only with deterministic, bounded outputs."
+  },
+  "repo": "xtrl",
+  "schema_version": "xtrl.pre_contract/v0.2"
 }

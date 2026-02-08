@@ -1061,8 +1061,13 @@ def main(argv: List[str]) -> int:
 
     # Ledger + latest state pointer (best-effort).
     try:
-        ledger_path = repo_root / "ledger" / "ledger.jsonl"
-        latest_path = repo_root / "state" / "latest.json"
+        out_dir_env = os.environ.get("XTRL_OUT_DIR")
+        if out_dir_env:
+            out_root = pathlib.Path(out_dir_env).expanduser().resolve()
+        else:
+            out_root = repo_root
+        ledger_path = out_root / "ledger" / "ledger.jsonl"
+        latest_path = out_root / "state" / "latest.json"
         promotion_eligible = (
             decision == "ALLOW"
             and "TESTS_MISSING" not in reasons
