@@ -1,0 +1,67 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-loop-0009-linearizer-replay",
+  "component": "xtrl",
+  "repo": "xtrl",
+  "base_ref": "origin/main",
+  "mode": "loop",
+  "budgets": {
+    "time_minutes": 60,
+    "iteration_budget": 2,
+    "diff_budget": { "max_files_changed": 50, "max_lines_changed": 1500 }
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [".codex", ".quint"],
+    "allowed_paths": [
+      "tools/**",
+      "control/**",
+      "schemas/**",
+      "docs/**",
+      "README.md"
+    ],
+    "forbidden_paths": [".git/**"],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "actions": {
+    "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "evidence/events.jsonl",
+      "evidence/linearizer_replay_report.json",
+      "evidence/linearizer_replay_report.md",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "plan_card": {
+    "why": "Ensure promotion decisions are deterministic and replayable.",
+    "what": "Implement concurrency-safe candidate aggregation and authoritative linearizer replay.",
+    "how": "Replay patch on clean base; deny PATCH_APPLY_FAILED; single-writer lock; stale base filtering.",
+    "where": "controller linearizer + promotion",
+    "who": "xtrl runner",
+    "when": "PROMOTE"
+  },
+  "inputs": {
+    "notes": [
+      "Candidate aggregation must be concurrency-safe and deterministic.",
+      "Linearizer must replay patch on clean base and deny on PATCH_APPLY_FAILED.",
+      "Emit replay report under evidence/linearizer_replay_report.{json,md}."
+    ]
+  }
+}

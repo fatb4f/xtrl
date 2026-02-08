@@ -1,0 +1,66 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-loop-0008-gate-worker-artifact",
+  "component": "xtrl",
+  "repo": "xtrl",
+  "base_ref": "origin/main",
+  "mode": "loop",
+  "budgets": {
+    "time_minutes": 45,
+    "iteration_budget": 2,
+    "diff_budget": { "max_files_changed": 40, "max_lines_changed": 1200 }
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [".codex", ".quint"],
+    "allowed_paths": [
+      "tools/**",
+      "control/**",
+      "schemas/**",
+      "docs/**",
+      "README.md"
+    ],
+    "forbidden_paths": [".git/**"],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "actions": {
+    "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "evidence/events.jsonl",
+      "evidence/gate_worker.json",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "plan_card": {
+    "why": "Make every worker decision explainable and machine-readable.",
+    "what": "Emit evidence/gate_worker.json on each worker run with decision + reason_code + facts.",
+    "how": "Derive stable diff metrics, forbidden hits, budgets; enforce JSONL-only events + stdout/stderr separation.",
+    "where": "runner/evidence collector + verifiers",
+    "who": "xtrl runner",
+    "when": "CHECK + GATE"
+  },
+  "inputs": {
+    "notes": [
+      "gate_worker.json must be emitted on every run with decision + reason_code + facts and pointers.",
+      "Use deterministic diff metrics and stable reason codes (e.g., DIFF_BUDGET_EXCEEDED, FORBIDDEN_PATH_TOUCHED).",
+      "Ensure transcript hygiene: events.jsonl is JSONL-only; stdout/stderr separated."
+    ]
+  }
+}

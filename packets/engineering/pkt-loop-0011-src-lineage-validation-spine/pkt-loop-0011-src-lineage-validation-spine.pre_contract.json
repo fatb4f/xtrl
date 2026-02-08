@@ -1,0 +1,71 @@
+{
+  "schema_version": "xtrl.pre_contract/v0.2",
+  "packet_id": "pkt-loop-0011-src-lineage-validation-spine",
+  "component": "xtrl",
+  "repo": "xtrl",
+  "base_ref": "origin/main",
+  "mode": "loop",
+  "budgets": {
+    "time_minutes": 60,
+    "iteration_budget": 2,
+    "diff_budget": { "max_files_changed": 80, "max_lines_changed": 2000 }
+  },
+  "constraints": {
+    "clean_repo_required": true,
+    "deny_repo_local_roots": [".codex", ".quint"],
+    "allowed_paths": [
+      "tools/**",
+      "control/**",
+      "schemas/**",
+      "docs/**",
+      "README.md"
+    ],
+    "forbidden_paths": [".git/**"],
+    "forbidden_patterns": [
+      "subprocess\\.run\\(.*shell\\s*=\\s*True",
+      "os\\.system\\(",
+      "eval\\(",
+      "exec\\("
+    ]
+  },
+  "actions": {
+    "test": ["python", "-m", "pytest", "-q", "--junitxml", "evidence/tests.junit.xml"]
+  },
+  "evidence": {
+    "required_files": [
+      "evidence/plan.md",
+      "evidence/decision.md",
+      "evidence/scope.json",
+      "evidence/integrity.json",
+      "evidence/tests.junit.xml",
+      "evidence/regression.md",
+      "evidence/events.jsonl",
+      "evidence/src_state.json",
+      "evidence/src_state.md",
+      "evidence/src_replay_report.json",
+      "evidence/src_replay_report.md",
+      "evidence/src_fuzz_mutation_report.json",
+      "evidence/src_fuzz_mutation_report.md",
+      "commands.log",
+      "summary.md",
+      "packet.json",
+      "contract.json",
+      "exec-prompt.md"
+    ]
+  },
+  "plan_card": {
+    "why": "Optional deterministic src lineage + validation spine.",
+    "what": "describe_src + replay + mutation fuzz with stable reason codes.",
+    "how": "AST snapshots + lineage pointers; replay validation + mutation fuzz with bounded budgets.",
+    "where": "tools/describe_src + validation harness",
+    "who": "xtrl runner",
+    "when": "CHECK"
+  },
+  "inputs": {
+    "notes": [
+      "describe_src emits evidence/src_state.{json,md} with lineage pointers.",
+      "Replay validation emits evidence/src_replay_report.{json,md}.",
+      "Mutation fuzz emits evidence/src_fuzz_mutation_report.{json,md} with stable reason codes."
+    ]
+  }
+}
