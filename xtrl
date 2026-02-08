@@ -370,28 +370,6 @@ def handle_just_render(args: argparse.Namespace, script_dir: Path) -> None:
     print(f"wrote Justfile → {out_path}")
 
 
-def handle_just_install_mcp(args: argparse.Namespace) -> None:
-    codex_home = resolve_codex_home(args.codex_home)
-    codex_state = resolve_codex_state(args.codex_state)
-    watch_dir = codex_home / "xtrl"
-    try:
-        watch_dir.mkdir(parents=True, exist_ok=True)
-    except PermissionError as exc:
-        print(f"warning: could not create {watch_dir}: {exc}", file=sys.stderr)
-    xtrl_root = resolve_xtrl_root(Path(__file__).resolve().parent)
-    snippet = f"""[mcp_servers.{args.server_name}]
-command = "just-mcp"
-args = ["--watch-dir", "{watch_dir}:{args.watch_alias}"]
-env = {{
-    "CODEX_HOME" = "{codex_home}",
-    "CODEX_STATE" = "{codex_state}",
-    "XTRL_ROOT" = "{xtrl_root}",
-    "CTRLEX_ROOT" = "{xtrl_root}"
-}}
-"""
-    print(snippet)
-
-
 def main() -> None:
     script_dir = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(prog="xtrl")
@@ -471,29 +449,6 @@ def main() -> None:
         default=None,
     )
     render.set_defaults(func=lambda args: handle_just_render(args, script_dir))
-
-    install = just_sub.add_parser("install-mcp")
-    install.add_argument(
-        "--codex-home",
-        help="Override the CODEX_HOME base path for the MCP server.",
-        default=None,
-    )
-    install.add_argument(
-        "--codex-state",
-        help="Override the CODEX_STATE base path for the MCP server.",
-        default=None,
-    )
-    install.add_argument(
-        "--watch-alias",
-        help="Alias appended to tools (watch-dir:name).",
-        default="xtrl",
-    )
-    install.add_argument(
-        "--server-name",
-        help="Name of the MCP server stanza.",
-        default="just_xtrl",
-    )
-    install.set_defaults(func=lambda args: handle_just_install_mcp(args))
 
     args = parser.parse_args()
     args.func(args)
