@@ -52,6 +52,32 @@ def git_porcelain(repo: Path) -> List[str]:
     return [ln.rstrip("\n") for ln in out.splitlines() if ln.strip()]
 
 
+def extract_status_path(line: str) -> str:
+    # Porcelain lines are "XY path" or "XY old -> new" for renames.
+    raw = line[3:] if len(line) > 3 else line
+    if " -> " in raw:
+        return raw.split(" -> ", 1)[1].strip()
+    return raw.strip()
+
+
+def allowed_dirty_prefixes(contract: Dict[str, Any], repo_root: Path) -> List[str]:
+    prefixes: List[str] = []
+    evidence_cfg = contract.get("evidence") if isinstance(contract.get("evidence"), dict) else {}
+    out_dir_raw = evidence_cfg.get("out_dir")
+    if isinstance(out_dir_raw, str) and out_dir_raw:
+        p = Path(os.path.expandvars(os.path.expanduser(out_dir_raw)))
+        if p.is_absolute():
+            try:
+                rel = p.relative_to(repo_root)
+                prefixes.append(str(rel).split("/")[0])
+            except Exception:
+                pass
+        else:
+            prefixes.append(str(Path(out_dir_raw).parts[0]))
+    prefixes.extend(["ledger", "state"])
+    return [p for p in prefixes if p]
+
+
 def git_symbolic_ref(repo: Path) -> Tuple[bool, str]:
     rc, out, err = run(["git", "symbolic-ref", "-q", "--short", "HEAD"], cwd=repo)
     if rc != 0:
@@ -462,8 +488,17 @@ def main() -> int:
             )
 
     if decision.allow:
-        if git_porcelain(repo_root):
-            decision.deny("DIRTY_ROOT_PRE", "root working tree not clean")
+        dirty = git_porcelain(repo_root)
+        if dirty:
+            allowed_prefixes = allowed_dirty_prefixes(contract, repo_root)
+            remaining = []
+            for line in dirty:
+                path = extract_status_path(line)
+                if any(path == p or path.startswith(f"{p}/") for p in allowed_prefixes):
+                    continue
+                remaining.append(line)
+            if remaining:
+                decision.deny("DIRTY_ROOT_PRE", "root working tree not clean")
 
     if decision.allow:
         gdir = git_dir(repo_root)

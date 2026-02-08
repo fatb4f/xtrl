@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Packet-002: Structured Post-Run Evidence Harness.
 
-Writes a uniform bundle to the xtrl state root (default):
-  $CODEX_STATE/xtrl/out/<packet_id>/
+Writes a uniform bundle under the repo root (default):
+  <repo_root>/out/<packet_id>/
     evidence.json
     evidence.md
     manifest.json
@@ -26,6 +26,7 @@ current values.
 from __future__ import annotations
 
 import argparse
+import os
 import fnmatch
 import hashlib
 import json
@@ -63,8 +64,8 @@ def read_json(p: Path) -> Any:
     return json.loads(read_text(p))
 
 
-def resolve_out_root_from_packet_json(packet_id: str, state_root: Path) -> Path | None:
-    out_root = state_root / "out"
+def resolve_out_root_from_packet_json(packet_id: str, repo_root: Path) -> Path | None:
+    out_root = repo_root / "out"
     for candidate in out_root.rglob("packet.json"):
         try:
             data = read_json(candidate)
@@ -302,10 +303,11 @@ def main() -> int:
 
     out_dir_raw = evidence_cfg.get("out_dir")
     if out_dir_raw:
-        out_root = str(resolve_state_path(out_dir_raw, state_root, "out"))
+        expanded = Path(os.path.expandvars(os.path.expanduser(str(out_dir_raw))))
+        out_root = str(expanded if expanded.is_absolute() else (repo_root / expanded).resolve())
     else:
-        resolved_root = resolve_out_root_from_packet_json(packet_id, state_root)
-        out_root = str(resolved_root or resolve_state_path(None, state_root, "out"))
+        resolved_root = resolve_out_root_from_packet_json(packet_id, repo_root)
+        out_root = str(resolved_root or (repo_root / "out").resolve())
 
     # Normalize absolute allowed_paths to repo-relative if they point inside the repo.
     normalized_allowed: List[str] = []

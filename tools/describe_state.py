@@ -37,8 +37,8 @@ def current_packet_id() -> str:
     raise SystemExit("current branch is not packet/<packet_id>")
 
 
-def find_out_dir(packet_id: str, state_root: Path) -> Path:
-    out_root = state_root / "out"
+def find_out_dir(packet_id: str, repo_root: Path) -> Path:
+    out_root = repo_root / "out"
     for candidate in out_root.rglob("packet.json"):
         try:
             data = json.loads(candidate.read_text(encoding="utf-8"))
@@ -104,8 +104,8 @@ def main() -> int:
     packet_id = current_packet_id()
 
     codex_state = resolve_codex_state(None)
-    state_root = resolve_state_root(str(codex_state))
-    out_dir = find_out_dir(packet_id, state_root)
+    resolve_state_root(str(codex_state))
+    out_dir = find_out_dir(packet_id, root)
     evidence_dir = out_dir / "evidence"
     evidence_dir.mkdir(parents=True, exist_ok=True)
 
@@ -136,8 +136,8 @@ def main() -> int:
         if isinstance(cmds, list):
             actions.extend([f"cmd:{i}" for i in range(len(cmds))])
 
-    state_latest = state_root / "state" / "latest.json"
-    ledger_path = state_root / "ledger" / "ledger.jsonl"
+    state_latest = root / "state" / "latest.json"
+    ledger_path = root / "ledger" / "ledger.jsonl"
     ledger_tail = []
     if ledger_path.exists():
         lines = ledger_path.read_text(encoding="utf-8").splitlines()

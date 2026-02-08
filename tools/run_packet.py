@@ -8,7 +8,7 @@ Responsibilities:
 
 Notes:
 - stdlib only
-- evidence is written under the xtrl state root (default: $CODEX_STATE/xtrl/out/<packet_id>/)
+- evidence is written under the repo root (default: <repo_root>/out/<packet_id>/)
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ import shlex
 import datetime as _dt
 import hashlib
 import json
+import os
 import pathlib
 import platform
 import subprocess
@@ -621,8 +622,12 @@ def read_json(path: pathlib.Path) -> Dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def resolve_out_root_from_packet_json(packet_id: str, state_root: pathlib.Path) -> pathlib.Path | None:
-    out_root = state_root / "out"
+def resolve_out_root_from_packet_json(
+    packet_id: str,
+    state_root: pathlib.Path,
+    repo_root: pathlib.Path,
+) -> pathlib.Path | None:
+    out_root = repo_root / "out"
     for candidate in out_root.rglob("packet.json"):
         try:
             data = read_json(candidate)
@@ -717,10 +722,11 @@ def main(argv: List[str]) -> int:
 
     out_dir_raw = evidence_cfg.get("out_dir")
     if out_dir_raw:
-        out_dir = str(resolve_state_path(out_dir_raw, state_root, "out"))
+        expanded = pathlib.Path(os.path.expandvars(os.path.expanduser(str(out_dir_raw))))
+        out_dir = str(expanded if expanded.is_absolute() else (repo_root / expanded).resolve())
     else:
-        resolved_root = resolve_out_root_from_packet_json(packet_id, state_root)
-        out_dir = str(resolved_root or resolve_state_path(None, state_root, "out"))
+        resolved_root = resolve_out_root_from_packet_json(packet_id, state_root, repo_root)
+        out_dir = str(resolved_root or (repo_root / "out"))
     out_base = pathlib.Path(out_dir) / packet_id
     raw_dir = out_base / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
@@ -1054,8 +1060,8 @@ def main(argv: List[str]) -> int:
 
     # Ledger + latest state pointer (best-effort).
     try:
-        ledger_path = state_root / "ledger" / "ledger.jsonl"
-        latest_path = state_root / "state" / "latest.json"
+        ledger_path = repo_root / "ledger" / "ledger.jsonl"
+        latest_path = repo_root / "state" / "latest.json"
         promotion_eligible = (
             decision == "ALLOW"
             and "TESTS_MISSING" not in reasons
