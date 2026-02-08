@@ -1,0 +1,38 @@
+{
+  "schema_version": "xtrl.contract/v0.2",
+  "packet_id": "template",
+  "area": "engineering",
+  "repo": "xtrl",
+  "base_ref": "origin/main",
+  "branch": "packet/template",
+  "github_ops_required": false,
+  "net_ops_required": false,
+  "allowed_paths": ["**"],
+  "forbidden_outputs": [],
+  "worktree_policy": {
+    "mode": "strict",
+    "worktree_root": "worktrees",
+    "deny_if_worktree_exists": true,
+    "allow_dirty_globs": [],
+    "allow_untracked_globs": []
+  },
+  "network_policy": {
+    "internet_access": "off",
+    "domain_allowlist_preset": "none",
+    "additional_domains": [],
+    "allowed_http_methods": []
+  },
+  "run": {
+    "regen_cmd": [],
+    "test_cmd": [],
+    "commands": []
+  },
+  "budgets": {
+    "max_changed_files": 0,
+    "max_changed_lines": 0
+  },
+  "evidence": {
+    "out_dir": "out",
+    "include_git_diff_patch": false
+  }
+}
