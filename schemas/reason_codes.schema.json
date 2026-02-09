@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "xtrl/schemas/reason_codes.schema.json",
+  "title": "xtrl reason codes v0.1",
+  "type": "string",
+  "enum": [
+    "OK",
+    "NOT_IMPLEMENTED",
+    "INTERNAL_ERROR",
+
+    "SCHEMA_VALIDATION_FAILED",
+    "ACTION_NOT_FOUND",
+    "FORBIDDEN_PATH_HIT",
+    "DIFF_BUDGET_EXCEEDED",
+
+    "PATCH_APPLY_FAILED",
+    "CHECK_FAILED",
+    "STALE_BASE_REF",
+    "LOCK_UNAVAILABLE"
+  ]
+}
