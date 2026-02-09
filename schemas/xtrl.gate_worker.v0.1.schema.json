@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "xtrl.gate_worker.v0.1",
+  "type": "object",
+  "required": ["schema_version", "decision", "reason_code", "facts"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "decision": {"type": "string", "enum": ["ALLOW", "DENY"]},
+    "reason_code": {"$ref": "xtrl.reason_codes.v0.1.schema.json"},
+    "facts": {"type": "object"}
+  },
+  "additionalProperties": true
+}

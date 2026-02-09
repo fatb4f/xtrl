@@ -1,13 +1,4 @@
-"""Canonical reason codes for xtrl.
-
-Single source of truth for reason-code strings used across:
-- gate_worker.json
-- linearizer replay/promotion reports
-- replay/fuzz harness reports
-
-Keep this list stable; add new codes only with schema + tests.
-"""
-
+"""Canonical reason codes for xtrl (single source of truth)."""
 from __future__ import annotations
 
 from enum import Enum
@@ -15,22 +6,49 @@ from typing import Iterable, Set
 
 
 class ReasonCode(str, Enum):
-    # Success / meta
     OK = "OK"
     NOT_IMPLEMENTED = "NOT_IMPLEMENTED"
     INTERNAL_ERROR = "INTERNAL_ERROR"
 
-    # Worker gate
-    SCHEMA_VALIDATION_FAILED = "SCHEMA_VALIDATION_FAILED"
+    ACTION_FAILED = "ACTION_FAILED"
+    ACTION_NOT_AUTHORIZED = "ACTION_NOT_AUTHORIZED"
     ACTION_NOT_FOUND = "ACTION_NOT_FOUND"
-    FORBIDDEN_PATH_HIT = "FORBIDDEN_PATH_HIT"
-    DIFF_BUDGET_EXCEEDED = "DIFF_BUDGET_EXCEEDED"
 
-    # Linearizer / promotion
-    PATCH_APPLY_FAILED = "PATCH_APPLY_FAILED"
+    BASE_REF_MISSING = "BASE_REF_MISSING"
+    BINARY_DIFF_DENIED = "BINARY_DIFF_DENIED"
+    BUDGET_EXCEEDED = "BUDGET_EXCEEDED"
     CHECK_FAILED = "CHECK_FAILED"
-    STALE_BASE_REF = "STALE_BASE_REF"
+    CHECKOUT_FAILED = "CHECKOUT_FAILED"
+    CONTRACT_INVALID = "CONTRACT_INVALID"
+    DIRTY_REPO_DENIED = "DIRTY_REPO_DENIED"
+    DIRTY_ROOT_PRE = "DIRTY_ROOT_PRE"
+    DIFF_BUDGET_EXCEEDED = "DIFF_BUDGET_EXCEEDED"
+    EVIDENCE_DENIED = "EVIDENCE_DENIED"
+    ENV_MISSING = "ENV_MISSING"
+    EXEC_PROMPT_INVALID = "EXEC_PROMPT_INVALID"
+    EXEC_PROMPT_MISSING = "EXEC_PROMPT_MISSING"
+    FORBIDDEN_PATH_HIT = "FORBIDDEN_PATH_HIT"
+    FORBIDDEN_PATH_TOUCHED = "FORBIDDEN_PATH_TOUCHED"
+    FORBIDDEN_ROOTS = "FORBIDDEN_ROOTS"
+    FORBIDDEN_ROOT_PRESENT = "FORBIDDEN_ROOT_PRESENT"
+    GIT_OP_IN_PROGRESS = "GIT_OP_IN_PROGRESS"
+    GH_PUSH_DENIED = "GH_PUSH_DENIED"
+    GITHUB_UNAVAILABLE = "GITHUB_UNAVAILABLE"
+    HEAD_DETACHED_PRE = "HEAD_DETACHED_PRE"
+    LEGACY_XDG_PATHS = "LEGACY_XDG_PATHS"
     LOCK_UNAVAILABLE = "LOCK_UNAVAILABLE"
+    MISSING_EVIDENCE = "MISSING_EVIDENCE"
+    NET_UNAVAILABLE = "NET_UNAVAILABLE"
+    PATCH_APPLY_FAILED = "PATCH_APPLY_FAILED"
+    PROMOTE_NOT_PUSHED = "PROMOTE_NOT_PUSHED"
+    SCHEMA_VALIDATION_FAILED = "SCHEMA_VALIDATION_FAILED"
+    STALE_BASE_REF = "STALE_BASE_REF"
+    SUBMODULE_DENIED = "SUBMODULE_DENIED"
+    TESTS_MISSING = "TESTS_MISSING"
+    TOOLS_MISSING = "TOOLS_MISSING"
+    UNHANDLED_ERROR = "UNHANDLED_ERROR"
+    WORKTREE_COLLISION = "WORKTREE_COLLISION"
+    WORKTREE_MISMATCH = "WORKTREE_MISMATCH"
 
 
 ALL_REASON_CODES: Set[str] = {c.value for c in ReasonCode}
@@ -38,6 +56,10 @@ ALL_REASON_CODES: Set[str] = {c.value for c in ReasonCode}
 
 def is_valid_reason_code(code: str) -> bool:
     return code in ALL_REASON_CODES
+
+
+def is_valid_reason(code: str) -> bool:
+    return is_valid_reason_code(code)
 
 
 def require_valid_reason_codes(codes: Iterable[str]) -> None:

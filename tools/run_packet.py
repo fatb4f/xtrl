@@ -856,6 +856,7 @@ def main(argv: List[str]) -> int:
             )
 
         os.environ["XTRL_OUT_DIR"] = str(out_base)
+        os.environ["XTRL_REPO_ROOT"] = str(repo_root)
         cmd_results, run_meta = run_commands(
             run_cfg,
             cwd=wt_path,
