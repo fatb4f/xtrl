@@ -6,6 +6,11 @@ Reviewed: 2026-02-09
 
 Review note: No matching evidence directories found under `out/xtrl/` for the listed packets, so the run list remains unchanged.
 
+## Migration pivot
+The ctrlv2 normalization run list above is the last set of migration-aligned work. The first clear
+post-migration feature work begins immediately after these packets, starting with commit
+`9078a54` (2026-02-05) - "Add helper_created event packet and verifier".
+
 ## Runs
 - pkt-exec-0002-enforce-budgets-time-diff-iteration: ALLOW (generated 2026-02-05T18:54:49Z)
 - pkt-exec-0003-enforce-allowed-paths-during-execution: ALLOW (generated 2026-02-05T18:58:58Z)
