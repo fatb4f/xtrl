@@ -3,14 +3,14 @@
   "base_sha": null,
   "decision": "DENY",
   "final_status": "DENY",
-  "out_dir": "/home/src404/src/xtrl/out/xtrl/pkt-loop-0011-src-lineage-validation-spine",
-  "packet_id": "pkt-loop-0011-src-lineage-validation-spine",
+  "out_dir": "/home/src404/src/xtrl/out/xtrl/pkt-loop-0008-gate-worker-artifact",
+  "packet_id": "pkt-loop-0008-gate-worker-artifact",
   "promotion_eligible": false,
   "reason_codes": [
-    "G0 enter work denied",
+    "root preflight denied",
     "evidence_denied"
   ],
   "repo": "xtrl",
   "schema_version": "xtrl.latest_state/v0.1",
-  "timestamp_utc": "2026-02-08T22:48:58.708728Z"
+  "timestamp_utc": "2026-02-09T17:58:57.029891Z"
 }
