@@ -2,6 +2,10 @@
 
 Generated: 2026-02-05
 
+Reviewed: 2026-02-09
+
+Review note: No matching evidence directories found under `out/xtrl/` for the listed packets, so the run list remains unchanged.
+
 ## Runs
 - pkt-exec-0002-enforce-budgets-time-diff-iteration: ALLOW (generated 2026-02-05T18:54:49Z)
 - pkt-exec-0003-enforce-allowed-paths-during-execution: ALLOW (generated 2026-02-05T18:58:58Z)
