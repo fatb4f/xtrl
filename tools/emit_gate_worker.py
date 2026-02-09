@@ -9,7 +9,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from reason_codes import is_valid_reason, REASON_CODES_SET
+from reason_codes import is_valid_reason, ALL_REASON_CODES
 
 
 def sh(argv: List[str], cwd: Path | None = None) -> Tuple[int, str, str]:
@@ -99,7 +99,7 @@ def main() -> int:
             "forbidden_hits": forbidden_hits,
             "max_files": max_files,
             "max_lines": max_lines,
-            "reason_code_enum": sorted(REASON_CODES_SET),
+            "reason_code_enum": sorted(ALL_REASON_CODES),
         },
     }
 
