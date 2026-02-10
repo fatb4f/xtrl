@@ -13,17 +13,17 @@ Goal: re-establish xtrlv2 as SSOT for post-pivot features, then align xtrl runti
 - xtrlv2 gap tracker: https://github.com/fatb4f/xtrlv2/issues/1
 
 ## Work Items (ordered, blocking-first)
-1. ReasonCodes schema (SSOT) — formalize `reason_codes.json` as a schema-bound artifact.
-2. Gate decision bundle — decide gate_worker vs gate_decision+run_manifest+evidence_capsule.
-3. helper_created event schema — JSONL envelope + payload.
-4. Ledger/latest pointer schemas — if required by runtime.
-5. Phase E snapshot schemas — dep_graph, api_surface, module_manifest.
-6. Align xtrl emitters/validators to SSOT + pin schema hash.
+1. **M1-T01** ReasonCodes schema (SSOT) — formalize `reason_codes.json` as a schema-bound artifact.
+2. **M1-T02** Gate decision bundle — decide gate_worker vs gate_decision+run_manifest+evidence_capsule.
+3. **M1-T03** helper_created event schema — JSONL envelope + payload.
+4. **M1-T04** Ledger/latest pointer schemas — if required by runtime.
+5. **M1-T05** Phase E snapshot schemas — dep_graph, api_surface, module_manifest.
+6. **M2-T01** Align xtrl emitters/validators to SSOT + pin schema hash.
 
 ## Work Item Details (executable checklist)
 Format: keep entries short and auditable.
 
-### 1) ReasonCodes schema (SSOT)
+### M1-T01 — ReasonCodes schema (SSOT)
 - Repo: xtrlv2
 - Artifacts: `control/ssot/reason_codes.json`, `control/ssot/schemas/reason_codes.schema.json`
 - Schema refs: `reason_codes` v0.1 (new)
@@ -31,10 +31,11 @@ Format: keep entries short and auditable.
 - Status: Not started
 - Owner: TBD
 - Links: (PR/commit)
+- DoD gate: schema validation + example + negative case
 - Evidence: (CI run / validation report)
 - Blockers: none
 
-### 2) Gate decision bundle choice
+### M1-T02 — Gate decision bundle choice
 - Repo: xtrlv2
 - Artifacts: `control/ssot/schemas/gate_decision.schema.json` (and/or gate_worker schema if chosen)
 - Schema refs: `gate_decision` v0.1 (+ run_manifest/evidence_capsule if used)
@@ -42,10 +43,11 @@ Format: keep entries short and auditable.
 - Status: Not started
 - Owner: TBD
 - Links: (PR/commit)
+- DoD gate: schema validation + example + negative case
 - Evidence: (CI run / validation report)
 - Blockers: ReasonCodes schema
 
-### 3) helper_created event schema
+### M1-T03 — helper_created event schema
 - Repo: xtrlv2
 - Artifacts: `control/ssot/schemas/helper_event.schema.json` (name TBD), JSONL envelope spec
 - Schema refs: helper event v0.1
@@ -53,10 +55,11 @@ Format: keep entries short and auditable.
 - Status: Not started
 - Owner: TBD
 - Links: (PR/commit)
+- DoD gate: schema validation + example + negative case
 - Evidence: (CI run / validation report)
 - Blockers: ReasonCodes schema
 
-### 4) Ledger/latest pointer schemas
+### M1-T04 — Ledger/latest pointer schemas
 - Repo: xtrlv2
 - Artifacts: `control/ssot/schemas/ledger_entry.schema.json`, `control/ssot/schemas/latest_state.schema.json` (names TBD)
 - Schema refs: ledger/latest v0.1
@@ -64,10 +67,11 @@ Format: keep entries short and auditable.
 - Status: Not started
 - Owner: TBD
 - Links: (PR/commit)
+- DoD gate: schema validation + example + negative case
 - Evidence: (CI run / validation report)
 - Blockers: ReasonCodes schema
 
-### 5) Phase E snapshot schemas
+### M1-T05 — Phase E snapshot schemas
 - Repo: xtrlv2
 - Artifacts: `control/ssot/schemas/dep_graph.schema.json`, `api_surface.schema.json`, `module_manifest.schema.json` (names TBD)
 - Schema refs: snapshots v0.1
@@ -75,10 +79,11 @@ Format: keep entries short and auditable.
 - Status: Not started
 - Owner: TBD
 - Links: (PR/commit)
+- DoD gate: schema validation + example + negative case
 - Evidence: (CI run / validation report)
 - Blockers: ReasonCodes schema
 
-### 6) xtrl alignment + schema pin
+### M2-T01 — xtrl alignment + schema pin
 - Repo: xtrl
 - Artifacts: pinned schema hash file, conformance validator, updated emitters
 - Schema refs: all SSOT items above
@@ -86,6 +91,7 @@ Format: keep entries short and auditable.
 - Status: Not started
 - Owner: TBD
 - Links: (PR/commit)
+- DoD gate: schema pin + artifact conformance
 - Evidence: (CI run / validation report)
 - Blockers: 1–5 complete
 
