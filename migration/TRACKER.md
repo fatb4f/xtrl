@@ -8,6 +8,8 @@ Goal: re-establish xtrlv2 as SSOT for post-pivot features, then align xtrl runti
 
 ## Current State
 - SSOT update landed in xtrlv2: commit `0fdb685`
+- New SSOT schemas now include `control_strategy` and `guardrails_bundle` (registered)
+- ReasonCodes exist as `reason_codes.json` but still lack a formal JSON Schema
 - xtrlv2 gap tracker: https://github.com/fatb4f/xtrlv2/issues/1
 
 ## Work Items (ordered, blocking-first)
