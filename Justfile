@@ -5,3 +5,9 @@ migrate-check:
 
 migrate-dry:
     @python tools/migration/migrate.py --dry-run
+
+ssot-conformance:
+    @python tools/ssot_gate.py conformance
+
+ssot-pin-check:
+    @python tools/ssot_gate.py pin

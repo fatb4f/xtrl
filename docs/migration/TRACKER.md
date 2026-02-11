@@ -7,9 +7,9 @@ Goal: re-establish xtrlv2 as SSOT for post-pivot features, then align xtrl runti
 - xtrl: runtime/emitters/adapters
 
 ## Current State
-- SSOT update landed in xtrlv2: commit `0fdb685`
-- New SSOT schemas now include `control_strategy` and `guardrails_bundle` (registered)
-- ReasonCodes exist as `reason_codes.json` but still lack a formal JSON Schema
+- SSOT catch-up landed in xtrlv2: commit `328806e`
+- M1-T01..M1-T05 are complete in xtrlv2 (reason codes, gate bundle decision, helper event, ledger/latest, src snapshots)
+- xtrl schema pin + conformance gates implemented locally for M2-T01
 - xtrlv2 gap tracker: https://github.com/fatb4f/xtrlv2/issues/1
 
 ## Work Items (ordered, blocking-first)
@@ -28,11 +28,11 @@ Format: keep entries short and auditable.
 - Artifacts: `control/ssot/reason_codes.json`, `control/ssot/schemas/reason_codes.schema.json`
 - Schema refs: `reason_codes` v0.1 (new)
 - Tests: schema validation; example file validates; negative case for unknown code
-- Status: Not started
+- Status: Done (xtrlv2)
 - Owner: TBD
 - Links: (PR/commit)
 - DoD gate: schema validation + example + negative case
-- Evidence: (CI run / validation report)
+- Evidence: xtrlv2 commit `328806e` (`feat(ssot): complete M1 schema catch-up (T01-T05)`)
 - Blockers: none
 
 ### M1-T02 — Gate decision bundle choice
@@ -40,59 +40,59 @@ Format: keep entries short and auditable.
 - Artifacts: `control/ssot/schemas/gate_decision.schema.json` (and/or gate_worker schema if chosen)
 - Schema refs: `gate_decision` v0.1 (+ run_manifest/evidence_capsule if used)
 - Tests: schema validation; golden example; negative case for missing reason code
-- Status: Not started
+- Status: Done (xtrlv2)
 - Owner: TBD
 - Links: (PR/commit)
 - DoD gate: schema validation + example + negative case
-- Evidence: (CI run / validation report)
-- Blockers: ReasonCodes schema
+- Evidence: xtrlv2 commit `328806e`; decision record in `docs/migration/decisions/M1-T02-gate-bundle.md`
+- Blockers: none
 
 ### M1-T03 — helper_created event schema
 - Repo: xtrlv2
 - Artifacts: `control/ssot/schemas/helper_event.schema.json` (name TBD), JSONL envelope spec
 - Schema refs: helper event v0.1
 - Tests: schema validation; example JSONL line validates; negative case for missing required fields
-- Status: Not started
+- Status: Done (xtrlv2)
 - Owner: TBD
 - Links: (PR/commit)
 - DoD gate: schema validation + example + negative case
-- Evidence: (CI run / validation report)
-- Blockers: ReasonCodes schema
+- Evidence: xtrlv2 commit `328806e`; schema `control/ssot/schemas/helper_event.schema.json`
+- Blockers: none
 
 ### M1-T04 — Ledger/latest pointer schemas
 - Repo: xtrlv2
 - Artifacts: `control/ssot/schemas/ledger_entry.schema.json`, `control/ssot/schemas/latest_state.schema.json` (names TBD)
 - Schema refs: ledger/latest v0.1
 - Tests: schema validation; example validates; negative case for missing base_ref/run_id
-- Status: Not started
+- Status: Done (xtrlv2)
 - Owner: TBD
 - Links: (PR/commit)
 - DoD gate: schema validation + example + negative case
-- Evidence: (CI run / validation report)
-- Blockers: ReasonCodes schema
+- Evidence: xtrlv2 commit `328806e`; schemas `control/ssot/schemas/ledger_entry.schema.json`, `control/ssot/schemas/latest_state.schema.json`
+- Blockers: none
 
 ### M1-T05 — Phase E snapshot schemas
 - Repo: xtrlv2
 - Artifacts: `control/ssot/schemas/dep_graph.schema.json`, `api_surface.schema.json`, `module_manifest.schema.json` (names TBD)
 - Schema refs: snapshots v0.1
 - Tests: schema validation; example validates; negative case for unstable ordering
-- Status: Not started
+- Status: Done (xtrlv2)
 - Owner: TBD
 - Links: (PR/commit)
 - DoD gate: schema validation + example + negative case
-- Evidence: (CI run / validation report)
-- Blockers: ReasonCodes schema
+- Evidence: xtrlv2 commit `328806e`; schemas `dep_graph`, `api_surface`, `module_manifest`
+- Blockers: none
 
 ### M2-T01 — xtrl alignment + schema pin
 - Repo: xtrl
 - Artifacts: pinned schema hash file, conformance validator, updated emitters
 - Schema refs: all SSOT items above
 - Tests: schema pin gate; artifact conformance gate (B–E)
-- Status: Not started
+- Status: Done
 - Owner: TBD
 - Links: (PR/commit)
 - DoD gate: schema pin + artifact conformance
-- Evidence: (CI run / validation report)
+- Evidence: 2026-02-11 Files: `control/ssot_pin.json`, `Justfile`, `tools/ssot_gate.py`, `tests/test_ssot_conformance.py`, `tests/test_ssot_pin_check_m2_t01.py`, `docs/migration/TRACKER.md` Commands: `just ssot-pin-check` (output: `ssot-pin: ok (53b0e967ba58a7e42ed2606b1163de84c89182f5de9562f6bc7c92573c405053)`), `pytest -q tests/test_ssot_pin_check_m2_t01.py tests/test_ssot_conformance.py` (output: `4 passed in 0.38s`) Commit: not committed
 - Blockers: 1–5 complete
 
 ## Definition of Done

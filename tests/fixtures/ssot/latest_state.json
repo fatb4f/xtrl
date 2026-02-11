@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1",
+  "artifact_kind": "latest_state",
+  "updated_at": "2026-02-11T18:30:10Z",
+  "run_id": "run-2026-02-11-001",
+  "iteration_id": "iter-0003",
+  "last_decision": "DENY",
+  "out_dir": "out/xtrl/pkt-loop-0010",
+  "base_ref": "origin/main",
+  "next_base_ref": "origin/main",
+  "ledger_ref": {
+    "path": "state/ledger/ledger.jsonl"
+  }
+}

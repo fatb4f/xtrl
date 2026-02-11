@@ -1,0 +1,27 @@
+{
+  "artifact_kind": "gate_decision",
+  "run_id": "run-0001",
+  "iteration_id": "iter-0001",
+  "decision": "DENY",
+  "reason_codes": [
+    "TESTS_FAILED"
+  ],
+  "pointers": {
+    "evidence": ".../evidence_capsule.json"
+  },
+  "meta": {
+    "policy_linkage": {
+      "reason_codes_ref": {
+        "path": "control/ssot/reason_codes.json",
+        "version": "0.1"
+      }
+    },
+    "requirements": {
+      "required_evidence": []
+    },
+    "guards": {
+      "spec": [],
+      "eval": []
+    }
+  }
+}

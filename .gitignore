@@ -1,5 +1,6 @@
 /out/
 /.worktrees/
+__pycache__/
 
 # Packet runner worktrees
 worktrees/
