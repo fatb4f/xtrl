@@ -92,7 +92,7 @@ Format: keep entries short and auditable.
 - Owner: TBD
 - Links: (PR/commit)
 - DoD gate: schema pin + artifact conformance
-- Evidence: 2026-02-11 Files: `control/ssot_pin.json`, `Justfile`, `tools/ssot_gate.py`, `tests/test_ssot_conformance.py`, `tests/test_ssot_pin_check_m2_t01.py`, `docs/migration/TRACKER.md` Commands: `just ssot-pin-check` (output: `ssot-pin: ok (53b0e967ba58a7e42ed2606b1163de84c89182f5de9562f6bc7c92573c405053)`), `pytest -q tests/test_ssot_pin_check_m2_t01.py tests/test_ssot_conformance.py` (output: `4 passed in 0.38s`) Commit: not committed
+- Evidence: 2026-02-11 Files: `control/ssot_pin.json`, `Justfile`, `tools/ssot_gate.py`, `tests/test_ssot_conformance.py`, `tests/test_ssot_pin_check_m2_t01.py`, `docs/migration/TRACKER.md` Commands: `just ssot-pin-check` (output: `ssot-pin: ok (53b0e967ba58a7e42ed2606b1163de84c89182f5de9562f6bc7c92573c405053)`), `pytest -q tests/test_ssot_pin_check_m2_t01.py tests/test_ssot_conformance.py` (output: `4 passed in 0.39s`) Commit: not committed
 - Blockers: 1–5 complete
 
 ## Definition of Done
